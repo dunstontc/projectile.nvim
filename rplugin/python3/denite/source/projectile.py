@@ -3,6 +3,7 @@
 #  AUTHOR: Clay Dunston <dunstontc at gmail.com>
 #  License: MIT
 #  =============================================================================
+
 import os
 import json
 from .base import Base
@@ -20,7 +21,6 @@ class Source(Base):
             'data_dir': vim.vars.get('projectile#data_dir', '~/.config/projectile'),
             # "data_dir": '~/.config/projectile/projects.json' # TODO: Pull from g:projectile#directory
         }
-
 
     def on_init(self, context):
         # if not self.vars.get('path'):
