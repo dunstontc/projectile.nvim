@@ -1,0 +1,23 @@
+#   ┌─┐┬┌┬┐┬┌─┐┌┐┌┌─┐┬─┐┌─┐
+#   │ ┬│ │ ││ ┬││││ │├┬┘├┤
+#  o└─┘┴ ┴ ┴└─┘┘└┘└─┘┴└─└─┘
+
+
+# mac system files
+Icon?
+.DS_Store
+
+# private files
+.env
+.variables
+ignore/**
+
+# editor settings
+.vscode
+.idea*
+**/tags
+
+# other
+!.gitkeep
+**/__pycache__/**
+
