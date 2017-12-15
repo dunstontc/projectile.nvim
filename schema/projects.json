@@ -1,0 +1,26 @@
+{
+    "title": "JSON schema for Projectile projects list",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "type": ["object", "boolean"],
+    "required": [ "id", "name", "root" ],
+    "properties": {
+        "id": {
+            "description": "The unique identifier for the project",
+            "type": "integer"
+        },
+        "name": {
+            "description": "Name of the project",
+            "type": "string"
+        },
+        "root": {
+            "description": "Absolute path to the project's root directory",
+            "type": "string"
+        },
+        "description": {
+            "description": "A description of the project",
+            "type": "string"
+        }
+    }
+
+}
+

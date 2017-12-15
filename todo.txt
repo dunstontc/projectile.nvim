@@ -1,0 +1,12 @@
+x 2017-12-06 List projects id:1
+x 2017-12-06 Provide a @Denite source for projects id:4
+(A) 2017-12-06 Find or create @projects.json id:8
+(B) 2017-12-06 Make default_action for opening projects customizable (check for nerdtree/vimfiler) id:9
+2017-12-06 Add projects to projectile/projects.json automatically id:2
+2017-12-06 Automatically add version controlled projects id:3
+(C) 2017-12-07 Integrate with @Startify id:10
+2017-12-06 Provide a FZF source for projects @Optional id:5
+2017-12-06 Provide functions for adding, editing, & removing projects id:6
+(C) 2017-12-06 Grep for @todo or load todo.txt or similar in projects id:7 +todo.nvim
+(B) 2017-12-12 Find a more consistent way of identifying the active buffer id:11
+(B) 2017-12-14 Handle errors for regex non matches (ex: `'NoneType' object has no attribute 'group'`)
