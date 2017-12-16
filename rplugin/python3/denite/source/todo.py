@@ -74,7 +74,7 @@ class Source(Base):
         # line_pattern = re.compile(r'(?:\:)(\d*)(?:\:)', re.M)
         line_pattern    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)', re.M)
         # content_pattern = re.compile(r'(?:\:\d*\:\d*\:\s*)(.*$)', re.M)
-        content_pattern = re.compile(r'(TODO|FIXME|XXX)+(.*$)', re.M)
+        content_pattern = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
 
         candidates = []
 

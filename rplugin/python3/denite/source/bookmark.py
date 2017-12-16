@@ -4,8 +4,9 @@
 #  License: MIT
 #  =============================================================================
 
-# import os
+import os
 import json
+
 from .base import Base
 from denite import util
 
@@ -25,10 +26,17 @@ class Source(Base):
     def on_init(self, context):
         # context['is_interactive'] = True
         context['data_file']    = util.expand(self.vars['data_dir'] + '/bookmarks.json')
-        context['hacks']        = []
         context['current_buff'] = self.vim.current.buffer.name
+
+        # (denite-extra)
+        context['__linenr'] = self.vim.current.window.cursor[0]
+        context['__bufnr'] = self.vim.current.buffer.number
+        context['__bufname'] = self.vim.current.buffer.name
+        context['__filename'] = os.path.basename(context['__bufname'])
+
+        # (denite-marks)
+        text = self.vim.call('getline', context['__linenr'])
         # data_file = util.expand(self.vars['data_dir'] + '/bookmarks.json')
-        # context['__db'] = TinyDB(data_file)
         # if not self.vars.get('path'):
         #     raise AttributeError('Invalid session directory, please configure')
 
@@ -38,18 +46,22 @@ class Source(Base):
 
         candidates = []
         with open(context['data_file'], 'r') as fp:
-            # try:
+            try:
                 config = json.load(fp)
                 for obj in config:
                     candidates.append({
-                        'word': obj['root'],
-                        'abbr': '{0:^25} -- {1:^50} -- {2}'.format(obj['name'], obj['description'], obj['root']),
+                        'word':         obj['root'],
+                        'abbr':         '{0:^25} -- {1:^50} -- {2}'.format(obj['name'], obj['description'], obj['root']),
                         'action__path': obj['root'],
+                        'action__line': obj['line'],
+                        'action__col':  obj['col'],
                     })
-            # except json.JSONDecodeError:
-                # util.error(self.vim, 'Decode error for %s' % context['data_file'])
-                return candidates
-        # context['hacks'].extend(candidates)
+            except json.JSONDecodeError:
+                err_string = 'Decode error for' + context['data_file']
+                util.error(self.vim, err_string)
+                # util.error(self.vim, f'Decode error for {context["data_file"]}')
+
+            return candidates
 
     def define_syntax(self):
         self.vim.command(r'syntax match deniteSource_Projectile_Project /^.*$/ '

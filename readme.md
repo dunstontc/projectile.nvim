@@ -48,6 +48,7 @@ ag -r --nocolor --silent "(TODO:|FIXME:|XXX:).*$" .
 
 
 ## Denite ##
+  - [usr_41.html#41.6: Using Functions](https://neovim.io/doc/user/usr_41.html#41.6)
 
 ### Sources ###
 
