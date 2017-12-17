@@ -22,21 +22,21 @@ class Kind(Openable):
         super().__init__(vim)
         self.name             = 'data'
         self.default_action   = 'read'
-        self.persist_actions += ['preview', 'highlight']
         # TODO: See if there is a way to persist without saving the denite buffer.
-        # self.persist_actions += ['add', 'delete', 'edit']
-        # self.redraw_actions  += ['add', 'delete', 'edit']
-        self._previewed_target = {}
+        self.persist_actions += ['preview', 'highlight', 'delete']
+        self.redraw_actions  += ['delete']
+        self._previewed_target  = {}
         self._previewed_buffers = {}
         self.vars = {
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.config/projectile'),
+            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'date_format': '%d %b %Y %H:%M:%S',
             'exclude_filetypes': ['denite'],
         }
 
     def action_add(self, context):
-        # data_path = context['__data_file']
+        data_file = util.expand(self.vars['data_dir'] + '/bookmarks.json')
         boofer = self.vim.current.buffer.name
+        linenr = self.vim.current.window.cursor[0]
         content = util.input(self.vim, context, 'Add as: ')
         if not len(content):
             # FIXME: If this returns null it will overwrite the file with 'null'.
@@ -46,19 +46,39 @@ class Kind(Openable):
 
         new_data = {
             'name': content,
-            'root': boofer,
-            'line': '',
-            'col' : '',
-            # 'date': str(datetime.datetime.now().isoformat()),
+            'path': boofer,
+            'line': linenr,
+            'col' : 1,
+            'added': str(datetime.datetime.now().isoformat()),
             'description': str(datetime.datetime.now().isoformat()),
         }
 
-        with open('/users/clay/.config/projectile/bookmarks.json', 'r') as g:
+        with open(data_file, 'r') as g:
             json_info   = json.load(g)
             json_info.append(new_data)
 
-        with open('/users/clay/.config/projectile/bookmarks.json', 'w') as f:
+        with open(data_file, 'w') as f:
             json.dump(json_info, f, indent=2)
+
+    def action_delete(self, context):
+        target = context['targets'][0]
+        target_date = target['timestamp']
+        data_file = util.expand(self.vars['data_dir'] + '/bookmarks.json')
+        # data_path = context['__data_file']
+        confirmation = self.vim.call('confirm', "Delete this bookmark?", "&Yes\n&No")
+        if confirmation == 2:
+            return
+        else:
+            with open(data_file, 'r') as g:
+                content = json.load(g)
+                bookmarks  = content[:]
+                for i in range(len(bookmarks)):
+                    if bookmarks[i]["added"] == target_date:
+                        bookmarks.pop(i)
+                        break
+
+            with open(data_file, 'w') as f:
+                json.dump(bookmarks, f, indent=2)
 
     def action_read(self, context):
         cwd = self.vim.call('getcwd')
@@ -136,25 +156,6 @@ class Kind(Openable):
         winids = self.vim.call('win_findbuf', bufnr)
         return None if len(winids) == 0 else winids[0]
 
-    # def action_delete(self, context):
-    #     target = context['targets'][0]
-    #     # data_path = context['__data_file']
-    #     content = util.input(self.vim, context, 'Add as: ')
-    #     if not len(content):
-    #         #
-    #         # FIXME: If this returns null it will overwrite the file with the worn null.
-    #         return
-    #     # if not os.access('~/test.json', os.R_OK):
-    #     #     return
-    #
-    #     with open('/users/clay/.config/projectile/bookmarks.json') as g:
-    #         content= json.load(g)
-    #         c_copy = testtwo[:]
-    #         # TODO: c_copy.pop(target)
-    #
-    #     with open('/users/clay/.config/projectile/bookmarks.json', 'w') as f:
-    #         json.dump(testthree, f, indent=2)
-
 
     # def action_test(self, context):
     #     buffer = self.vim.current.buffer.name
@@ -167,8 +168,8 @@ class Kind(Openable):
     #     test_data = {}
     #     test_data = {
     #         'name': content,
-    #         # 'root': self.vim.eval('expand("%:p")'),
-    #         # 'root': self.vim.current.buffer.name,
+    #         # 'path': self.vim.eval('expand("%:p")'),
+    #         # 'path': self.vim.current.buffer.name,
     #         'boofer': buffer,
     #         # 'buffers': self.vim.call('execute', 'ls'),
     #         'source_context': source_context,

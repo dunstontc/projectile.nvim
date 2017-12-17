@@ -69,6 +69,7 @@ ag -r --nocolor --silent "(TODO:|FIXME:|XXX:).*$" .
   - [searchtasks.vim](https://github.com/gilsondev/searchtasks.vim)
   - [todolist.vim](vim-scripts/todolist.vim)
   - [vim-todo](https://github.com/codegram/vim-todo)
+  - [gather-todo.txt-vim](https://github.com/lgalke/gather-todo.txt-vim)
 
 ## Credit & Thanks ##
 

@@ -1,0 +1,67 @@
+{
+    "title": "JSON schema for Projectile project",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+
+    "type": ["object", "boolean"],
+    "required": [ "id", "name", "root" ],
+
+    "properties": {
+        "id": {
+            "description": "The unique identifier for the project",
+            "type": "integer"
+        },
+        "name": {
+            "description": "Name of the project",
+            "type": "string"
+        },
+        "root": {
+            "description": "Absolute path to the project's root directory",
+            "type": "string"
+        },
+        "description": {
+            "description": "A description of the project",
+            "type": "string"
+        },
+        "date": {
+            "description": "Date when the project was added",
+            "type": "string",
+            "format": "date"
+        },
+        "is_vcs": {
+            "description": "Is the project under version control?",
+            "type": "boolean"
+        },
+        "vcs": {
+            "type": "object",
+            "properties": {
+              "repo_system": {
+                  "description": "Version control system",
+                  "type": "string",
+                  "enum": [
+                      "Bazaar",
+                      "CVS",
+                      "Git",
+                      "Mercurial",
+                      "Subversion",
+                      "other"
+                  ]
+              },
+              "repo_type": {
+                  "description": "Who owns the repository",
+                  "type": "string",
+                  "enum": [
+                      "origin",
+                      "clone",
+                      "fork",
+                      "other"
+                  ]
+              },
+              "repo_address": {
+                  "description": "URL where the code is hosted",
+                  "type": "string"
+              }
+            }
+        }
+    }
+}
+

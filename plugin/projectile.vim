@@ -9,7 +9,11 @@
 let g:projectile#default_command = 'cd'
 
 if !exists('g:projectile#data_dir')
-  let g:projectile#data_dir = '~/.config/projectile'
+  let g:projectile#data_dir = '~/.cache/projectile'
+endif
+
+if !exists('g:projectile#directory_command')
+  let g:projectile#directory_command = 'Vimfiler -explorer '
 endif
 
 if !exists('g:projectile#todo_terms')
