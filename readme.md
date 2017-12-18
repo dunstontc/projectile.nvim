@@ -1,8 +1,8 @@
 # Projectile.nvim #
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
 
 ![under_construction](https://raw.githubusercontent.com/dunstontc/assets/master/gifs/pika.gif)
+
 > Collection of features for Vim similar to [bbatsov/projectile](https://github.com/bbatsov/projectile); using [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim) for it's interfaces.
 ## Features ##
   - Projects
