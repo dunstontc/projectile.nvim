@@ -2,7 +2,7 @@
 " FILE: projectile.vim
 " AUTHOR: Clay Dunston <dunstontc@gmail.com>
 " License: MIT license
-" Last Modified: December 7th, 2017
+" Last Modified: December 18th, 2017
 " ==============================================================================
 
 

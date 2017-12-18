@@ -1,8 +1,5 @@
 # Projectile.nvim #
 
-
-![under_construction](https://raw.githubusercontent.com/dunstontc/assets/master/gifs/pika.gif)
-
 > Collection of features for Vim similar to [bbatsov/projectile](https://github.com/bbatsov/projectile); using [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim) for it's interfaces.  
 > I wouldn't recommend using this quite yet, but if you do and you think of anything it needs that isn't already listed in [the todo file](todo.txt), let me know.
 
@@ -28,26 +25,35 @@
   - Vim or Neovim with Python3 support
 
 ### Configuration ###
-  - Settings are persisted in in `$XDG_CACHE_HOME/projectile` by default.  
-  - You can change the location by setting `g:projectile#data_dir` to your preferred path.  
+  - Data is persisted in in `$XDG_CACHE_HOME/projectile` or `~/.config/projectile/`by default.  
 
-```viml
-let g:projectile#data_dir = '~/.projectile'
+```vim
+let g:projectile#data_dir = '~/.config/.projectile'
+let g:projectile#directory_command = ''
+let g:todo_plugin#todo_terms=['TODO', 'FIXME', 'XXX']
 ```
+
+
 
 ## Denite Sources ##
 ```vim
 :Denite projectile
 ```
-
+  - *add*
+  - *remove*
+  - *cd*
 
 ```vim
 :Denite bookmark
 ```
+  - *add*
+  - *remove*
+  - *open*
 
 ```vim
-:Denite 
+:Denite todo
 ```
+  - *Jump*
 
 
 ## Related Projects ##
