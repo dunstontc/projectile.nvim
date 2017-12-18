@@ -1,42 +1,43 @@
 {
-    "title": "JSON schema for Projectile project",
-    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title":   "JSON schema for Projectile project",
+    "$schema": "https://raw.githubusercontent.com/dunstontc/projectile.nvim/master/schema/project.json",
 
-    "type": ["object", "boolean"],
+    "type":     ["object", "boolean"],
     "required": [ "id", "name", "root" ],
 
     "properties": {
-        "id": {
-            "description": "The unique identifier for the project",
-            "type": "integer"
+        "timestamp": {
+          "description": "Date when the bookmark was added",
+          "type":        "string",
+          "format":      "date"
         },
         "name": {
             "description": "Name of the project",
-            "type": "string"
+            "type":        "string"
         },
         "root": {
             "description": "Absolute path to the project's root directory",
-            "type": "string"
+            "type":        "string"
         },
         "description": {
             "description": "A description of the project",
-            "type": "string"
+            "type":        "string"
         },
         "date": {
             "description": "Date when the project was added",
-            "type": "string",
-            "format": "date"
-        },
-        "is_vcs": {
-            "description": "Is the project under version control?",
-            "type": "boolean"
+            "type":        "string",
+            "format":      "date"
         },
         "vcs": {
+            "description": "Is the project under version control?",
+            "type":        "boolean"
+        },
+        "vcs_info": {
             "type": "object",
             "properties": {
               "repo_system": {
                   "description": "Version control system",
-                  "type": "string",
+                  "type":        "string",
                   "enum": [
                       "Bazaar",
                       "CVS",
@@ -48,7 +49,7 @@
               },
               "repo_type": {
                   "description": "Who owns the repository",
-                  "type": "string",
+                  "type":        "string",
                   "enum": [
                       "origin",
                       "clone",
@@ -58,7 +59,8 @@
               },
               "repo_address": {
                   "description": "URL where the code is hosted",
-                  "type": "string"
+                  "type":        "string",
+                  "format":      "url"
               }
             }
         }
