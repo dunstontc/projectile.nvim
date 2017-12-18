@@ -9,7 +9,7 @@ if exists("b:current_syntax")
     finish
 endif
 
-syntax  match  todoItem       '^.*$'                      contains=todoDate,todoProject,todoContext,todoExtra,todoString,todoOverDue
+syntax  match  todoItem       '^.*$'                      contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
 syntax  match  todoComment    '^#\s.\+$'
 syntax  match  todoDone       '^[xX]\s.\+$'
 syntax  match  todoPriorityA  '^([aA])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
