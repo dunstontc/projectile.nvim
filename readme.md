@@ -21,14 +21,13 @@
 ## Usage ##
 ### Requirements ###
   - [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
-  - (currently) [vim-rooter](https://github.com/airblade/vim-rooter)
   - Vim or Neovim with Python3 support
 
 ### Configuration ###
-  - Data is persisted in in `$XDG_CACHE_HOME/projectile` or `~/.config/projectile/`by default.  
+  - Data is persisted in in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`by default.  
 
 ```vim
-let g:projectile#data_dir = '~/.config/.projectile'
+let g:projectile#data_dir = '~/.cache/.projectile'
 let g:projectile#directory_command = ''
 let g:todo_plugin#todo_terms=['TODO', 'FIXME', 'XXX']
 ```

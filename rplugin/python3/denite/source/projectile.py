@@ -17,9 +17,12 @@ class Source(Base):
         self.name = 'projectile'
         self.kind = 'project'
         self.vars = {
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.config/projectile'),
-            'has_rooter': vim.vars.get('loaded_rooter'),
+            'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'user_cmd':     vim.vars.get('projectile#directory_command'),
+            'has_rooter':   vim.vars.get('loaded_rooter'),
             'has_devicons': vim.vars.get('loaded_devicons'),
+            'has_nerdtree': vim.vars.get('loaded_nerdtree'),
+            'has_vimfiler': vim.vars.get('loaded_vimfiler'),
         }
 
     def on_init(self, context):
@@ -40,12 +43,14 @@ class Source(Base):
                 for obj in config:
                     candidates.append({
                         'word': obj['root'],
-                        'abbr': '{0:^25} -- {1:^50} -- {2}'.format(
+                        'abbr': '{0:^25} -- {1} -- {2} -- {3}'.format(
                             obj['name'],
                             obj['description'],
-                            obj['root']
+                            obj['root'],
+                            obj['timestamp']
                         ),
                         'action__path': obj['root'],
+                        'timestamp':    obj['timestamp'],
                         })
             except json.JSONDecodeError:
                 util.error(self.vim, 'Decode error for %s' % context['projects_file'])

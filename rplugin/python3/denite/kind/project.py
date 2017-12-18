@@ -15,6 +15,14 @@ from ..kind.openable import Kind as Openable
 from denite import util
 # from denite.util import clearmatch, input
 
+def get_length(array):
+    """Get the max string length for an attribute in a collection."""
+    max_count = int(0)
+    for item in array:
+        cur_len = len(item)
+        if cur_len > max_count:
+            max_count = cur_len
+    return max_count
 
 class Kind(Openable):
 
@@ -22,6 +30,7 @@ class Kind(Openable):
         super().__init__(vim)
         self.name             = 'project'
         self.default_action   = 'add'
+        # self.default_action   = 'prompt' TODO: prompt for action
         # TODO: See if there is a way to persist without saving the denite buffer.
         self.persist_actions += ['delete', 'edit']
         self.redraw_actions  += ['delete', 'edit']
@@ -35,12 +44,14 @@ class Kind(Openable):
 
     def action_add(self, context):
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
-        new_data = {}
-        # TODO: checl if self.vars.has_rooter == '1'
-        rooter_dir = self.vim.eval('FindRootDirectory()')
         root_dir = self.vim.call('getcwd')
+        new_data = {}
+        if self.vars['has_rooter'] == 1:
+            rooter_dir = self.vim.eval('FindRootDirectory()')
 
-        content = util.input(self.vim, context, rooter_dir)
+        propt_string = f'Add project at \"{root_dir}\" as: '
+
+        content = util.input(self.vim, context, propt_string)
         # content = util.input(self.vim, context, 'Add as: ')
         if not len(content):
             # FIXME: If this returns null it will overwrite the file with 'null'.
@@ -60,6 +71,25 @@ class Kind(Openable):
 
         with open(data_file, 'w') as f:
             json.dump(json_info, f, indent=2)
+
+    def action_delete(self, context):
+        target = context['targets'][0]
+        target_date = target['timestamp']
+        data_file = util.expand(self.vars['data_dir'] + '/projects.json')
+        confirmation = self.vim.call('confirm', "Remove this project?", "&Yes\n&No")
+        if confirmation == 2:
+            return
+        else:
+            with open(data_file, 'r') as g:
+                content = json.load(g)
+                projects  = content[:]
+                for i in range(len(projects)):
+                    if projects[i]['timestamp'] == target_date:
+                        projects.pop(i)
+                        break
+
+            with open(data_file, 'w') as f:
+                json.dump(projects, f, indent=2)
 
     def action_cd(self, context):
         target = context['targets'][0]
@@ -95,24 +125,5 @@ class Kind(Openable):
         winids = self.vim.call('win_findbuf', bufnr)
         return None if len(winids) == 0 else winids[0]
 
-    # def action_delete(self, context):
-    #     target = context['targets'][0]
-        # data_path = context['__data_file']
-        # content = util.input(self.vim, context, 'Add as: ')
-        # confirmation = self.vim.confirm("Save changes?", "&Yes\n&No\n&Cancel")
-        # if not len(content):
-            #
-            # FIXME: If this returns null it will overwrite the file with the worn null.
-        # return
-        # if not os.access('~/test.json', os.R_OK):
-        #     return
-
-        # with open('/users/clay/.cache/projectile/bookmarks.json') as g:
-        #     content= json.load(g)
-        #     c_copy = testtwo[:]
-        #     # TODO: c_copy.pop(target)
-        #
-        # with open('/users/clay/.cache/projectile/bookmarks.json', 'w') as f:
-        #     json.dump(testthree, f, indent=2)
 
 

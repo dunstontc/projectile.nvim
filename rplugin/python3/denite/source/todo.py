@@ -62,10 +62,12 @@ class Source(Base):
         self.sorters     = ['sorter_rank']
         # self.syntax_name = 'deniteSource_Todos'
         self.vars = {
+            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'user_cmd': vim.vars.get('projectile#directory_command'),
             'command' : 'ag',
             'options' : ['-s','--nocolor', '--nogroup', '--vimgrep'],
             'input'   : "\s(BUG|FIXME|HACK|TODO|XXX)\:\s",
-            'encoding': 'utf-8'
+            'encoding': 'utf-8',
         }
 
     def on_init(self, context):

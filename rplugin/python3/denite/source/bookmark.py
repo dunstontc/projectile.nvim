@@ -60,17 +60,19 @@ class Source(Base):
                 config  = json.load(fp)
                 path_width = get_length(config, 'path')
                 desc_width = get_length(config, 'description')
+                name_width = get_length(config, 'name')
                 for obj in config:
                     candidates.append({
                         'word': obj['path'],
-                        'abbr': "{0:>{width1}}  {1} -- {2:<{width2}} -- {4} --".format(
-                            obj['path'],
+                        'abbr': "{0} {1:^{name_width}} -- {2:<{path_width}} -- {4} --".format(
                             self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),
                             obj['name'],
+                            obj['path'],
                             obj['description'],
                             obj['timestamp'],
-                            width1=path_width,
-                            width2=desc_width,
+                            path_width = path_width,
+                            desc_width = desc_width,
+                            name_width = name_width
                             ),
                         'action__path': obj['path'],
                         'action__line': obj['line'],
@@ -90,19 +92,20 @@ class Source(Base):
                          r'contains=deniteSource_Projectile_Project,deniteSource_Projectile_Noise,deniteSource_Projectile_Name,deniteSource_Projectile_Description,deniteSource_Projectile_Path,deniteSource_Projectile_Timestamp')
         self.vim.command(r'syntax match deniteSource_Projectile_Noise /\(\s--\s\)/ contained ')
                          # r'contained containedin=deniteSource_Projectile_Project')
-        self.vim.command(r'syntax match deniteSource_Projectile_Name /^\(.*\)\(\(.* -- \)\{3\}\)\@=/ contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Name /^\(.*\)\(\(.* -- \)\{2\}\)\@=/ contained ')
+        # self.vim.command(r'syntax match deniteSource_Projectile_Name /^\(.*\)\(\(.* -- \)\{3\}\)\@=/ contained ')
                          # r'contained containedin=deniteSource_Projectile_Project')
-        self.vim.command(r'syntax match deniteSource_Projectile_Description /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{2\}\)\@=/ contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Path /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
                          # r'contained containedin=deniteSource_Projectile_Project')
-        self.vim.command(r'syntax match deniteSource_Projectile_Path /\(\(.* -- \)\{2\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
+        # self.vim.command(r'syntax match deniteSource_Projectile_Path /\(\(.* -- \)\{2\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
                          # r'contained containedin=deniteSource_Projectile_Project')
-        self.vim.command(r'syntax match deniteSource_Projectile_Timestamp /\v((-- .*){3})@<=(.*)/ contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Timestamp /\v((-- .*){2})@<=(.*)/ contained ')
                          # r'contained containedin=deniteSource_Projectile_Project')
 
     def highlight(self):
         self.vim.command('highlight link deniteSource_Projectile_Project Normal')
         self.vim.command('highlight link deniteSource_Projectile_Noise Comment')
-        self.vim.command('highlight link deniteSource_Projectile_Name Identifier')
+        self.vim.command('highlight link deniteSource_Projectile_Name String')
         self.vim.command('highlight link deniteSource_Projectile_Description String')
         self.vim.command('highlight link deniteSource_Projectile_Path Directory')
         self.vim.command('highlight link deniteSource_Projectile_Timestamp Number')
