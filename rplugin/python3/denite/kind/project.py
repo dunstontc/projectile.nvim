@@ -16,50 +16,41 @@ from denite import util
 # from denite.util import clearmatch, input
 
 
-def __get_id(array, attribute):
-    # FIXME: There is a more pythonic way to do this.
-    new_id = int(0)
-    for item in array:
-        cur_id = item['id']
-        if cur_id > new_id:
-            new_id = cur_id
-    return new_id
-
 class Kind(Openable):
 
     def __init__(self, vim):
         super().__init__(vim)
         self.name             = 'project'
-        self.default_action   = 'cd'
-        # self.persist_actions += ['preview', 'highlight']
+        self.default_action   = 'add'
         # TODO: See if there is a way to persist without saving the denite buffer.
-        # self.persist_actions += ['add', 'delete', 'edit']
-        # self.redraw_actions  += ['add', 'delete', 'edit']
-        # self._previewed_target = {}
-        # self._previewed_buffers = {}
+        self.persist_actions += ['delete', 'edit']
+        self.redraw_actions  += ['delete', 'edit']
         self.vars = {
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'date_format': '%d %b %Y %H:%M:%S',
             'exclude_filetypes': ['denite'],
+            'date_format': '%d %b %Y %H:%M:%S',
+            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'has_rooter': vim.vars.get('loaded_rooter'),
+            'has_devicons': vim.vars.get('loaded_devicons')
         }
 
     def action_add(self, context):
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
-        boofer = self.vim.current.buffer.name
-        linenr = self.vim.current.window.cursor[0]
-        content = util.input(self.vim, context, 'Add as: ')
+        new_data = {}
+        # TODO: checl if self.vars.has_rooter == '1'
+        rooter_dir = self.vim.eval('FindRootDirectory()')
+        root_dir = self.vim.call('getcwd')
+
+        content = util.input(self.vim, context, rooter_dir)
+        # content = util.input(self.vim, context, 'Add as: ')
         if not len(content):
             # FIXME: If this returns null it will overwrite the file with 'null'.
             return
         # if not os.access('~/test.json', os.R_OK):
         #     return
-
         new_data = {
             'name': content,
-            'path': boofer,
-            'line': linenr,
-            'col' : 1,
-            'added': str(datetime.datetime.now().isoformat()),
+            'root': rooter_dir,
+            'timestamp': str(datetime.datetime.now().isoformat()),
             'description': '',
         }
 
@@ -71,14 +62,6 @@ class Kind(Openable):
             json.dump(json_info, f, indent=2)
 
     def action_cd(self, context):
-        """Change lcd.
-
-        Parameters
-        ----------
-        context : object
-            Used to reference context[targets].
-
-        """
         target = context['targets'][0]
         self.vim.command('lcd {}'.format(target['action__path']))
 
@@ -112,11 +95,11 @@ class Kind(Openable):
         winids = self.vim.call('win_findbuf', bufnr)
         return None if len(winids) == 0 else winids[0]
 
-    def action_delete(self, context):
-        target = context['targets'][0]
+    # def action_delete(self, context):
+    #     target = context['targets'][0]
         # data_path = context['__data_file']
         # content = util.input(self.vim, context, 'Add as: ')
-        confirmation = self.vim.confirm("Save changes?", "&Yes\n&No\n&Cancel")
+        # confirmation = self.vim.confirm("Save changes?", "&Yes\n&No\n&Cancel")
         # if not len(content):
             #
             # FIXME: If this returns null it will overwrite the file with the worn null.

@@ -12,6 +12,7 @@ from denite import util
 
 
 def get_length(array, attribute):
+    """Get the max string length for an attribute in a collection."""
     max_count = int(0)
     for item in array:
         cur_attr = item[attribute]
@@ -27,11 +28,13 @@ class Source(Base):
         super().__init__(vim)
 
         self.name = 'bookmark'
-        self.kind = 'data'
+        self.kind = 'bookmark'
         self.vars = {
             'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'date_format': '%d %b %Y %H:%M:%S',
             'exclude_filetypes': ['denite'],
+            'has_rooter': vim.vars.get('loaded_rooter'),
+            'has_devicons': vim.vars.get('loaded_devicons'),
         }
 
     def on_init(self, context):
@@ -55,20 +58,24 @@ class Source(Base):
         with open(context['data_file'], 'r') as fp:
             try:
                 config  = json.load(fp)
-                padding = get_length(config, 'path')
+                path_width = get_length(config, 'path')
+                desc_width = get_length(config, 'description')
                 for obj in config:
                     candidates.append({
                         'word': obj['path'],
-                        'abbr': "{0:^15} -- {1} -- {2:<{width}} -- {3}".format(obj['name'],
-                                                                               obj['description'],
-                                                                               obj['path'],
-                                                                               obj['added'],
-                                                                               width=padding,
-                                                                               ),
+                        'abbr': "{0:>{width1}}  {1} -- {2:<{width2}} -- {4} --".format(
+                            obj['path'],
+                            self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),
+                            obj['name'],
+                            obj['description'],
+                            obj['timestamp'],
+                            width1=path_width,
+                            width2=desc_width,
+                            ),
                         'action__path': obj['path'],
                         'action__line': obj['line'],
                         'action__col':  obj['col'],
-                        'timestamp':    obj['added'],
+                        'timestamp':    obj['timestamp'],
                     })
             except json.JSONDecodeError:
                 err_string = 'Decode error for' + context['data_file']

@@ -1,9 +1,9 @@
 """Kind to model data; Create, Read, Update, & Delete said data. (currently files & folders in JSON)."""
 #  =============================================================================
-#  FILE: data.py
+#  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc at gmail.com>
 #  License: MIT
-#  Last Updated: 2017-12-11
+#  Last Updated: 2017-12-17
 #  =============================================================================
 
 import os
@@ -20,9 +20,8 @@ class Kind(Openable):
 
     def __init__(self, vim):
         super().__init__(vim)
-        self.name             = 'data'
+        self.name             = 'bookmark'
         self.default_action   = 'read'
-        # TODO: See if there is a way to persist without saving the denite buffer.
         self.persist_actions += ['preview', 'highlight', 'delete']
         self.redraw_actions  += ['delete']
         self._previewed_target  = {}
@@ -31,6 +30,8 @@ class Kind(Openable):
             'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'date_format': '%d %b %Y %H:%M:%S',
             'exclude_filetypes': ['denite'],
+            'has_rooter': vim.vars.get('loaded_rooter'),
+            'has_devicons': vim.vars.get('loaded_devicons'),
         }
 
     def action_add(self, context):
@@ -49,7 +50,7 @@ class Kind(Openable):
             'path': boofer,
             'line': linenr,
             'col' : 1,
-            'added': str(datetime.datetime.now().isoformat()),
+            'timestamp': str(datetime.datetime.now().isoformat()),
             'description': str(datetime.datetime.now().isoformat()),
         }
 
@@ -64,7 +65,6 @@ class Kind(Openable):
         target = context['targets'][0]
         target_date = target['timestamp']
         data_file = util.expand(self.vars['data_dir'] + '/bookmarks.json')
-        # data_path = context['__data_file']
         confirmation = self.vim.call('confirm', "Delete this bookmark?", "&Yes\n&No")
         if confirmation == 2:
             return
@@ -73,7 +73,7 @@ class Kind(Openable):
                 content = json.load(g)
                 bookmarks  = content[:]
                 for i in range(len(bookmarks)):
-                    if bookmarks[i]["added"] == target_date:
+                    if bookmarks[i]['timestamp'] == target_date:
                         bookmarks.pop(i)
                         break
 

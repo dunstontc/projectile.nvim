@@ -42,6 +42,16 @@ def run_search(command, options, pattern, location):
     return p.stdout.decode('utf-8').split('\n')
 
 
+def get_length(array):
+    """Get the max string length for an attribute in a collection."""
+    max_count = int(0)
+    for item in array:
+        cur_len = len(item)
+        if cur_len > max_count:
+            max_count = cur_len
+    return max_count
+
+
 class Source(Base):
 
     def __init__(self, vim):
@@ -77,21 +87,31 @@ class Source(Base):
         content_pattern = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
 
         candidates = []
+        max_count = int(0)
 
         for item in context['todos']:
             try:
-                 todo_path = path_pattern.search(item).group(1)
+                comp_path = path_pattern.search(item).group(1)[cur_dir_len:]
             except AttributeError:
-                 todo_path = ''
+                comp_path = ''
+            cur_len = len(comp_path)
+            if cur_len > max_count:
+                max_count = cur_len
+
+        for item in context['todos']:
+            try:
+                todo_path = path_pattern.search(item).group(1)[cur_dir_len:]
+                # withh = get_length(path_pattern.search(item).group(1))
+            except AttributeError:
+                todo_path = ''
 
             try:
                 item_line = line_pattern.search(item)  # TODO: does it make a difference if this is defined before the try/except blocks?
                 todo_line = item_line.group(1)
                 todo_col  = item_line.group(2)
-                todo_pos  = f'[{todo_line}:{todo_col}]'
+                todo_pos  = f'{todo_path} [{todo_line}:{todo_col}]'
             except AttributeError:
                 todo_line = ''
-                todo_pcol = ''
                 todo_pos  = ''
 
             try:
@@ -102,7 +122,8 @@ class Source(Base):
             if item:
                 candidates.append({
                     'word':         item,
-                    'abbr':         '{:>} {:>} {:>}'.format(todo_path[cur_dir_len:], todo_pos, todo_content, ),
+                    'abbr':         '{:<{width}} {:>}'.format(todo_pos, todo_content, width=(max_count+8)),
+                    # 'abbr':         f'{todo_path[cur_dir_len:]:<{width}} {todo_pos:>} {todo_content:>}',
                     'action__path': todo_path,
                     'action__line': todo_line,
                     'action__col':  todo_col,
@@ -114,7 +135,7 @@ class Source(Base):
         self.vim.command(r'syntax match deniteSource_Todo /^.*$/ containedin=' + self.syntax_name)
         # self.vim.command(r'syntax match deniteSource_Todo_Path /^\s\zs\S*\ze/ contained '
         # self.vim.command(r'syntax match deniteSource_Todo_Path /\zs\S*\ze\s*--.*$/ contained '
-        self.vim.command(r'syntax match deniteSource_Todo_Path /\v%(^\s)(\w|\.|\/)*/ contained '
+        self.vim.command(r'syntax match deniteSource_Todo_Path /\v%(^\s)(\w|\.|\-|\/)*/ contained '
                          r'containedin=deniteSource_Todo')
         self.vim.command(r'syntax match deniteSource_Todo_Noise /\S*\%\(--\)\s/ contained '
                          r'containedin=deniteSource_Todo')

@@ -11,6 +11,7 @@ Icon?
 .env
 .variables
 ignore/**
+dontreadme.md
 
 # editor settings
 .vscode

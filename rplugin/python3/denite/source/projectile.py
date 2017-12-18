@@ -15,17 +15,19 @@ class Source(Base):
         super().__init__(vim)
 
         self.name = 'projectile'
-        self.kind = 'directory'
-        self.default_action = 'cd'
+        self.kind = 'project'
         self.vars = {
             'data_dir': vim.vars.get('projectile#data_dir', '~/.config/projectile'),
-            # "data_dir": '~/.config/projectile/projects.json' # TODO: Pull from g:projectile#directory
+            'has_rooter': vim.vars.get('loaded_rooter'),
+            'has_devicons': vim.vars.get('loaded_devicons'),
         }
 
     def on_init(self, context):
         # if not self.vars.get('path'):
             # raise AttributeError('Invalid session directory, please configure')
         context['projects_file'] = util.expand(self.vars['data_dir'] + '/projects.json')
+        # if self.vim.vars('g:loaded_rooter') == 1:
+            # context['__cwd'] = self.vim.call('FindRootDirectory()')
 
     def gather_candidates(self, context):
         if not os.access(context['projects_file'], os.R_OK):
@@ -38,7 +40,11 @@ class Source(Base):
                 for obj in config:
                     candidates.append({
                         'word': obj['root'],
-                        'abbr': '{0:^25} -- {1:^50} -- {2}'.format(obj['name'], obj['description'], obj['root']),
+                        'abbr': '{0:^25} -- {1:^50} -- {2}'.format(
+                            obj['name'],
+                            obj['description'],
+                            obj['root']
+                        ),
                         'action__path': obj['root'],
                         })
             except json.JSONDecodeError:
