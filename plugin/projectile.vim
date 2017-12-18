@@ -1,6 +1,6 @@
 " ==============================================================================
-" File: projectile.vim
-" Author: Clay Dunston <dunstontc@gmail.com>
+" FILE: projectile.vim
+" AUTHOR: Clay Dunston <dunstontc@gmail.com>
 " License: MIT license
 " Last Modified: December 7th, 2017
 " ==============================================================================
@@ -17,7 +17,7 @@ if !exists('g:projectile#directory_command')
 endif
 
 if !exists('g:projectile#todo_terms')
-  let g:todo_plugin#search_list=['TODO', 'FIXME']
+  let g:todo_plugin#todo_terms=['TODO', 'FIXME']
 endif
 
 " Say hello so people can see that we're here
