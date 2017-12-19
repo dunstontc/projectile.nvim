@@ -75,7 +75,7 @@ class Kind(Openable):
     def action_delete(self, context):
         target = context['targets'][0]
         target_date = target['timestamp']
-        target_name = target['__name']
+        target_name = target['name']
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
         confirmation = self.vim.call('confirm', f"Remove {target_name}?", "&Yes\n&No")
         if confirmation == 2:
