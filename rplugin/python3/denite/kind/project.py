@@ -29,11 +29,11 @@ class Kind(Openable):
     def __init__(self, vim):
         super().__init__(vim)
         self.name             = 'project'
-        self.default_action   = 'add'
+        self.default_action   = 'cd'
         # self.default_action   = 'prompt' TODO: prompt for action
         # TODO: See if there is a way to persist without saving the denite buffer.
-        self.persist_actions += ['delete', 'edit']
-        self.redraw_actions  += ['delete', 'edit']
+        # self.persist_actions += ['delete', 'edit']
+        # self.redraw_actions  += ['delete', 'edit']
         self.vars = {
             'exclude_filetypes': ['denite'],
             'date_format': '%d %b %Y %H:%M:%S',
@@ -75,8 +75,9 @@ class Kind(Openable):
     def action_delete(self, context):
         target = context['targets'][0]
         target_date = target['timestamp']
+        target_name = target['__name']
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
-        confirmation = self.vim.call('confirm', "Remove this project?", "&Yes\n&No")
+        confirmation = self.vim.call('confirm', f"Remove {target_name}?", "&Yes\n&No")
         if confirmation == 2:
             return
         else:
@@ -88,8 +89,8 @@ class Kind(Openable):
                         projects.pop(i)
                         break
 
-            with open(data_file, 'w') as f:
-                json.dump(projects, f, indent=2)
+                with open(data_file, 'w') as f:
+                    json.dump(projects, f, indent=2)
 
     def action_cd(self, context):
         target = context['targets'][0]

@@ -1,5 +1,8 @@
 # Projectile.nvim #
 
+[![license](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
+[![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
+
 > Collection of features for Vim similar to [bbatsov/projectile](https://github.com/bbatsov/projectile); using [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim) for it's interfaces.  
 > I wouldn't recommend using this quite yet, but if you do and you think of anything it needs that isn't already listed in [the todo file](todo.txt), let me know.
 
@@ -7,7 +10,6 @@
 > Some of these items have yet to be implemented.
   - Projects
     - Keep a list of project locations with metadata
-    - Add, Remove, or Open Projects
     - Check version control status of Projects
     - List todos in a project
   - Bookmarks
@@ -38,16 +40,16 @@ let g:todo_plugin#todo_terms=['TODO', 'FIXME', 'XXX']
 ```vim
 :Denite projectile
 ```
-  - *add*
-  - *remove*
-  - *cd*
+  - *Add*
+  - *Remove*
+  - *Cd*
 
 ```vim
 :Denite bookmark
 ```
-  - *add*
-  - *remove*
-  - *open*
+  - *Add*
+  - *Remove*
+  - *Open*
 
 ```vim
 :Denite todo

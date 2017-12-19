@@ -9,6 +9,17 @@ import json
 from .base import Base
 from denite import util
 
+
+def get_length(array, attribute):
+    """Get the max string length for an attribute in a collection."""
+    max_count = int(0)
+    for item in array:
+        cur_attr = item[attribute]
+        cur_len = len(cur_attr)
+        if cur_len > max_count:
+            max_count = cur_len
+    return max_count
+
 class Source(Base):
 
     def __init__(self, vim):
@@ -17,6 +28,7 @@ class Source(Base):
         self.name = 'projectile'
         self.kind = 'project'
         self.vars = {
+            'exclude_filetypes': ['denite'],
             'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'user_cmd':     vim.vars.get('projectile#directory_command'),
             'has_rooter':   vim.vars.get('loaded_rooter'),
@@ -33,27 +45,34 @@ class Source(Base):
             # context['__cwd'] = self.vim.call('FindRootDirectory()')
 
     def gather_candidates(self, context):
-        if not os.access(context['projects_file'], os.R_OK):
-            return []
+        # if not os.access(context['projects_file'], os.R_OK):
+        #     return []
 
         candidates = []
-        with open(context['projects_file']) as fp:
+        with open(context['projects_file'], 'r') as fp:
             try:
                 config = json.loads(fp.read())
+                name_len = get_length(config, 'name')
+                path_len = get_length(config, 'root')
+
                 for obj in config:
                     candidates.append({
                         'word': obj['root'],
-                        'abbr': '{0:^25} -- {1} -- {2} -- {3}'.format(
+                        'abbr': '{0:>{name_len}} -- {1:<{path_len}} -- {2}'.format(
                             obj['name'],
-                            obj['description'],
+                            # obj['description'],
                             obj['root'],
-                            obj['timestamp']
+                            obj['timestamp'],
+                            name_len = name_len,
+                            path_len = path_len
                         ),
                         'action__path': obj['root'],
+                        'name':         obj['name'],
                         'timestamp':    obj['timestamp'],
                         })
             except json.JSONDecodeError:
-                util.error(self.vim, 'Decode error for %s' % context['projects_file'])
+                err_string = 'Decode error for' + context['projects_file']
+                util.error(self.vim, err_string)
 
         return candidates
 

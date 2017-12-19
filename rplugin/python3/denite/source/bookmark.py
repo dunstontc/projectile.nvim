@@ -58,21 +58,22 @@ class Source(Base):
         with open(context['data_file'], 'r') as fp:
             try:
                 config  = json.load(fp)
-                path_width = get_length(config, 'path')
-                desc_width = get_length(config, 'description')
-                name_width = get_length(config, 'name')
+                path_len = get_length(config, 'path')
+                desc_len = get_length(config, 'description')
+                name_len = get_length(config, 'name')
+
                 for obj in config:
                     candidates.append({
                         'word': obj['path'],
-                        'abbr': "{0} {1:^{name_width}} -- {2:<{path_width}} -- {4} --".format(
+                        'abbr': "{0} {1:^{name_len}} -- {2:<{path_len}} -- {4} --".format(
                             self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),
                             obj['name'],
                             obj['path'],
                             obj['description'],
                             obj['timestamp'],
-                            path_width = path_width,
-                            desc_width = desc_width,
-                            name_width = name_width
+                            path_len = path_len,
+                            desc_len = desc_len,
+                            name_len = name_len
                             ),
                         'action__path': obj['path'],
                         'action__line': obj['line'],
@@ -82,7 +83,6 @@ class Source(Base):
             except json.JSONDecodeError:
                 err_string = 'Decode error for' + context['data_file']
                 util.error(self.vim, err_string)
-                # util.error(self.vim, f'Decode error for {context["data_file"]}')
 
             return candidates
 
