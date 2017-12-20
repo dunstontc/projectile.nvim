@@ -70,8 +70,9 @@ let g:todo_plugin#todo_terms=['TODO', 'FIXME', 'XXX']
 
 ## Credit & Thanks ##
 
-<!-- > A good portion of this project is just a patchwork of preexisting code. Here's that code:   -->
-- [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)  
+- [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
 - [neoclide/denite-git](https://github.com/neoclide/denite-git)
-- [chemzqm/denite-extra](https://github.com/chemzqm/denite-extra)  
+- [chemzqm/denite-extra](https://github.com/chemzqm/denite-extra)
 - [rafi/vim-denite-session](https://github.com/rafi/vim-denite-session)
+- [SpaceVim](https://github.com/SpaceVim/SpaceVim)
+

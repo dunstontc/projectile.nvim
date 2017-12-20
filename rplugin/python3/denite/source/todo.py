@@ -62,12 +62,14 @@ class Source(Base):
         self.sorters     = ['sorter_rank']
         # self.syntax_name = 'deniteSource_Todos'
         self.vars = {
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'user_cmd': vim.vars.get('projectile#directory_command'),
-            'command' : 'ag',
-            'options' : ['-s','--nocolor', '--nogroup', '--vimgrep'],
-            'input'   : "\s(BUG|FIXME|HACK|TODO|XXX)\:\s",
-            'encoding': 'utf-8',
+            'data_dir':    vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'user_cmd':    vim.vars.get('projectile#directory_command'),
+            'todo_terms':  vim.vars.get('projectile#todo_terms'),
+            'search_prog': vim.vars.get('projectile#search_prog'),
+            'command' :    'ag',
+            'options' :    ['-s','--nocolor', '--nogroup', '--vimgrep'],
+            'input'   :    "\s(BUG|FIXME|HACK|TODO|XXX)\:\s",
+            'encoding':    'utf-8',
         }
 
     def on_init(self, context):
@@ -80,12 +82,9 @@ class Source(Base):
         context['todos'] = run_search(a, b, c, d)
 
     def gather_candidates(self, context):
-        # cur_dir = self.vim.call('getcwd')
         cur_dir_len     = len(self.vim.call('getcwd'))
         path_pattern    = re.compile(r'(^.*?)(?:\:.*$)', re.M)
-        # line_pattern = re.compile(r'(?:\:)(\d*)(?:\:)', re.M)
         line_pattern    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)', re.M)
-        # content_pattern = re.compile(r'(?:\:\d*\:\d*\:\s*)(.*$)', re.M)
         content_pattern = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
 
         candidates = []
@@ -93,25 +92,19 @@ class Source(Base):
 
         for item in context['todos']:
             try:
+                todo_path = path_pattern.search(item).group(1)
                 comp_path = path_pattern.search(item).group(1)[cur_dir_len:]
             except AttributeError:
+                todo_path = ''
                 comp_path = ''
             cur_len = len(comp_path)
             if cur_len > max_count:
-                max_count = cur_len
-
-        for item in context['todos']:
-            try:
-                todo_path = path_pattern.search(item).group(1)[cur_dir_len:]
-                # withh = get_length(path_pattern.search(item).group(1))
-            except AttributeError:
-                todo_path = ''
+                max_count = cur_len + 1
 
             try:
-                item_line = line_pattern.search(item)  # TODO: does it make a difference if this is defined before the try/except blocks?
-                todo_line = item_line.group(1)
-                todo_col  = item_line.group(2)
-                todo_pos  = f'{todo_path} [{todo_line}:{todo_col}]'
+                todo_line = line_pattern.search(item).group(1)
+                todo_col  = line_pattern.search(item).group(2)
+                todo_pos  = f'{todo_path[cur_dir_len:]} [{todo_line}:{todo_col}]'
             except AttributeError:
                 todo_line = ''
                 todo_pos  = ''
@@ -124,8 +117,10 @@ class Source(Base):
             if item:
                 candidates.append({
                     'word':         item,
-                    'abbr':         '{:<{width}} {:>}'.format(todo_pos, todo_content, width=(max_count+8)),
-                    # 'abbr':         f'{todo_path[cur_dir_len:]:<{width}} {todo_pos:>} {todo_content:>}',
+                    'abbr':         '{0:>{width}} -- {1:>}'.format(todo_pos,
+                                                                   todo_content,
+                                                                   width=(max_count + 8)
+                                                                   ),
                     'action__path': todo_path,
                     'action__line': todo_line,
                     'action__col':  todo_col,
@@ -137,10 +132,10 @@ class Source(Base):
         self.vim.command(r'syntax match deniteSource_Todo /^.*$/ containedin=' + self.syntax_name)
         # self.vim.command(r'syntax match deniteSource_Todo_Path /^\s\zs\S*\ze/ contained '
         # self.vim.command(r'syntax match deniteSource_Todo_Path /\zs\S*\ze\s*--.*$/ contained '
-        self.vim.command(r'syntax match deniteSource_Todo_Path /\v%(^\s)(\w|\.|\-|\/)*/ contained '
+        self.vim.command(r'syntax match deniteSource_Todo_Path /\%(^\s\)\@<=\(.*\)\%(\[\)\@=/ contained '
                          r'containedin=deniteSource_Todo')
-        self.vim.command(r'syntax match deniteSource_Todo_Noise /\S*\%\(--\)\s/ contained '
-                         r'containedin=deniteSource_Todo')
+        # self.vim.command(r'syntax match deniteSource_Todo_Noise /\S*\%\(--\)\s/ contained '
+                         # r'containedin=deniteSource_Todo')
         self.vim.command(r'syntax match deniteSource_Todo_Word /\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained '
                          r'containedin=deniteSource_Todo')
         self.vim.command(r'syntax match deniteSource_Todo_Pos /\d\+\(:\d\+\)\?/ contained '
@@ -154,7 +149,6 @@ class Source(Base):
         self.vim.command('highlight default link deniteSource_Todo_Path Directory')
         self.vim.command('highlight default link deniteSource_Todo_Pos Number')
         self.vim.command('highlight default link deniteSource_Todo_Word Type')
-
 
     # def convert(self, val, context):
     #     bufnr = val['bufnr']
