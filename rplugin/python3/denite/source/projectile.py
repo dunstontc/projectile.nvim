@@ -4,7 +4,7 @@
 #  License: MIT
 #  =============================================================================
 
-import os
+# import os
 import json
 from .base import Base
 from denite import util
@@ -54,16 +54,20 @@ class Source(Base):
                 config = json.loads(fp.read())
                 name_len = get_length(config, 'name')
                 path_len = get_length(config, 'root')
+                is_vsc   = ''
 
                 for obj in config:
+                    if obj['vcs'] == True:
+                        # is_vsc = '⛕ ' # TODO: Check against has_devicons & display this if false
+                        is_vsc = ' ' # \ue0a0 -- Powerline branch symbol
                     candidates.append({
                         'word': obj['root'],
-                        'abbr': '{0:>{name_len}} -- {1:<{path_len}} -- {2}'.format(
-                            obj['name'],
+                        'abbr': '{0:<{name_len}} -- {1:<{path_len}} -- {2}'.format(
+                            is_vsc + obj['name'],
                             # obj['description'],
                             obj['root'],
                             obj['timestamp'],
-                            name_len = name_len,
+                            name_len = (name_len + 2),
                             path_len = path_len
                         ),
                         'action__path': obj['root'],

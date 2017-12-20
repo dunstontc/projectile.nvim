@@ -6,14 +6,41 @@
 #  Last Updated: 2017-12-11
 #  =============================================================================
 
-# import os
 # import re
+import os
 import json
 import datetime
+import subprocess
 
 from ..kind.openable import Kind as Openable
 from denite import util
 # from denite.util import clearmatch, input
+
+
+def git_do(location, command):
+    """Run git commands from Python scripts.
+
+    Arguments
+    ---------
+    location : str
+        The target directory
+
+    Returns
+    -------
+    list     : The utf-8 decoded search results
+
+    """
+    # cmd = f"git -C {location} {command}"
+    cmd = f"git -C {location} status -s"
+    try:
+        p = subprocess.run(cmd,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT,
+                           shell=True)
+    except subprocess.CalledProcessError:
+        return []
+    return p.stdout.decode('utf-8').split('\n')
+
 
 def get_length(array):
     """Get the max string length for an attribute in a collection."""
@@ -23,6 +50,7 @@ def get_length(array):
         if cur_len > max_count:
             max_count = cur_len
     return max_count
+
 
 class Kind(Openable):
 
@@ -43,26 +71,28 @@ class Kind(Openable):
         }
 
     def action_add(self, context):
+        """Add a project to *projects.json*."""
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
         root_dir = self.vim.call('getcwd')
         new_data = {}
         if self.vars['has_rooter'] == 1:
-            rooter_dir = self.vim.eval('FindRootDirectory()')
+            if len(self.vim.eval('FindRootDirectory()')):
+                root_dir = self.vim.eval('FindRootDirectory()')  # FIXME: Write a function to do this.
 
-        propt_string = f'Add project at \"{root_dir}\" as: '
+        prompt_string = f'Add project at `{root_dir}` as: '
 
-        content = util.input(self.vim, context, propt_string)
-        # content = util.input(self.vim, context, 'Add as: ')
+        content = util.input(self.vim, context, prompt_string)
         if not len(content):
             # FIXME: If this returns null it will overwrite the file with 'null'.
             return
-        # if not os.access('~/test.json', os.R_OK):
+        # if not os.access(data_file, os.R_OK):
         #     return
         new_data = {
             'name': content,
-            'root': rooter_dir,
+            'root': root_dir,
             'timestamp': str(datetime.datetime.now().isoformat()),
             'description': '',
+            'vcs': os.path.isdir(f"{root_dir}/.git") # TODO: Also check for .hg/ and .svn
         }
 
         with open(data_file, 'r') as g:
@@ -73,6 +103,7 @@ class Kind(Openable):
             json.dump(json_info, f, indent=2)
 
     def action_delete(self, context):
+        """Remove a project from *projects.json*."""
         target = context['targets'][0]
         target_date = target['timestamp']
         target_name = target['name']
@@ -93,10 +124,12 @@ class Kind(Openable):
                     json.dump(projects, f, indent=2)
 
     def action_cd(self, context):
+        """Change cd to the project's root."""
         target = context['targets'][0]
         self.vim.command('lcd {}'.format(target['action__path']))
 
     def action_narrow(self, context):
+        """Traverse the path of a target."""
         target = context['targets'][0]
         context['sources_queue'].append([
             {'name': 'file', 'args': []},
@@ -126,5 +159,37 @@ class Kind(Openable):
         winids = self.vim.call('win_findbuf', bufnr)
         return None if len(winids) == 0 else winids[0]
 
+    def __git_do(location, command):
+        """Run git commands from Python scripts.
 
+        Arguments
+        ---------
+        location : str
+            The target directory
+        command : str
+            The git command to execute
 
+        Returns
+        -------
+        list    : The utf-8 decoded search results, split by newline
+
+        """
+        # cmd = f"git -C {location} {command}"
+        cmd = f"git -C {location} status -s"
+        try:
+            p = subprocess.run(cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               shell=True)
+        except subprocess.CalledProcessError:
+            return []
+        return p.stdout.decode('utf-8').split('\n')
+
+    def __get_length(array):
+        """Get the max string length for an attribute in a collection."""
+        max_count = int(0)
+        for item in array:
+            cur_len = len(item)
+            if cur_len > max_count:
+                max_count = cur_len
+        return max_count

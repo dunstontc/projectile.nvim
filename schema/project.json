@@ -23,11 +23,6 @@
             "description": "A description of the project",
             "type":        "string"
         },
-        "date": {
-            "description": "Date when the project was added",
-            "type":        "string",
-            "format":      "date"
-        },
         "vcs": {
             "description": "Is the project under version control?",
             "type":        "boolean"
@@ -39,11 +34,11 @@
                   "description": "Version control system",
                   "type":        "string",
                   "enum": [
-                      "Bazaar",
-                      "CVS",
-                      "Git",
-                      "Mercurial",
-                      "Subversion",
+                      "bazaar",
+                      "cvs",
+                      "git",
+                      "mercurial",
+                      "subversion",
                       "other"
                   ]
               },
