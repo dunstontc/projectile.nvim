@@ -3,7 +3,7 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc at gmail.com>
 #  License: MIT
-#  Last Updated: 2017-12-17
+#  Last Updated: 2017-12-20
 #  =============================================================================
 
 import os
@@ -85,6 +85,10 @@ class Kind(Openable):
         for target in context['targets']:
             path = target['action__path']
             match_path = '^{0}$'.format(path)
+
+            if not os.path.exists(path):
+                util.error(self.vim, f"error accessing {path}")
+                # TODO: Handle this error.
 
             if re.match('https?://', path):
                 # URI

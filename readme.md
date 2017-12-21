@@ -7,17 +7,17 @@
 > I wouldn't recommend using this quite yet, but if you do and you think of anything it needs that isn't already listed in [the todo file](todo.txt), let me know.
 
 ## Features ##
-> Some of these items have yet to be implemented.
+
   - Projects
     - Keep a list of project locations with metadata
-    - Check version control status of Projects
+    - (WIP) Check version control status of Projects
     - List todos in a project
   - Bookmarks
     - Keep a list of bookmarked locations that can be jumped to
   - TODOs
     - List todos in the current project folder & jump to them
-    - List todos from a todo.txt file
-    - Append todos to the quickfix or location list
+    - (WIP) List todos from a todo.txt file
+    - (WIP) Append todos to the quickfix or location list
 
 
 ## Usage ##
@@ -28,33 +28,35 @@
 ### Configuration ###
   - Data is persisted in in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`by default.  
 
-```vim
+```viml
 let g:projectile#data_dir = '~/.cache/.projectile'
 let g:projectile#directory_command = ''
-let g:todo_plugin#todo_terms=['TODO', 'FIXME', 'XXX']
+let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
+let g:projectile#search_prog = 'grep'
+let g:projectile#disable_devicons = 0
 ```
 
 
-
 ## Denite Sources ##
-```vim
+```viml
 :Denite projectile
 ```
   - *Add*
   - *Remove*
+  - *Open (default)*
   - *Cd*
 
-```vim
+```viml
 :Denite bookmark
 ```
   - *Add*
   - *Remove*
-  - *Open*
+  - *Open (default)*
 
-```vim
+```viml
 :Denite todo
 ```
-  - *Jump*
+  - *Jump (default)*
 
 
 ## Related Projects ##

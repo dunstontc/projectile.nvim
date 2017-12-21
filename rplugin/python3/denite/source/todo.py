@@ -92,14 +92,23 @@ class Source(Base):
 
         for item in context['todos']:
             try:
-                todo_path = path_pattern.search(item).group(1)
                 comp_path = path_pattern.search(item).group(1)[cur_dir_len:]
             except AttributeError:
-                todo_path = ''
-                comp_path = ''
+                comp_path = ' '
             cur_len = len(comp_path)
             if cur_len > max_count:
-                max_count = cur_len + 1
+                max_count = cur_len
+
+        for item in context['todos']:
+            try:
+                todo_path = path_pattern.search(item).group(1)
+                # comp_path = path_pattern.search(item).group(1)[cur_dir_len:]
+                # cur_len = len(comp_path)
+                # if cur_len > max_count:
+                    # max_count = cur_len + 1
+            except AttributeError:
+                todo_path = ''
+                # comp_path = ''
 
             try:
                 todo_line = line_pattern.search(item).group(1)
@@ -167,3 +176,4 @@ class Source(Base):
     #         'action__col': col,
     #         'action__buffer_nr': bufnr,
     #         }
+

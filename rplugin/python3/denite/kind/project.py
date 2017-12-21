@@ -57,7 +57,7 @@ class Kind(Openable):
     def __init__(self, vim):
         super().__init__(vim)
         self.name             = 'project'
-        self.default_action   = 'cd'
+        self.default_action   = 'open'
         # self.default_action   = 'prompt' TODO: prompt for action
         # TODO: See if there is a way to persist without saving the denite buffer.
         # self.persist_actions += ['delete', 'edit']
@@ -92,7 +92,7 @@ class Kind(Openable):
             'root': root_dir,
             'timestamp': str(datetime.datetime.now().isoformat()),
             'description': '',
-            'vcs': os.path.isdir(f"{root_dir}/.git") # TODO: Also check for .hg/ and .svn
+            'vcs': os.path.isdir(f"{root_dir}/.git")  # TODO: Also check for .hg/ and .svn
         }
 
         with open(data_file, 'r') as g:
@@ -126,6 +126,8 @@ class Kind(Openable):
     def action_cd(self, context):
         """Change cd to the project's root."""
         target = context['targets'][0]
+        if not os.access(target['action__path']):
+            return
         self.vim.command('lcd {}'.format(target['action__path']))
 
     def action_narrow(self, context):

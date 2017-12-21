@@ -2,6 +2,7 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc at gmail.com>
 #  License: MIT
+#  Last Edited: 2017-12-20
 #  =============================================================================
 
 import os
@@ -38,7 +39,6 @@ class Source(Base):
         }
 
     def on_init(self, context):
-        # context['is_interactive'] = True
         context['data_file']  = util.expand(self.vars['data_dir'] + '/bookmarks.json')
         # (denite-extra)
         context['__linenr']   = self.vim.current.window.cursor[0]
@@ -51,8 +51,9 @@ class Source(Base):
         #     raise AttributeError('Invalid directory, please configure')
 
     def gather_candidates(self, context):
-        # if not os.access(context['data_file'], os.R_OK):
-            # return []
+        # if not os.path.exists(context['data_file']):
+        #     util.error(self.vim, f"error accessing {context['data_file']}")
+        #     return []
 
         candidates = []
         with open(context['data_file'], 'r') as fp:
@@ -65,12 +66,12 @@ class Source(Base):
                 for obj in config:
                     candidates.append({
                         'word': obj['path'],
-                        'abbr': "{0} {1:^{name_len}} -- {2:<{path_len}} -- {4} --".format(
-                            self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),
+                        'abbr': " {0} {1:^{name_len}} -- {2:<{path_len}} -- {3}".format(
+                            self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),  # TODO: Check avainst @has_devicons
                             obj['name'],
-                            obj['path'],
-                            obj['description'],
+                            obj['path'].replace(os.path.expanduser('~'), '~'),
                             obj['timestamp'],
+                            # obj['description'],
                             path_len = path_len,
                             desc_len = desc_len,
                             name_len = name_len
@@ -91,16 +92,9 @@ class Source(Base):
                          r'containedin=' + self.syntax_name + ' '
                          r'contains=deniteSource_Projectile_Project,deniteSource_Projectile_Noise,deniteSource_Projectile_Name,deniteSource_Projectile_Description,deniteSource_Projectile_Path,deniteSource_Projectile_Timestamp')
         self.vim.command(r'syntax match deniteSource_Projectile_Noise /\(\s--\s\)/ contained ')
-                         # r'contained containedin=deniteSource_Projectile_Project')
         self.vim.command(r'syntax match deniteSource_Projectile_Name /^\(.*\)\(\(.* -- \)\{2\}\)\@=/ contained ')
-        # self.vim.command(r'syntax match deniteSource_Projectile_Name /^\(.*\)\(\(.* -- \)\{3\}\)\@=/ contained ')
-                         # r'contained containedin=deniteSource_Projectile_Project')
         self.vim.command(r'syntax match deniteSource_Projectile_Path /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
-                         # r'contained containedin=deniteSource_Projectile_Project')
-        # self.vim.command(r'syntax match deniteSource_Projectile_Path /\(\(.* -- \)\{2\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
-                         # r'contained containedin=deniteSource_Projectile_Project')
         self.vim.command(r'syntax match deniteSource_Projectile_Timestamp /\v((-- .*){2})@<=(.*)/ contained ')
-                         # r'contained containedin=deniteSource_Projectile_Project')
 
     def highlight(self):
         self.vim.command('highlight link deniteSource_Projectile_Project Normal')
