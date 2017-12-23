@@ -1,17 +1,16 @@
 {
+    "title":   "JSON schema for projectile.nvim bookmarks",
     "$schema": "http://json-schema.org/draft-06/schema#",
     "$id":     "https://raw.githubusercontent.com/dunstontc/projectile.nvim/master/schema/bookmark.json",
 
-    "title": "JSON schema for Projectile.nvim bookmark",
-
-    "type":     ["object", "boolean"],
+    "type":     [ "object", "boolean" ],
     "required": [ "timestamp", "name", "path" ],
 
     "properties": {
         "timestamp": {
-          "description": "Date when the bookmark was added",
-          "type":        "string",
-          "format":      "date"
+            "description": "Date when the bookmark was added",
+            "type":        "string",
+            "format":      "date"
         },
         "name": {
             "description": "Name of the bookmark",
@@ -20,6 +19,14 @@
         "path": {
             "description": "Absolute path to the marked file",
             "type":        "string"
+        },
+        "line": {
+            "description": "Line number of the bookmark",
+            "type":        "number"
+        },
+        "col": {
+            "description": "Column number of the bookmark",
+            "type":        "number"
         },
         "description": {
             "description": "A description of the bookmark",

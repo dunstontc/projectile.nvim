@@ -1,15 +1,16 @@
 {
-    "title":   "JSON schema for Projectile project",
-    "$schema": "https://raw.githubusercontent.com/dunstontc/projectile.nvim/master/schema/project.json",
+    "title":   "JSON schema for projectile.nvim projects",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id":     "https://raw.githubusercontent.com/dunstontc/projectile.nvim/master/schema/project.json",
 
-    "type":     ["object", "boolean"],
+    "type":     [ "object", "boolean" ],
     "required": [ "id", "name", "root" ],
 
     "properties": {
         "timestamp": {
-          "description": "Date when the bookmark was added",
-          "type":        "string",
-          "format":      "date"
+            "description": "Date when the project was added",
+            "type":        "string",
+            "format":      "date"
         },
         "name": {
             "description": "Name of the project",
@@ -52,7 +53,7 @@
                       "other"
                   ]
               },
-              "repo_address": {
+              "repo_url": {
                   "description": "URL where the code is hosted",
                   "type":        "string",
                   "format":      "url"

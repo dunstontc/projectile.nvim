@@ -1,0 +1,41 @@
+{
+    "title":   "JSON schema for .projectionist.json files for use with vim-projectionist.",
+    "$schema": "https://raw.githubusercontent.com/dunstontc/projectile.nvim/master/schema/projections.json",
+
+    "type":     ["object", "boolean"],
+    "required": [],
+
+    "properties": {
+        "alternate": {
+          "description": "Determines the destination of the |projectionist-:A| command.  If this is a list, the first readable file will be used.",
+          "type":        "string"
+        },
+        "console": {
+            "description": "Command to run to start a REPL or other interactive shell.  Will be defined as :Console.  This is useful to set from a '*' projection or on a simple file glob like '*.js'.  Experimental.",
+            "type":        "string"
+        },
+        "dispatch": {
+            "description": "Default task to use for |:Dispatch| in dispatch.vim.  If not provided, the option for any existing alternate file is used instead. Expansions are shell escaped.",
+            "type":        "string"
+        },
+        "make": {
+            "description": "Sets 'makeprg'.  Also loads a |:compiler| plugin if one is available matching the executable name.  This is useful to set from a '*' projection.  Expansions are shell escaped.",
+            "type":        "string"
+        },
+        "path": {
+            "description": "Additional directories to prepend to 'path'.  Can be relative to the project root or absolute.  This is useful to set on a simple file glob like '*.js'.",
+            "type":        "string"
+        },
+        "start": {
+            "description": "Command to run to 'boot' the project.  Examples include `lein run`, `rails server`, and `foreman start`.  It will be used as a default task for |:Start| in dispatch.vim.  This is useful to set from a '*' projection.  Expansions are shell escaped.",
+            "type":        "string"
+        },
+        "template": {
+            "description": "Array of lines to use when creating a new file.",
+            "type":        "array"
+        },
+        "type": {
+            "description": "Declares the type of file and navigation command it belongs to.  If this option is provided for a literal filename rather than a glob, it is used as the default destination of the navigation command when no argument is given.",
+            "type":        "string"
+        }
+}

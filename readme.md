@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
 [![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
 
-> Collection of utilities similar to those provided by [bbatsov/projectile](https://github.com/bbatsov/projectile); utilizing [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim).
+> Collection of utilities similar to those provided by [Projectile](https://github.com/bbatsov/projectile) utilizing [denite.nvim](https://github.com/Shougo/denite.nvim).
 
 <div align="center">
     <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" alt="mission-control"/>
