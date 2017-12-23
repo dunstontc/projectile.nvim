@@ -1,0 +1,15 @@
+*projectile.nvim.txt*	Various utilities to help keep track of projects.
+Clay Dunston <dunstontc@gmail.com>                           *projectile.nvim*
+
+==============================================================================
+CONTENTS                                            *projectile.nvim-contents*
+  1. Configuration....................................|projectile.nvim-config|
+
+==============================================================================
+CONFIGURATION                                         *projectile.nvim-config*
+
+                                                                *g:projectile*
+|g:projectile#loaded| Used to check if Projectile is installed & loaded.
+
+
+vim:tw=78:ts=8:ft=help:norl:

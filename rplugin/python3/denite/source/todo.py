@@ -1,9 +1,9 @@
 """Grep for TODOS."""
 # ==============================================================================
-#  File: todo.py
-#  Author: Clay Dunston <dunstontc@gmail.com>
+#  FILE: todo.py
+#  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2017-12-07
+#  Last Modified: 2017-12-20
 # ==============================================================================
 
 import re
@@ -14,24 +14,6 @@ from .base import Base
 
 # Based off of a script by @chemzqm in denite-git
 def run_search(command, options, pattern, location):
-    """Run grep, or the fastest available alternative.
-
-    Arguments
-    ---------
-    command  : str
-        The search engine to use
-    options  : list
-        Options to pass to the engine. Can be a list
-    pattern  : str
-        The RegEx to search for
-    location : str
-        The target directory
-
-    Returns
-    -------
-    list     : The utf-8 decoded search results
-
-    """
     try:
         p = subprocess.run(f"{command} {' '.join(options)} \"{pattern}\" {location}",
                            stdout=subprocess.PIPE,
@@ -42,16 +24,6 @@ def run_search(command, options, pattern, location):
     return p.stdout.decode('utf-8').split('\n')
 
 
-def get_length(array):
-    """Get the max string length for an attribute in a collection."""
-    max_count = int(0)
-    for item in array:
-        cur_len = len(item)
-        if cur_len > max_count:
-            max_count = cur_len
-    return max_count
-
-
 class Source(Base):
 
     def __init__(self, vim):
@@ -59,40 +31,45 @@ class Source(Base):
         self.name        = 'todo'
         self.kind        = 'file'
         self.matchers    = ['matcher_fuzzy']
-        self.sorters     = ['sorter_rank']
-        # self.syntax_name = 'deniteSource_Todos'
         self.vars = {
             'data_dir':    vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'user_cmd':    vim.vars.get('projectile#directory_command'),
             'todo_terms':  vim.vars.get('projectile#todo_terms'),
             'search_prog': vim.vars.get('projectile#search_prog'),
-            'command' :    'ag',
-            'options' :    ['-s','--nocolor', '--nogroup', '--vimgrep'],
-            'input'   :    "\s(BUG|FIXME|HACK|TODO|XXX)\:\s",
             'encoding':    'utf-8',
+
+            'command' : 'ag',
+            'options' : ['-s', '--nocolor', '--nogroup', '--vimgrep'],
+
+            'ack_options'  : ['-r'],
+            'ag_options'   : ['-s', '--nocolor', '--nogroup', '--vimgrep'],
+            'grep_options' : ['-E', '-r', '-n'],
+            'pt_options'   : ['--nogroup', '--nocolor', '--column'],
         }
 
     def on_init(self, context):
         # context['is_async'] = True
+        context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)', re.M)
+        context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)', re.M)
+        context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
+        context['terms'] = '|'.join(self.vars.get('todo_terms'))
+        # context['terms'] = self.vars.get('todo_terms')
+
         a = self.vars['command']
         b = self.vars['options']
-        c = self.vars['input']
+        # c = self.vars['input']
+        c = f"\s({context['terms']})\:\s"
         d = self.vim.call('getcwd')
 
         context['todos'] = run_search(a, b, c, d)
 
     def gather_candidates(self, context):
-        cur_dir_len     = len(self.vim.call('getcwd'))
-        path_pattern    = re.compile(r'(^.*?)(?:\:.*$)', re.M)
-        line_pattern    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)', re.M)
-        content_pattern = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
-
-        candidates = []
-        max_count = int(0)
+        cur_dir_len = len(self.vim.call('getcwd'))
+        candidates  = []
+        max_count   = int(0)
 
         for item in context['todos']:
             try:
-                comp_path = path_pattern.search(item).group(1)[cur_dir_len:]
+                comp_path = context['path_pattern'].search(item).group(1)[cur_dir_len:]
             except AttributeError:
                 comp_path = ' '
             cur_len = len(comp_path)
@@ -101,35 +78,30 @@ class Source(Base):
 
         for item in context['todos']:
             try:
-                todo_path = path_pattern.search(item).group(1)
-                # comp_path = path_pattern.search(item).group(1)[cur_dir_len:]
-                # cur_len = len(comp_path)
-                # if cur_len > max_count:
-                    # max_count = cur_len + 1
+                todo_path = context['path_pattern'].search(item).group(1)
             except AttributeError:
                 todo_path = ''
-                # comp_path = ''
 
             try:
-                todo_line = line_pattern.search(item).group(1)
-                todo_col  = line_pattern.search(item).group(2)
+                todo_line = context['line_pattern'].search(item).group(1)
+                todo_col  = context['line_pattern'].search(item).group(2)
                 todo_pos  = f'{todo_path[cur_dir_len:]} [{todo_line}:{todo_col}]'
             except AttributeError:
                 todo_line = ''
                 todo_pos  = ''
 
             try:
-                todo_content = content_pattern.search(item).group(0)
+                todo_content = context['content_pattern'].search(item).group(0)
             except AttributeError:
                 todo_content = ''
 
             if item:
                 candidates.append({
-                    'word':         item,
-                    'abbr':         '{0:>{width}} -- {1:>}'.format(todo_pos,
-                                                                   todo_content,
-                                                                   width=(max_count + 8)
-                                                                   ),
+                    'word': item,
+                    'abbr': '{0:>{width}} -- {1:>}'.format(todo_pos,
+                                                           todo_content,
+                                                           width=(max_count + 8)  # + 8 for the line & column info
+                                                           ),
                     'action__path': todo_path,
                     'action__line': todo_line,
                     'action__col':  todo_col,
@@ -138,26 +110,22 @@ class Source(Base):
         return candidates
 
     def define_syntax(self):
-        self.vim.command(r'syntax match deniteSource_Todo /^.*$/ containedin=' + self.syntax_name)
-        # self.vim.command(r'syntax match deniteSource_Todo_Path /^\s\zs\S*\ze/ contained '
-        # self.vim.command(r'syntax match deniteSource_Todo_Path /\zs\S*\ze\s*--.*$/ contained '
-        self.vim.command(r'syntax match deniteSource_Todo_Path /\%(^\s\)\@<=\(.*\)\%(\[\)\@=/ contained '
-                         r'containedin=deniteSource_Todo')
-        # self.vim.command(r'syntax match deniteSource_Todo_Noise /\S*\%\(--\)\s/ contained '
-                         # r'containedin=deniteSource_Todo')
-        self.vim.command(r'syntax match deniteSource_Todo_Word /\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained '
-                         r'containedin=deniteSource_Todo')
-        self.vim.command(r'syntax match deniteSource_Todo_Pos /\d\+\(:\d\+\)\?/ contained '
-                         r'containedin=deniteSource_Todo')
-        # self.vim.command(r'syntax match deniteSource_Todo_Content /^.\{-}\ze\:/ contained '
-        #                  r'containedin=deniteSource_Todo')
+        self.vim.command(r'syntax match deniteSource_Todo /^.*$/ containedin=' + self.syntax_name + ' '
+                         r'contains=deniteSource_Todo_Path,deniteSource_Todo_Noise,deniteSource_Todo_Pos,deniteSource_Todo_Word,deniteSource_Todo_String')
+        self.vim.command(r'syntax match deniteSource_Todo_Word   /\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained ')
+        self.vim.command(r'syntax match deniteSource_Todo_Path   /\%(^\s\)\@<=\(.*\)\%(\[\)\@=/                contained ')
+        self.vim.command(r'syntax match deniteSource_Todo_Noise  /\S*\%\(--\)\s/                               contained ')
+        self.vim.command(r'syntax match deniteSource_Todo_Noise  /\[\|\]/                                      contained ')
+        self.vim.command(r'syntax match deniteSource_Todo_Pos    /\d\+\(:\d\+\)\?/                             contained ')
+        self.vim.command(r'syntax match deniteSource_Todo_String /\s`\S\+`/                                    contained ')
 
     def highlight(self):
-        self.vim.command('highlight default link deniteSource_Todo Normal')
-        self.vim.command('highlight default link deniteSource_Todo_Noise Comment')
-        self.vim.command('highlight default link deniteSource_Todo_Path Directory')
-        self.vim.command('highlight default link deniteSource_Todo_Pos Number')
-        self.vim.command('highlight default link deniteSource_Todo_Word Type')
+        self.vim.command('highlight default link deniteSource_Todo        Normal')
+        self.vim.command('highlight default link deniteSource_Todo_Noise  Comment')
+        self.vim.command('highlight default link deniteSource_Todo_Path   Directory')
+        self.vim.command('highlight default link deniteSource_Todo_Pos    Number')
+        self.vim.command('highlight default link deniteSource_Todo_Word   Type')
+        self.vim.command('highlight default link deniteSource_Todo_String String')
 
     # def convert(self, val, context):
     #     bufnr = val['bufnr']

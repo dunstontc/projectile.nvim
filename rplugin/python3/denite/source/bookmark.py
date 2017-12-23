@@ -2,11 +2,12 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc at gmail.com>
 #  License: MIT
-#  Last Edited: 2017-12-20
+#  Last Modified: 2017-12-20
 #  =============================================================================
 
 import os
 import json
+import pathlib
 
 from .base import Base
 from denite import util
@@ -47,61 +48,70 @@ class Source(Base):
         context['__filename'] = os.path.basename(context['__bufname'])
         # (denite-marks)
         # text = self.vim.call('getline', context['__linenr'])
-        # if not self.vars.get('path'):
-        #     raise AttributeError('Invalid directory, please configure')
+        # if not os.path.exists(context['data_file']):
+            # pathlib.Path(self.vars['data_dir']).mkdir(parents=True, exist_ok=True)
+            # with open(context['data_file'], 'w+') as f:
+                # json.dump([], f, indent=2)
+
 
     def gather_candidates(self, context):
-        # if not os.path.exists(context['data_file']):
-        #     util.error(self.vim, f"error accessing {context['data_file']}")
-        #     return []
+        if not os.path.exists(context['data_file']):
+            util.error(self.vim, f"error accessing {context['data_file']}")
+            return
 
         candidates = []
         with open(context['data_file'], 'r') as fp:
             try:
-                config  = json.load(fp)
-                path_len = get_length(config, 'path')
-                desc_len = get_length(config, 'description')
-                name_len = get_length(config, 'name')
-
-                for obj in config:
-                    candidates.append({
-                        'word': obj['path'],
-                        'abbr': " {0} {1:^{name_len}} -- {2:<{path_len}} -- {3}".format(
-                            self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),  # TODO: Check avainst @has_devicons
-                            obj['name'],
-                            obj['path'].replace(os.path.expanduser('~'), '~'),
-                            obj['timestamp'],
-                            # obj['description'],
-                            path_len = path_len,
-                            desc_len = desc_len,
-                            name_len = name_len
-                            ),
-                        'action__path': obj['path'],
-                        'action__line': obj['line'],
-                        'action__col':  obj['col'],
-                        'timestamp':    obj['timestamp'],
-                    })
+                config   = json.load(fp)
             except json.JSONDecodeError:
-                err_string = 'Decode error for' + context['data_file']
-                util.error(self.vim, err_string)
+                # err_string = 'Decode error for' + context['data_file']
+                # util.error(self.vim, err_string)
+                config   = []
+            path_len = get_length(config, 'path')
+            desc_len = get_length(config, 'description')
+            name_len = get_length(config, 'name')
 
-            return candidates
+            for obj in config:
+                if not os.path.isfile(obj['path']):
+                    err_mark = '✗ '
+                else:
+                    err_mark = ''
+                candidates.append({
+                    'word': obj['path'],
+                    'abbr': " {0} {1:^{name_len}} -- {err_mark}{2:<{path_len}} -- {3}".format(
+                        self.vim.funcs.WebDevIconsGetFileTypeSymbol(obj['path']),  # TODO: Check avainst @has_devicons
+                        obj['name'],
+                        obj['path'].replace(os.path.expanduser('~'), '~'),
+                        obj['timestamp'],
+                        err_mark=err_mark,
+                        path_len=path_len,
+                        desc_len=desc_len,
+                        name_len=name_len
+                    ),
+                    'action__path': obj['path'],
+                    'action__line': obj['line'],
+                    'action__col':  obj['col'],
+                    'timestamp':    obj['timestamp'],
+                })
+
+        return candidates
 
     def define_syntax(self):
         self.vim.command(r'syntax match deniteSource_Projectile_Project /^.*$/ '
                          r'containedin=' + self.syntax_name + ' '
-                         r'contains=deniteSource_Projectile_Project,deniteSource_Projectile_Noise,deniteSource_Projectile_Name,deniteSource_Projectile_Description,deniteSource_Projectile_Path,deniteSource_Projectile_Timestamp')
-        self.vim.command(r'syntax match deniteSource_Projectile_Noise /\(\s--\s\)/ contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Name /^\(.*\)\(\(.* -- \)\{2\}\)\@=/ contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Path /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Timestamp /\v((-- .*){2})@<=(.*)/ contained ')
+                         r'contains=deniteSource_Projectile_Project,deniteSource_Projectile_Noise,deniteSource_Projectile_Name,deniteSource_Projectile_Path,deniteSource_Projectile_Timestamp,deniteSource_Projectile_Error')
+        self.vim.command(r'syntax match deniteSource_Projectile_Noise     /\(\s--\s\)/                                          contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Name      /^\(.*\)\(\(.* -- \)\{2\}\)\@=/                       contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Path      /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Timestamp /\v((-- .*){2})@<=(.*)/                               contained ')
+        self.vim.command(r'syntax match deniteSource_Projectile_Error     /✗/                                                   contained ')
 
     def highlight(self):
         self.vim.command('highlight link deniteSource_Projectile_Project Normal')
         self.vim.command('highlight link deniteSource_Projectile_Noise Comment')
         self.vim.command('highlight link deniteSource_Projectile_Name String')
-        self.vim.command('highlight link deniteSource_Projectile_Description String')
         self.vim.command('highlight link deniteSource_Projectile_Path Directory')
         self.vim.command('highlight link deniteSource_Projectile_Timestamp Number')
+        self.vim.command('highlight link deniteSource_Projectile_Error Error')
 
 

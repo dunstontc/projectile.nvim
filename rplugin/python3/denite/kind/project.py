@@ -1,9 +1,9 @@
 """Kind to model data; Create, Read, Update, & Delete said data. (currently files & folders in JSON)."""
 #  =============================================================================
 #  FILE: project.py
-#  AUTHOR: Clay Dunston <dunstontc at gmail.com>
+#  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT
-#  Last Updated: 2017-12-11
+#  Last Modified: 2017-12-21
 #  =============================================================================
 
 # import re
@@ -14,42 +14,6 @@ import subprocess
 
 from ..kind.openable import Kind as Openable
 from denite import util
-# from denite.util import clearmatch, input
-
-
-def git_do(location, command):
-    """Run git commands from Python scripts.
-
-    Arguments
-    ---------
-    location : str
-        The target directory
-
-    Returns
-    -------
-    list     : The utf-8 decoded search results
-
-    """
-    # cmd = f"git -C {location} {command}"
-    cmd = f"git -C {location} status -s"
-    try:
-        p = subprocess.run(cmd,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT,
-                           shell=True)
-    except subprocess.CalledProcessError:
-        return []
-    return p.stdout.decode('utf-8').split('\n')
-
-
-def get_length(array):
-    """Get the max string length for an attribute in a collection."""
-    max_count = int(0)
-    for item in array:
-        cur_len = len(item)
-        if cur_len > max_count:
-            max_count = cur_len
-    return max_count
 
 
 class Kind(Openable):
@@ -58,45 +22,45 @@ class Kind(Openable):
         super().__init__(vim)
         self.name             = 'project'
         self.default_action   = 'open'
-        # self.default_action   = 'prompt' TODO: prompt for action
-        # TODO: See if there is a way to persist without saving the denite buffer.
-        # self.persist_actions += ['delete', 'edit']
-        # self.redraw_actions  += ['delete', 'edit']
+        self.persist_actions += ['add', 'delete', 'edit']
+        self.redraw_actions  += ['add', 'delete', 'edit']
         self.vars = {
             'exclude_filetypes': ['denite'],
-            'date_format': '%d %b %Y %H:%M:%S',
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'has_rooter': vim.vars.get('loaded_rooter'),
-            'has_devicons': vim.vars.get('loaded_devicons')
+            'date_format':       '%d %b %Y %H:%M:%S',
+            'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'has_devicons':      vim.vars.get('loaded_devicons')
         }
 
     def action_add(self, context):
         """Add a project to *projects.json*."""
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
-        root_dir = self.vim.call('getcwd')
-        new_data = {}
-        if self.vars['has_rooter'] == 1:
-            if len(self.vim.eval('FindRootDirectory()')):
-                root_dir = self.vim.eval('FindRootDirectory()')  # FIXME: Write a function to do this.
+        root_dir  = self.vim.call('getcwd')
+        boofer    = self.vim.current.buffer.name
+        pj_root   = util.path2project(self.vim, boofer, '.git')
+        pj_name   = os.path.basename(os.path.normpath(pj_root))
+        new_data  = {}
 
-        prompt_string = f'Add project at `{root_dir}` as: '
+        project_root = util.input(self.vim, context, 'Project Root: ', pj_root)
+        if not len(project_root):
+            project_root = pj_root
 
-        content = util.input(self.vim, context, prompt_string)
-        if not len(content):
-            # FIXME: If this returns null it will overwrite the file with 'null'.
-            return
-        # if not os.access(data_file, os.R_OK):
-        #     return
+        project_name = util.input(self.vim, context, 'Project Name: ', pj_name)
+        if not len(project_name):
+            project_name = pj_name
+
         new_data = {
-            'name': content,
-            'root': root_dir,
+            'name': project_name,
+            'root': project_root,
             'timestamp': str(datetime.datetime.now().isoformat()),
             'description': '',
             'vcs': os.path.isdir(f"{root_dir}/.git")  # TODO: Also check for .hg/ and .svn
         }
 
         with open(data_file, 'r') as g:
-            json_info   = json.load(g)
+            try:
+                json_info = json.load(g)
+            except json.JSONDecodeError:
+                json_info = []
             json_info.append(new_data)
 
         with open(data_file, 'w') as f:
@@ -104,17 +68,17 @@ class Kind(Openable):
 
     def action_delete(self, context):
         """Remove a project from *projects.json*."""
-        target = context['targets'][0]
-        target_date = target['timestamp']
-        target_name = target['name']
-        data_file = util.expand(self.vars['data_dir'] + '/projects.json')
+        target       = context['targets'][0]
+        target_date  = target['timestamp']
+        target_name  = target['name']
+        data_file    = util.expand(self.vars['data_dir'] + '/projects.json')
         confirmation = self.vim.call('confirm', f"Remove {target_name}?", "&Yes\n&No")
         if confirmation == 2:
             return
         else:
             with open(data_file, 'r') as g:
-                content = json.load(g)
-                projects  = content[:]
+                content  = json.load(g)
+                projects = content[:]
                 for i in range(len(projects)):
                     if projects[i]['timestamp'] == target_date:
                         projects.pop(i)
@@ -124,7 +88,7 @@ class Kind(Openable):
                     json.dump(projects, f, indent=2)
 
     def action_cd(self, context):
-        """Change cd to the project's root."""
+        """cd to the project's root."""
         target = context['targets'][0]
         if not os.access(target['action__path']):
             return

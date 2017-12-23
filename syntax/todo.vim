@@ -5,8 +5,8 @@
 " Thanks:      Based on work by Leandro Freitas's todo.txt-vim (http://github.com/freitass/todo.txt-vim)
 " ==============================================================================
 
-if exists("b:current_syntax")
-    finish
+if exists('b:current_syntax')
+  finish
 endif
 
 syntax  match  todoItem       '^.*$'                      contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
@@ -39,17 +39,13 @@ syntax  match  todoPriorityX  '^([xX])\s.\+$'             contains=todoDate,todo
 syntax  match  todoPriorityY  '^([yY])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
 syntax  match  todoPriorityZ  '^([zZ])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
 
-" syntax  match  todoDate       '\d\{2,4\}-\d\{2\}-\d\{2\}'       contained
-" syntax match todoOverDue
 syntax  match  todoDate       '\d\d\d\d\-\d\{2\}-\d\{2\}'       contained
 syntax  match  todoProject    '\(^\|\W\)+[^[:blank:]]\+'        contained
 syntax  match  todoContext    '\(^\|\W\)@[^[:blank:]]\+'        contained
-" syntax  match  todoExtra      '\(due\|t\|rec\|id\|link\)\:\S*\ze' contained
 syntax  match  todoExtra      '\(due\|t\|rec\|link\)\:\S*'      contained
 syntax  match  todoID         'id\:\d\+s*'                      contained
 syntax  match  todoString     '`\(.*\)`'                        contained
 
-" Other priority colours might be defined by the user
 highlight  default  link  todoItem       Normal
 highlight  default  link  todoDone       Comment
 highlight  default  link  todoPriorityA  Constant

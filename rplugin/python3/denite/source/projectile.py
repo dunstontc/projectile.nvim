@@ -2,10 +2,13 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc at gmail.com>
 #  License: MIT
-#  Last Edited: 2017-12-20
+#  Last Modified: 2017-12-22
 #  ============================================================================
+
 import os
 import json
+import pathlib
+
 from .base import Base
 from denite import util
 
@@ -38,28 +41,26 @@ class Source(Base):
         }
 
     def on_init(self, context):
-        # if not self.vars.get('path'):
-            # raise AttributeError('Invalid session directory, please configure')
-        context['projects_file'] = util.expand(self.vars['data_dir'] + '/projects.json')
-        # if self.vim.vars('g:loaded_rooter') == 1:
-            # context['__cwd'] = self.vim.call('FindRootDirectory()')
+        context['data_file'] = util.expand(self.vars['data_dir'] + '/projects.json')
+        if not os.path.exists(context['data_file']):
+                pathlib.Path(self.vars['data_dir']).mkdir(parents=True, exist_ok=True)
+                with open(context['data_file'], 'w+') as f:
+                    json.dump([], f, indent=2)
 
     def gather_candidates(self, context):
-        # if not os.access(context['projects_file'], os.R_OK):
-        #     return []
 
         candidates = []
-        with open(context['projects_file'], 'r') as fp:
+        with open(context['data_file'], 'r') as fp:
             try:
-                config = json.loads(fp.read())
+                config   = json.loads(fp.read())
                 name_len = get_length(config, 'name')
                 path_len = get_length(config, 'root')
                 is_vsc   = ''
 
                 for obj in config:
-                    if obj['vcs'] == True:
+                    if obj['vcs'] is True:
                         # is_vsc = '⛕ ' # TODO: Check against has_devicons & display this if false
-                        is_vsc = ' ' # \ue0a0 -- Powerline branch symbol
+                        is_vsc = ' '  # \ue0a0 -- Powerline branch symbol
                     candidates.append({
                         'word': obj['root'],
                         'abbr': '{0:<{name_len}} -- {1:<{path_len}} -- {2}'.format(
@@ -75,7 +76,7 @@ class Source(Base):
                         'timestamp':    obj['timestamp'],
                         })
             except json.JSONDecodeError:
-                err_string = 'Decode error for' + context['projects_file']
+                err_string = 'Decode error for' + context['data_file']
                 util.error(self.vim, err_string)
 
         return candidates
