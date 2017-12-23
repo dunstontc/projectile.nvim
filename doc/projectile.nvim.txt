@@ -7,9 +7,10 @@ License:        MIT License
 CONTENTS                                            *projectile.nvim-contents*
 
   1. Settings.......................................|projectile.nvim-settings|
+  2. Commands.......................................|projectile.nvim-commands|
 
 ==============================================================================
-SETTINGS                                            *projectile.nvim-settings*
+1. Settings                                         *projectile.nvim-settings*
 
                                                        *g:projectile#data_dir*
 |g:projectile#data_dir|
@@ -38,6 +39,10 @@ SETTINGS                                            *projectile.nvim-settings*
                                                          *g:projectile#loaded*
 |g:projectile#loaded|
 	Used to check if Projectile is installed & loaded.
+
+
+==============================================================================
+2. Commands				            *projectile.nvim-commands*
 
 
 
