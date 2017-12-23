@@ -1,15 +1,44 @@
 *projectile.nvim.txt*	Various utilities to help keep track of projects.
-Clay Dunston <dunstontc@gmail.com>                           *projectile.nvim*
+
+Author:         Clay Dunston <dunstontc@gmail.com>
+License:        MIT License
 
 ==============================================================================
 CONTENTS                                            *projectile.nvim-contents*
-  1. Configuration....................................|projectile.nvim-config|
+
+  1. Settings.......................................|projectile.nvim-settings|
 
 ==============================================================================
-CONFIGURATION                                         *projectile.nvim-config*
+SETTINGS                                            *projectile.nvim-settings*
 
-                                                                *g:projectile*
-|g:projectile#loaded| Used to check if Projectile is installed & loaded.
+                                                       *g:projectile#data_dir*
+|g:projectile#data_dir|
+	The location to store files containing saved projects & bookmarks.
+
+                                              *g:projectile#directory_command*
+|g:projectile#directory_command|
+	Command for opening projects. Will be passed the absolute path
+	to a project's root directory.
+
+                                                     *g:projectile#todo_terms*
+|g:projectile#todo_terms|
+	An array of terms to search for with the ':Denite todo' command.
+
+                                                *g:projectile#enable_devicons*
+|g:projectile#enable_devicons|
+	Controls the use of icons in source results.
+	Set to *0* to disable icons entirely.
+	Set to *1* to use devicons. (requires nerdfonts)
+	Set to *2* to use unicode icons. (Works with most fonts)
+
+                                                    *g:projectile#search_prog*
+|g:projectile#search_prog|
+	The command used to search for todos.
+
+                                                         *g:projectile#loaded*
+|g:projectile#loaded|
+	Used to check if Projectile is installed & loaded.
+
 
 
 vim:tw=78:ts=8:ft=help:norl:

@@ -32,7 +32,7 @@
 
 ### Configuration ###
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
-
+  - Run `:ProjectileInit` to create a directory at `g:projectile#data_dir` containing `bookmarks.json` & `projects.json`
 ```viml
 let g:projectile#data_dir = $HOME.'.cache/.projectile'
 
