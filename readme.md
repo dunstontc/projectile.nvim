@@ -3,24 +3,25 @@
 [![License](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
 [![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
 
+> Collection of utilities similar to those provided by [bbatsov/projectile](https://github.com/bbatsov/projectile); utilizing [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim).
+
 <div align="center">
     <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" alt="mission-control"/>
 </div>
 
-> Collection of utilities similar to those provided by [bbatsov/projectile](https://github.com/bbatsov/projectile); utilizing [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim).
 
 ## Features ##
 
   - Projects
     - Keep a list of project locations with metadata
-    - (WIP) Check version control status of Projects
+    - Check version control status of Projects **(WIP)**
     - List todos in a project
   - Bookmarks
-    - Keep a list of bookmarked locations.
+    - Keep a list of bookmarked locations
   - TODOs
     - List todos in the current project folder & jump to them
-    - (WIP) List todos from a todo.txt file
-    - (WIP) Append todos to the quickfix or location list
+    - List todos from a todo.txt file **(WIP)**
+    - Append todos to the quickfix or location list **(WIP)**
 
 
 ## Usage ##
@@ -30,15 +31,19 @@
   - Neovim (or Vim8) with Python3 support
 
 ### Configuration ###
-  - Data is persisted in in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`by default.  
+  - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
 
 ```viml
 let g:projectile#data_dir = $HOME.'.cache/.projectile'
+
 let g:projectile#directory_command = ''
+
 let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
+
 " Options: grep, ag, pt, rg, or ack. (Defaults to the first of these found.)
 let g:projectile#search_prog = 'grep'
-" Options: 0 - No icons, 1 - Use Devicons, 2 - use Unicode icons 
+
+" Options:  0 - No icons,  1 - Use Devicons,  2 - use Unicode icons 
 let g:projectile#enable_devicons = 0
 ```
 
