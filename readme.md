@@ -1,10 +1,13 @@
-# Projectile.nvim #
+# projectile.nvim #
 
-[![license](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
 [![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
 
-> Collection of features for Vim similar to [bbatsov/projectile](https://github.com/bbatsov/projectile); using [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim) for it's interfaces.  
-> I wouldn't recommend using this quite yet, but if you do and you think of anything it needs that isn't already listed in [the todo file](todo.txt), let me know.
+<div align="center">
+    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" alt="mission-control"/>
+</div>
+
+> Collection of utilities similar to those provided by [bbatsov/projectile](https://github.com/bbatsov/projectile); utilizing [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim).
 
 ## Features ##
 
@@ -13,7 +16,7 @@
     - (WIP) Check version control status of Projects
     - List todos in a project
   - Bookmarks
-    - Keep a list of bookmarked locations that can be jumped to
+    - Keep a list of bookmarked locations.
   - TODOs
     - List todos in the current project folder & jump to them
     - (WIP) List todos from a todo.txt file
@@ -21,19 +24,22 @@
 
 
 ## Usage ##
+
 ### Requirements ###
   - [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
-  - Vim or Neovim with Python3 support
+  - Neovim (or Vim8) with Python3 support
 
 ### Configuration ###
   - Data is persisted in in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`by default.  
 
 ```viml
-let g:projectile#data_dir = '~/.cache/.projectile'
+let g:projectile#data_dir = $HOME.'.cache/.projectile'
 let g:projectile#directory_command = ''
 let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
+" Options: grep, ag, pt, rg, or ack. (Defaults to the first of these found.)
 let g:projectile#search_prog = 'grep'
-let g:projectile#disable_devicons = 0
+" Options: 0 - No icons, 1 - Use Devicons, 2 - use Unicode icons 
+let g:projectile#enable_devicons = 0
 ```
 
 
@@ -41,22 +47,33 @@ let g:projectile#disable_devicons = 0
 ```viml
 :Denite projectile
 ```
-  - *Add*
-  - *Remove*
-  - *Open (default)*
-  - *Cd*
+  - *add*
+  - *remove*
+  - *open (default)*
+  - *cd*
+  - *directory_command*
+    - Passes the project path to a command defined by `g:projectile#directory_command`.
 
 ```viml
 :Denite bookmark
 ```
-  - *Add*
-  - *Remove*
-  - *Open (default)*
+  - *add*
+  - *remove*
+  - Extends `File`, so it supports all File kind actions. *(Jump, open, split, etc.)*
 
 ```viml
 :Denite todo
 ```
-  - *Jump (default)*
+  - Like `bookmark`, it supports all File kind actions. *(jump, open, split, etc.)*
+
+
+## Credit & Thanks ##
+  - [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
+  - [neoclide/denite-git](https://github.com/neoclide/denite-git)
+  - [chemzqm/denite-extra](https://github.com/chemzqm/denite-extra)
+  - [rafi/vim-denite-session](https://github.com/rafi/vim-denite-session)
+  - [SpaceVim](https://github.com/SpaceVim/SpaceVim)
+  - [freitass/todo.txt-vim](https://github.com/freitass/todo.txt-vim)
 
 
 ## Related Projects ##
@@ -69,12 +86,4 @@ let g:projectile#disable_devicons = 0
   - [todolist.vim](vim-scripts/todolist.vim)
   - [vim-todo](https://github.com/codegram/vim-todo)
   - [gather-todo.txt-vim](https://github.com/lgalke/gather-todo.txt-vim)
-
-## Credit & Thanks ##
-
-- [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
-- [neoclide/denite-git](https://github.com/neoclide/denite-git)
-- [chemzqm/denite-extra](https://github.com/chemzqm/denite-extra)
-- [rafi/vim-denite-session](https://github.com/rafi/vim-denite-session)
-- [SpaceVim](https://github.com/SpaceVim/SpaceVim)
 
