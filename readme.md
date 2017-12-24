@@ -67,11 +67,13 @@ let g:projectile#enable_devicons = 0
 ```
   - *add*
   - *remove*
+  - *open (default)*
   - Extends `File`, so it supports all File kind actions. *(Jump, open, split, etc.)*
 
 ```viml
 :Denite todo
 ```
+  - *open (default)*
   - Like `bookmark`, it supports all File kind actions. *(jump, open, split, etc.)*
 
 
