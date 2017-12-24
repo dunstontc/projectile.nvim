@@ -30,9 +30,12 @@
   - [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
   - Neovim (or Vim8) with Python3 support
 
+### Installation ###
+  - Run `:ProjectileInit` to create a directory at `g:projectile#data_dir` containing `bookmarks.json` & `projects.json`
+  - **NOTE:** Running this function more than once will reset your list of bookmarks & projects saved with projectile.
+
 ### Configuration ###
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
-  - Run `:ProjectileInit` to create a directory at `g:projectile#data_dir` containing `bookmarks.json` & `projects.json`
 ```viml
 let g:projectile#data_dir = $HOME.'.cache/.projectile'
 

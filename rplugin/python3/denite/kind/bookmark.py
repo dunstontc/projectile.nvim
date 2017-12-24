@@ -38,7 +38,7 @@ class Kind(File):
     def __init__(self, vim):
         super().__init__(vim)
         self.name             = 'bookmark'
-        self.default_action   = 'read'
+        self.default_action   = 'open'
         self.persist_actions += ['preview', 'highlight', 'delete']
         self.redraw_actions  += ['delete']
         self._previewed_target  = {}

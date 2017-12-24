@@ -22,8 +22,10 @@ class Kind(Openable):
         super().__init__(vim)
         self.name             = 'project'
         self.default_action   = 'open'
-        self.persist_actions += ['add', 'delete', 'edit']
-        self.redraw_actions  += ['add', 'delete', 'edit']
+        self.persist_actions += [ 'delete']
+        self.redraw_actions  += [ 'delete']
+        # self.persist_actions += ['add', 'delete', 'edit']
+        # self.redraw_actions  += ['add', 'delete', 'edit']
         self.vars = {
             'exclude_filetypes': ['denite'],
             'date_format':       '%d %b %Y %H:%M:%S',
