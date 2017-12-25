@@ -1,4 +1,4 @@
-"""Kind to model data; Create, Read, Update, & Delete said data. (currently files & folders in JSON)."""
+"""Kind using JSON to persist data for projects."""
 #  =============================================================================
 #  FILE: project.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
@@ -17,6 +17,7 @@ from denite import util
 
 
 class Kind(Openable):
+    """Kind using JSON to persist data for projects."""
 
     def __init__(self, vim):
         super().__init__(vim)

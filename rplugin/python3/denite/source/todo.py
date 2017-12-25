@@ -1,30 +1,19 @@
-"""Grep for TODOS."""
+"""Denite source for TODOS in the current directory."""
 # ==============================================================================
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2017-12-20
+#  Last Modified: 2017-12-25
 # ==============================================================================
 
 import re
-import subprocess
+import subprocess  # FIXME: Use Denite's util.proc
 from .base import Base
 # from denite import util
 
 
-# Based off of a script by @chemzqm in denite-git
-def run_search(command, options, pattern, location):
-    try:
-        p = subprocess.run(f"{command} {' '.join(options)} \"{pattern}\" {location}",
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT,
-                           shell=True)
-    except subprocess.CalledProcessError:
-        return []
-    return p.stdout.decode('utf-8').split('\n')
-
-
 class Source(Base):
+    """Denite source for TODOS in the current directory."""
 
     def __init__(self, vim):
         super().__init__(vim)
@@ -51,16 +40,14 @@ class Source(Base):
         context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)', re.M)
         context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)', re.M)
         context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
-        context['terms'] = '|'.join(self.vars.get('todo_terms'))
-        # context['terms'] = self.vars.get('todo_terms')
+        context['terms']           = '|'.join(self.vars.get('todo_terms'))
 
         a = self.vars['command']
         b = self.vars['options']
-        # c = self.vars['input']
         c = f"\s({context['terms']})\:\s"
         d = self.vim.call('getcwd')
 
-        context['todos'] = run_search(a, b, c, d)
+        context['todos'] = self._run_search(a, b, c, d)
 
     def gather_candidates(self, context):
         cur_dir_len = len(self.vim.call('getcwd'))
@@ -109,7 +96,19 @@ class Source(Base):
 
         return candidates
 
+    def _run_search(self, command, options, pattern, location):
+        """Based off of a script by @chemzqm in denite-git."""
+        try:
+            p = subprocess.run(f"{command} {' '.join(options)} \"{pattern}\" {location}",
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            shell=True)
+        except subprocess.CalledProcessError:
+            return []
+        return p.stdout.decode('utf-8').split('\n')
+
     def define_syntax(self):
+        """Define Vim regular expressions for syntax highlighting."""
         self.vim.command(r'syntax match deniteSource_Todo /^.*$/ containedin=' + self.syntax_name + ' '
                          r'contains=deniteSource_Todo_Path,deniteSource_Todo_Noise,deniteSource_Todo_Pos,deniteSource_Todo_Word,deniteSource_Todo_String')
         self.vim.command(r'syntax match deniteSource_Todo_Word   /\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained ')
@@ -120,6 +119,7 @@ class Source(Base):
         self.vim.command(r'syntax match deniteSource_Todo_String /\s`\S\+`/                                    contained ')
 
     def highlight(self):
+        """Link highlight groups to existing attributes."""
         self.vim.command('highlight default link deniteSource_Todo        Normal')
         self.vim.command('highlight default link deniteSource_Todo_Noise  Comment')
         self.vim.command('highlight default link deniteSource_Todo_Path   Directory')

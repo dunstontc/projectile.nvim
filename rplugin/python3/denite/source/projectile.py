@@ -38,14 +38,6 @@ class Source(Base):
         #         with open(context['data_file'], 'w+') as f:
         #             json.dump([], f, indent=2)
 
-        # (denite-extra)
-        context['__linenr']   = self.vim.current.window.cursor[0]
-        context['__bufnr']    = self.vim.current.buffer.number
-        context['__bufname']  = self.vim.current.buffer.name
-        context['__filename'] = os.path.basename(context['__bufname'])
-        # (denite-marks)
-        # text = self.vim.call('getline', context['__linenr'])
-
     def gather_candidates(self, context):
         """Gather candidates from ``projectile#data_dir``/projects.json."""
         candidates = []
