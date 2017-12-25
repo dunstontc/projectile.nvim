@@ -127,21 +127,4 @@ class Source(Base):
         self.vim.command('highlight default link deniteSource_Todo_Word   Type')
         self.vim.command('highlight default link deniteSource_Todo_String String')
 
-    # def convert(self, val, context):
-    #     bufnr = val['bufnr']
-    #     line = val['lnum'] if bufnr != 0 else 0
-    #     col = val['col'] if bufnr != 0 else 0
-    #     fname = "" if bufnr == 0 else self.vim.eval('bufname(' + str(bufnr) + ')')
-    #     word = '{fname} |{location}| {text}'.format(
-    #         fname=fname,
-    #         location='' if line == 0 and col == 0 else '%d col %d' % (line, col),
-    #         text=val['text'])
-    #
-    #     return {
-    #         'word': word,
-    #         'action__path': fname,
-    #         'action__line': line,
-    #         'action__col': col,
-    #         'action__buffer_nr': bufnr,
-    #         }
 

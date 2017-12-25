@@ -3,14 +3,14 @@
 #  FILE: project.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT
-#  Last Modified: 2017-12-21
+#  Last Modified: 2017-12-25
 #  =============================================================================
 
 # import re
 import os
 import json
 import datetime
-import subprocess
+import subprocess  # TODO: Use denite's proc
 
 from ..kind.openable import Kind as Openable
 from denite import util
@@ -22,19 +22,19 @@ class Kind(Openable):
         super().__init__(vim)
         self.name             = 'project'
         self.default_action   = 'open'
-        self.persist_actions += [ 'delete']
-        self.redraw_actions  += [ 'delete']
-        # self.persist_actions += ['add', 'delete', 'edit']
-        # self.redraw_actions  += ['add', 'delete', 'edit']
+        self.persist_actions += ['delete']
+        self.redraw_actions  += ['delete']
         self.vars = {
             'exclude_filetypes': ['denite'],
             'date_format':       '%d %b %Y %H:%M:%S',
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'has_devicons':      vim.vars.get('loaded_devicons')
+            'user_cmd':          vim.vars.get('projectile#directory_command'),
+            'has_nerdtree':      vim.vars.get('loaded_nerdtree'),
+            'has_vimfiler':      vim.vars.get('loaded_vimfiler'),
         }
 
     def action_add(self, context):
-        """Add a project to *projects.json*."""
+        """Add a project to ``projectile#data_dir``/projects.json."""
         data_file = util.expand(self.vars['data_dir'] + '/projects.json')
         root_dir  = self.vim.call('getcwd')
         boofer    = self.vim.current.buffer.name
@@ -90,7 +90,7 @@ class Kind(Openable):
                     json.dump(projects, f, indent=2)
 
     def action_cd(self, context):
-        """cd to the project's root."""
+        """Change cwd to the project's root."""
         target = context['targets'][0]
         if not os.access(target['action__path']):
             return
@@ -106,6 +106,7 @@ class Kind(Openable):
         context['path'] = target['action__path']
 
     def action_open(self, context):
+        """Open the target's action__path."""
         for target in context['targets']:
             path = target['action__path']
             match_path = '^{0}$'.format(path)
