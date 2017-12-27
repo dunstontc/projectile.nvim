@@ -39,7 +39,7 @@
 ```viml
 let g:projectile#data_dir = $HOME.'.cache/.projectile'
 
-let g:projectile#directory_command = ''
+let g:projectile#directory_command = 'VimFiler -explorer '
 
 let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
 
@@ -58,7 +58,7 @@ let g:projectile#enable_devicons = 0
   - *add*
   - *remove*
   - *open (default)*
-  - *cd*
+  - Extends `Directory`, so it supports all Directory kind actions. *(cd, narrow)* 
   - *directory_command*
     - Passes the project path to a command defined by `g:projectile#directory_command`.
 
@@ -68,7 +68,7 @@ let g:projectile#enable_devicons = 0
   - *add*
   - *remove*
   - *open (default)*
-  - Extends `File`, so it supports all File kind actions. *(Jump, open, split, etc.)*
+  - Extends `File`, so it supports all File kind actions. *(jump, open, split, etc.)*
 
 ```viml
 :Denite todo
