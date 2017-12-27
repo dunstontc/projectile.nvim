@@ -92,6 +92,7 @@ CHANGELOG 					 	                    *projectile.nvim-changelog*
 
     - Refactored syntax highlighting for all |Denite| sources
     - Extracted candidate formatting and conversion to a dedicated function
+    - Added filetype detection for todo.txt files
     - Updated documentation
     - Added changelog
 
