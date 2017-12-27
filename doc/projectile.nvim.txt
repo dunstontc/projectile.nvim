@@ -1,49 +1,100 @@
-*projectile.nvim.txt*	Various utilities to help keep track of projects.
+*projectile.nvim.txt*	     Various utilities to help keep track of projects
 
-Author:         Clay Dunston <dunstontc@gmail.com>
-License:        MIT License
+Version:    0.0.1
+Author:     Clay Dunston <dunstontc@gmail.com>
+License:    MIT License
+
 
 ==============================================================================
-CONTENTS                                            *projectile.nvim-contents*
+CONTENTS                                             *projectile.nvim-contents*
 
   1. Settings.......................................|projectile.nvim-settings|
   2. Commands.......................................|projectile.nvim-commands|
+  3. Usage..........................................|projectile.nvim-usage|
+  4. Changelog......................................|projectile.nvim-changelog|
+
 
 ==============================================================================
-1. Settings                                         *projectile.nvim-settings*
+SETTINGS                                             *projectile.nvim-settings*
 
                                                        *g:projectile#data_dir*
 |g:projectile#data_dir|
-	The location to store files containing saved projects & bookmarks.
+
+    Type: |String|
+    Default: `$XDG_CACHE_HOME/.cache/projectile`
+
+    The directory used to store files containing saved projects & bookmarks.
 
                                               *g:projectile#directory_command*
 |g:projectile#directory_command|
-	Command for opening projects. Will be passed the absolute path
-	to a project's root directory.
+
+    Type: |String|
+    Default: `'cd'`
+
+    Command for opening projects.
+    Will be passed the absolute path to a project's root directory.
 
                                                      *g:projectile#todo_terms*
 |g:projectile#todo_terms|
-	An array of terms to search for with the ':Denite todo' command.
+
+    Type: |List|
+    Default: `['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']`
+
+    An array of terms to search for with the ':Denite todo' command.
 
                                                 *g:projectile#enable_devicons*
 |g:projectile#enable_devicons|
-	Controls the use of icons in source results.
-	Set to *0* to disable icons entirely.
-	Set to *1* to use devicons. (requires nerdfonts)
-	Set to *2* to use unicode icons. (Works with most fonts)
+
+    Type: |Number|
+    Default: `0`
+
+    Controls the use of icons in source results.
+    Set to *0* to disable icons entirely.
+    Set to *1* to use |devicons|. (requires a *Nerd-Font* )
+    Set to *2* to use unicode icons. (Works with most fonts)
 
                                                     *g:projectile#search_prog*
 |g:projectile#search_prog|
-	The command used to search for todos.
+
+    Type: |String|
+    Default: `'grep'`
+    Current Options: 'ag', 'pt', 'rg', 'ack', 'grep'
+
+    The command used to search for TODOs.
+    Checks for executables in the listed order and defaults to
+    the first of these search programs found.
 
                                                          *g:projectile#loaded*
 |g:projectile#loaded|
-	Used to check if Projectile is installed & loaded.
+
+    Type: |Number|
+    Default: `1`
+
+    Used to check if Projectile is installed & loaded.
 
 
 ==============================================================================
-2. Commands				            *projectile.nvim-commands*
+COMMANDS				                             *projectile.nvim-commands*
+
+|:ProjectileInit|
+
+    Used to create the files for saving bookmarks & projects.
+    NOTE: This will overwrite any existing projectile projects and bookmarks.
+
+==============================================================================
+USAGE					                                *projectile.nvim-usage*
 
 
+==============================================================================
+CHANGELOG 					 	                    *projectile.nvim-changelog*
 
-vim:tw=78:ts=8:ft=help:norl:
+0.0.1    2017-12-27
+
+    - Refactored syntax highlighting for all |Denite| sources
+    - Extracted candidate formatting and conversion to a dedicated function
+    - Updated documentation
+    - Added changelog
+
+
+==============================================================================
+vim:tw=78:ts=4:ft=help:norl:

@@ -39,15 +39,16 @@
 ```viml
 let g:projectile#data_dir = $HOME.'.cache/.projectile'
 
+" Defaults to 'cd'
 let g:projectile#directory_command = 'VimFiler -explorer '
-
-let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
 
 " Options: grep, ag, pt, rg, or ack. (Defaults to the first of these found.)
 let g:projectile#search_prog = 'grep'
 
-" Options:  0 - No icons,  1 - Use Devicons,  2 - Use Unicode icons 
+" Options:  0 - No icons,  1 - Use Devicons,  2 - Use Unicode icons (Defaults to 0)
 let g:projectile#enable_devicons = 0
+
+let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
 ```
 
 

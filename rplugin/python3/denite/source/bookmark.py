@@ -86,11 +86,15 @@ class Source(Base):
         Parameters
         ----------
         candidates : list
+            Our raw source.
 
         Returns
         -------
         candidates : list
-            A sexy source. Adds error mark if a source's path is inaccessible.
+            A sexy source.
+            Aligns candidate properties.
+            Adds error mark if a source's path is inaccessible.
+            Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
 
         """
         path_len = self._get_length(candidates, 'short_path')

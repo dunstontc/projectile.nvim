@@ -3,11 +3,12 @@
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2017-12-25
+#  Last Modified: 2017-12-27
 # ==============================================================================
 
 import re
-import subprocess  # FIXME: Use Denite's util.proc
+import subprocess  # FIXME: Use Denite's util.proc?
+
 from .base import Base
 # from denite import util
 
@@ -16,18 +17,18 @@ class Source(Base):
     """Denite source for TODOS in the current directory."""
 
     def __init__(self, vim):
+        """Initialize thyself."""
         super().__init__(vim)
         self.name        = 'todo'
+        self.syntax_name = 'deniteSource_Todo'
         self.kind        = 'file'
         self.matchers    = ['matcher_fuzzy']
         self.vars = {
-            'data_dir':    vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'todo_terms':  vim.vars.get('projectile#todo_terms'),
-            'search_prog': vim.vars.get('projectile#search_prog'),
-            'encoding':    'utf-8',
-
-            'command' : 'ag',
-            'options' : ['-s', '--nocolor', '--nogroup', '--vimgrep'],
+            'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'icon_setting': vim.vars.get('projectile#enable_devicons'),
+            'search_prog':  vim.vars.get('projectile#search_prog'),
+            'todo_terms':   vim.vars.get('projectile#todo_terms'),
+            'encoding':     'utf-8',
 
             'ack_options'  : ['-r'],
             'ag_options'   : ['-s', '--nocolor', '--nogroup', '--vimgrep'],
@@ -36,95 +37,143 @@ class Source(Base):
         }
 
     def on_init(self, context):
+        """Parse user options and set up our search."""
         # context['is_async'] = True
-        context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)', re.M)
-        context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)', re.M)
-        context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)', re.M)
+        context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)')
+        context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)')
+        context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)')
         context['terms']           = '|'.join(self.vars.get('todo_terms'))
 
-        a = self.vars['command']
-        b = self.vars['options']
+        a = self.vars['search_prog']
+        b = self.vars[f'{a}_options']
         c = f"\s({context['terms']})\:\s"
         d = self.vim.call('getcwd')
 
         context['todos'] = self._run_search(a, b, c, d)
 
     def gather_candidates(self, context):
+        """Parse segments out of our search results."""
         cur_dir_len = len(self.vim.call('getcwd'))
         candidates  = []
-        max_count   = int(0)
 
         for item in context['todos']:
-            try:
-                comp_path = context['path_pattern'].search(item).group(1)[cur_dir_len:]
-            except AttributeError:
-                comp_path = ' '
-            cur_len = len(comp_path)
-            if cur_len > max_count:
-                max_count = cur_len
+            todo_path    = ''
+            todo_line    = ''
+            todo_col     = ''
+            todo_content = ''
 
-        for item in context['todos']:
-            try:
+            if context['path_pattern'].search(item):
                 todo_path = context['path_pattern'].search(item).group(1)
-            except AttributeError:
-                todo_path = ''
 
-            try:
+            if context['line_pattern'].search(item):
                 todo_line = context['line_pattern'].search(item).group(1)
                 todo_col  = context['line_pattern'].search(item).group(2)
-                todo_pos  = f'{todo_path[cur_dir_len:]} [{todo_line}:{todo_col}]'
-            except AttributeError:
-                todo_line = ''
-                todo_pos  = ''
 
-            try:
+            if context['content_pattern'].search(item):
                 todo_content = context['content_pattern'].search(item).group(0)
-            except AttributeError:
-                todo_content = ''
 
-            if item:
+            # if item:
                 candidates.append({
-                    'word': item,
-                    'abbr': '{0:>{width}} -- {1:>}'.format(todo_pos,
-                                                           todo_content,
-                                                           width=(max_count + 8)  # + 8 for the line & column info
-                                                           ),
+                    'word':         item,
                     'action__path': todo_path,
                     'action__line': todo_line,
                     'action__col':  todo_col,
+                    'content':      todo_content,
+                    'short_path':   todo_path[cur_dir_len:],
                 })
 
+        return self._convert(candidates)
+
+    def _convert(self, candidates):
+        """Format and add metadata to gathered candidates.
+
+        Parameters
+        ----------
+        candidates : list
+            Our raw source.
+
+        Returns
+        -------
+        candidates : list
+            A sexy source.
+            Aligns candidate properties.
+            Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
+
+        """
+        cur_dir_len = len(self.vim.call('getcwd'))
+
+        path_len = self._get_length(candidates, 'short_path')
+
+        for candidate in candidates:
+
+            todo_pos = f"[{candidate['action__line']}:{candidate['action__col']}]"
+
+            if self.vars['icon_setting'] == 1:
+                icon = self.vim.funcs.WebDevIconsGetFileTypeSymbol(candidate['action__path'])
+            else:
+                icon = '  '
+
+            candidate['abbr'] = "{0:<{path_len}} {1} {2:<8} -- {3} ".format(
+                candidate['action__path'][cur_dir_len:],
+                icon,
+                todo_pos,
+                # candidate['action__col'],
+                candidate['content'],
+                path_len=path_len
+            )
         return candidates
+
+    def _get_length(self, array, attribute):
+        """Get the max string length for an attribute in a collection."""
+        max_count = int(0)
+        for item in array:
+            cur_attr = item[attribute]
+            cur_len = len(cur_attr)
+            if type(item[attribute]) is int:
+                cur_len = len(str(cur_attr))
+            if cur_len > max_count:
+                max_count = cur_len
+        return max_count
 
     def _run_search(self, command, options, pattern, location):
         """Based off of a script by @chemzqm in denite-git."""
         try:
             p = subprocess.run(f"{command} {' '.join(options)} \"{pattern}\" {location}",
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            shell=True)
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               shell=True)
         except subprocess.CalledProcessError:
             return []
         return p.stdout.decode('utf-8').split('\n')
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        self.vim.command(r'syntax match deniteSource_Todo /^.*$/ containedin=' + self.syntax_name + ' '
-                         r'contains=deniteSource_Todo_Path,deniteSource_Todo_Noise,deniteSource_Todo_Pos,deniteSource_Todo_Word,deniteSource_Todo_String')
-        self.vim.command(r'syntax match deniteSource_Todo_Word   /\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained ')
-        self.vim.command(r'syntax match deniteSource_Todo_Path   /\%(^\s\)\@<=\(.*\)\%(\[\)\@=/                contained ')
-        self.vim.command(r'syntax match deniteSource_Todo_Noise  /\S*\%\(--\)\s/                               contained ')
-        self.vim.command(r'syntax match deniteSource_Todo_Noise  /\[\|\]/                                      contained ')
-        self.vim.command(r'syntax match deniteSource_Todo_Pos    /\d\+\(:\d\+\)\?/                             contained ')
-        self.vim.command(r'syntax match deniteSource_Todo_String /\s`\S\+`/                                    contained ')
+        items = [x['name'] for x in SYNTAX_GROUPS]
+        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                         f'containedin={self.syntax_name} contains={",".join(items)}')
+        for pattern in SYNTAX_PATTERNS:
+            self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        self.vim.command('highlight default link deniteSource_Todo        Normal')
-        self.vim.command('highlight default link deniteSource_Todo_Noise  Comment')
-        self.vim.command('highlight default link deniteSource_Todo_Path   Directory')
-        self.vim.command('highlight default link deniteSource_Todo_Pos    Number')
-        self.vim.command('highlight default link deniteSource_Todo_Word   Type')
-        self.vim.command('highlight default link deniteSource_Todo_String String')
+        for match in SYNTAX_GROUPS:
+            self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
+SYNTAX_GROUPS = [
+    {'name': 'deniteSource_Todo',        'link': 'Normal'   },
+    {'name': 'deniteSource_Todo_Noise',  'link': 'Comment'  },
+    {'name': 'deniteSource_Todo_Path',   'link': 'Directory'},
+    {'name': 'deniteSource_Todo_Pos',    'link': 'Number'   },
+    {'name': 'deniteSource_Todo_Word',   'link': 'Type'     },
+    {'name': 'deniteSource_Todo_String', 'link': 'String'   },
+]
+
+SYNTAX_PATTERNS = [
+    {'name': 'Word',   'regex': r'/\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained'},
+    {'name': 'Path',   'regex': r'/\%(^\s\)\@<=\(.*\)\%(\[\)\@=/                contained'},
+    {'name': 'Noise',  'regex': r'/\S*\%\(--\)\s/                               contained'},
+    {'name': 'Noise',  'regex': r'/\[\|\]/                                      contained'},
+    {'name': 'Pos',    'regex': r'/\d\+\(:\d\+\)\?/                             contained'},
+    {'name': 'String', 'regex': r'/\s`\S\+`/                                    contained'},
+]

@@ -12,7 +12,7 @@
 if !exists('g:projectile#data_dir')
 ""
 " @setting(g:projectile#data_dir)
-" The location to store files containing saved projects & bookmarks.
+"   The location to store files containing saved projects & bookmarks.
 let g:projectile#data_dir = expand($XDG_CACHE_HOME !=? '' ?
         \  $XDG_CACHE_HOME . '/projectile' : '~/.cache/projectile')
 endif
@@ -21,8 +21,8 @@ endif
 if !exists('g:projectile#directory_command')
 ""
 " @setting(g:projectile#directory_command)
-" Command for opening projects.
-" Will be passed the absolute path to a project's root directory.
+"   Command for opening projects.
+"   Will be passed the absolute path to a project's root directory.
 let g:projectile#directory_command = 'cd'
 endif
 
@@ -30,7 +30,7 @@ endif
 if !exists('g:projectile#todo_terms')
 ""
 " @setting(g:projectile#todo_terms)
-" An array of terms to search for with the *:Denite todo* command.
+"   An array of terms to search for with the *:Denite todo* command.
 let g:projectile#todo_terms = ['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']
 endif
 
@@ -38,10 +38,10 @@ endif
 if !exists('g:projectile#enable_devicons')
 ""
 " @setting(g:projectile#enable_devicons)
-" Controls the use of icons in source results.
-" Set to *0* to disable icons entirely.
-" Set to *1* to use devicons. (requires nerdfonts)
-" Set to *2* to use unicode icons. (Works with most fonts)
+"   Controls the use of icons in source results.
+"   Set to *0* to disable icons entirely.
+"   Set to *1* to use devicons. (requires nerdfonts)
+"   Set to *2* to use unicode icons. (Works with most fonts)
 let g:projectile#enable_devicons = 0
 endif
 
@@ -49,7 +49,7 @@ endif
 if !exists('g:projectile#search_prog')
 ""
 " @setting(g:projectile#search_prog)
-" The command used to search for todos.
+"   The command used to search for todos.
 let g:projectile#search_prog = 'grep'
   if executable('ag')
     let g:projectile#search_prog = 'ag'
@@ -65,14 +65,14 @@ endif
 
 ""
 " @setting(g:projectile#loaded)
-" Used to check if Projectile is installed & loaded.
+"   Used to check if Projectile is installed & loaded.
 let g:projectile#loaded = 1
 
 
 ""
 " @function(Projectile_Init)
-" Checks for projects.json & bookmarks.json in {g:projectile#data_dir}.
-" If those aren't there, or if the directory doesn't exist, it'll make them.
+"   Checks for projects.json & bookmarks.json in {g:projectile#data_dir}.
+"   If those aren't there, or if the directory doesn't exist, it'll make them.
 function Projectile_Init() abort
   let l:dir_path = expand(g:projectile#data_dir)
   let l:bookmark = '[{"name":"MYVIMRC","path":"'.expand("$MYVIMRC").'","line":1,"col":1,"timestamp":"123456","description":""}]'
@@ -94,9 +94,10 @@ function Projectile_Init() abort
   endif
 endfunction
 
+
 ""
 " @command(ProjectileInit)
-" calls @function(Projectile_Init),
-" creates {g:projectile#data_dir}/bookmarks&projects.json
+"   Calls @function(Projectile_Init),
+"   Creates {g:projectile#data_dir}/bookmarks&projects.json
 command -nargs=0 ProjectileInit call Projectile_Init()
 

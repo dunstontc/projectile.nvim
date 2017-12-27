@@ -11,8 +11,8 @@ import re
 import json
 import datetime
 
-from ..kind.file import Kind as File
 from denite import util
+from ..kind.file import Kind as File
 
 
 class Kind(File):
@@ -26,8 +26,7 @@ class Kind(File):
     action_delete()
         Prompts for confirmation and removes a bookmark from *bookmarks.json*
     action_read()
-        `Overloaded`
-
+        TODO: Make sure a file exists before opening
     super.action_open()
     super.action_preview()
     super.action_highlight()
@@ -51,6 +50,7 @@ class Kind(File):
         }
 
     def action_add(self, context):
+        """Add a bookmark to ``projectile#data_dir``/bookmarks.json"""
         data_file = util.expand(self.vars['data_dir'] + '/bookmarks.json')
         boofer = self.vim.current.buffer.name
         linenr = self.vim.current.window.cursor[0]
@@ -70,7 +70,6 @@ class Kind(File):
             'line': linenr,
             'col' : 1,            # TODO: get column number when adding bookmarks
             'timestamp': str(datetime.datetime.now().isoformat()),
-            'description': '',
         }
 
         with open(data_file, 'r') as g:
@@ -84,6 +83,7 @@ class Kind(File):
             json.dump(json_info, f, indent=2)
 
     def action_delete(self, context):
+        """Remove a bookmark from ``projectile#data_dir``/bookmarks.json"""
         target       = context['targets'][0]
         target_date  = target['timestamp']
         data_file    = util.expand(self.vars['data_dir'] + '/bookmarks.json')
