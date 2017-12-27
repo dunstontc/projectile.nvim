@@ -1,43 +1,52 @@
 " ==============================================================================
-" File:        todo.vim
-" Author:      Clay Dunston <dunstontc@gmail.com>
-" License:     MIT License
-" Thanks:      Based on work by Leandro Freitas's todo.txt-vim (http://github.com/freitass/todo.txt-vim)
+" Vim syntax file
+" Language:      todo.txt
+" File:          todo.vim
+" Maintainer:    Clay Dunston <dunstontc@gmail.com>
+" License:       MIT License
+" Last Modified: 2017-12-25
+" Remark:        Based on work by Leandro Freitas's todo.txt-vim (http://github.com/freitass/todo.txt-vim)
 " ==============================================================================
 
-if exists('b:current_syntax')
+if version < 600
+  syntax clear
+elseif exists("b:current_syntax")
   finish
 endif
 
-syntax  match  todoItem       '^.*$'                      contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
+syntax  match  todoItem       '^.*$'                      contains=@todoData
 syntax  match  todoComment    '^#\s.\+$'
 syntax  match  todoDone       '^[xX]\s.\+$'
-syntax  match  todoPriorityA  '^([aA])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityB  '^([bB])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityC  '^([cC])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityD  '^([dD])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityE  '^([eE])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityF  '^([fF])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityG  '^([gG])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityH  '^([hH])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityI  '^([iI])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityJ  '^([jJ])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityK  '^([kK])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityL  '^([lL])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityM  '^([mM])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityN  '^([nN])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityO  '^([oO])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityP  '^([pP])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityQ  '^([qQ])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityR  '^([rR])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityS  '^([sS])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityT  '^([tT])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityU  '^([uU])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityV  '^([vV])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityW  '^([wW])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityX  '^([xX])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityY  '^([yY])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
-syntax  match  todoPriorityZ  '^([zZ])\s.\+$'             contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
+
+syntax  cluster todoPriority  contains=todoPriorityA,todoPriorityB,todoPriorityC,todoPriorityD,todoPriorityE,todoPriorityF,todoPriorityG,todoPriorityH,todoPriorityI,todoPriorityJ,todoPriorityK,todoPriorityL,todoPriorityM,todoPriorityN,todoPriorityO,todoPriorityP,todoPriorityQ,todoPriorityR,todoPriorityS,todoPriorityT,todoPriorityU,todoPriorityV,todoPriorityW,todoPriorityX,todoPriorityY,todoPriorityZ
+syntax  cluster todoData      contains=todoDate,todoProject,todoContext,todoExtra,todoID,todoString,todoOverDue
+
+syntax  match  todoPriorityA  '^([aA])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityB  '^([bB])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityC  '^([cC])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityD  '^([dD])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityE  '^([eE])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityF  '^([fF])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityG  '^([gG])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityH  '^([hH])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityI  '^([iI])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityJ  '^([jJ])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityK  '^([kK])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityL  '^([lL])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityM  '^([mM])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityN  '^([nN])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityO  '^([oO])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityP  '^([pP])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityQ  '^([qQ])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityR  '^([rR])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityS  '^([sS])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityT  '^([tT])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityU  '^([uU])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityV  '^([vV])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityW  '^([wW])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityX  '^([xX])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityY  '^([yY])\s.\+$'             contains=@todoData
+syntax  match  todoPriorityZ  '^([zZ])\s.\+$'             contains=@todoData
 
 syntax  match  todoDate       '\d\d\d\d\-\d\{2\}-\d\{2\}'       contained
 syntax  match  todoProject    '\(^\|\W\)+[^[:blank:]]\+'        contained
