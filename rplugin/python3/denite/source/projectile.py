@@ -3,7 +3,7 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-26
+#  Last Modified: 2017-12-27
 # ==============================================================================
 
 from os.path import expanduser, isdir
@@ -122,7 +122,7 @@ class Source(Base):
                 candidate['timestamp'],
                 name_len=name_len,
                 err_mark=err_mark,
-                path_len=(path_len + 3),
+                path_len=(path_len),
             )
         return candidates
 
