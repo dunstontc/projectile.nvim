@@ -1,28 +1,46 @@
 """Denite source for project directories."""
-#  =============================================================================
+# ==============================================================================
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
-#  License: MIT
-#  Last Modified: 2017-12-25
-#  ============================================================================
+#  License: MIT License
+#  Last Modified: 2017-12-26
+# ==============================================================================
 
-import os
+from os.path import expanduser, isdir
 import json
-# import pathlib
-# import subprocess  # TODO: Use denite's util.proc
 
 from .base import Base
-from denite import util
+from denite.util import error, expand
+
+SYNTAX_GROUPS = [
+    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'   },
+    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'  },
+    {'name': 'deniteSource_Projectile_Name',      'link': 'String'   },
+    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory'},
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'   },
+    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'    },
+]
+
+SYNTAX_PATTERNS = [
+    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
+    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
+    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
+    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
+    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
+]
 
 
 class Source(Base):
     """Denite source for project directories."""
 
     def __init__(self, vim):
+        """Initialize thyself."""
         super().__init__(vim)
 
         self.name = 'projectile'
-        self.kind = 'project'
+        self.kind = 'projectile'
+        self.syntax_name = 'deniteSource_Projectile'
         self.vars = {
             'exclude_filetypes': ['denite'],
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
@@ -32,11 +50,7 @@ class Source(Base):
 
     def on_init(self, context):
         """Parse and accept user settings; gather file information from ``context``."""
-        context['data_file'] = util.expand(self.vars['data_dir'] + '/projects.json')
-        # if not os.path.exists(context['data_file']):
-        #         pathlib.Path(self.vars['data_dir']).mkdir(parents=True, exist_ok=True)
-        #         with open(context['data_file'], 'w+') as f:
-        #             json.dump([], f, indent=2)
+        context['data_file'] = expand(self.vars['data_dir'] + '/projects.json')
 
     def gather_candidates(self, context):
         """Gather candidates from ``projectile#data_dir``/projects.json."""
@@ -51,13 +65,13 @@ class Source(Base):
                         'action__path': obj['root'],
                         'name':         obj['name'],
                         'is_vsc':       obj['vcs'],
-                        'short_root':   obj['root'].replace(os.path.expanduser('~'), '~'),
+                        'short_root':   obj['root'].replace(expanduser('~'), '~'),
                         'timestamp':    obj['timestamp'],
                     })
 
             except json.JSONDecodeError:
                 err_string = 'Decode error for' + context['data_file']
-                util.error(self.vim, err_string)
+                error(self.vim, err_string)
 
         return self._convert(candidates)
 
@@ -70,16 +84,22 @@ class Source(Base):
 
         Returns
         -------
-        A sexy source.
+        candidates : list
+            A sexy source. Adds error mark if a source's path is inaccessible.
 
         """
         name_len = self._get_length(candidates, 'name')
         path_len = self._get_length(candidates, 'short_root')
 
         if self.vars['icon_setting'] == 0:
+            err_icon = 'X '
+        else:
+            err_icon = '✗ '
+
+        if self.vars['icon_setting']   == 0:
             vsc_icon = 'git'
         elif self.vars['icon_setting'] == 1:
-            vsc_icon = '  '        # \ue0a0 -- Powerline branch symbol
+            vsc_icon = '  '         # \ue0a0 -- Powerline branch symbol
         elif self.vars['icon_setting'] == 2:
             vsc_icon = '⛕  '
 
@@ -90,13 +110,19 @@ class Source(Base):
             else:
                 is_vsc = '   '
 
-            candidate['abbr'] = "{0}{1:<{name_len}} -- {2:<{path_len}} -- {3}".format(
+            if not isdir(candidate['action__path']):
+                err_mark = err_icon
+            else:
+                err_mark = '  '
+
+            candidate['abbr'] = "{0}{1:<{name_len}} -- {err_mark}{2:<{path_len}} -- {3}".format(
                 is_vsc,
                 candidate['name'],
                 candidate['short_root'],
                 candidate['timestamp'],
                 name_len=name_len,
-                path_len=path_len,
+                err_mark=err_mark,
+                path_len=(path_len + 3),
             )
         return candidates
 
@@ -112,20 +138,14 @@ class Source(Base):
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        self.vim.command(r'syntax match deniteSource_Projectile_Project /^.*$/ '
-                         r'containedin=' + self.syntax_name + ' '
-                         r'contains=deniteSource_Projectile_Project,deniteSource_Projectile_Noise,deniteSource_Projectile_Name,deniteSource_Projectile_Description,deniteSource_Projectile_Path,deniteSource_Projectile_Timestamp')
-        self.vim.command(r'syntax match deniteSource_Projectile_Noise       /\(\s--\s\)/                                          contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Name        /^\(.*\)\(\(.* -- \)\{2\}\)\@=/                       contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Description /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{2\}\)\@=/ contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Path        /\(\(.* -- \)\{1\}\)\@<=\(.*\)\(\(.* -- \)\{1\}\)\@=/ contained ')
-        self.vim.command(r'syntax match deniteSource_Projectile_Timestamp   /\(\%(.* -- \)\{2}\)\@<=\(.*\)/                       contained ')
+        items = [x['name'] for x in SYNTAX_GROUPS]
+        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                         f"containedin={self.syntax_name} contains={','.join(items)}")
+        for pattern in SYNTAX_PATTERNS:
+            self.vim.command(f"syntax match {self.syntax_name}_{pattern['name']} {pattern['regex']}")
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        self.vim.command('highlight link deniteSource_Projectile_Project     Normal')
-        self.vim.command('highlight link deniteSource_Projectile_Noise       Comment')
-        self.vim.command('highlight link deniteSource_Projectile_Name        Identifier')
-        self.vim.command('highlight link deniteSource_Projectile_Description String')
-        self.vim.command('highlight link deniteSource_Projectile_Path        Directory')
-        self.vim.command('highlight link deniteSource_Projectile_Timestamp   Number')
+        for match in SYNTAX_GROUPS:
+            self.vim.command(f"highlight default link {match['name']} {match['link']}")
+
