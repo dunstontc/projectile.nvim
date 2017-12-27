@@ -58,9 +58,9 @@ let g:projectile#enable_devicons = 0
   - *add*
   - *remove*
   - *open (default)*
-  - Extends `Directory`, so it supports all Directory kind actions. *(cd, narrow)* 
   - *directory_command*
     - Passes the project path to a command defined by `g:projectile#directory_command`.
+  - Extends `Directory`, so it supports all Directory kind actions. *(cd, narrow, ..)* 
 
 ```viml
 :Denite bookmark
