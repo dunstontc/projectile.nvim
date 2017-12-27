@@ -1,6 +1,6 @@
 """Kind using JSON to persist data for projects."""
 #  =============================================================================
-#  FILE: project.py
+#  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT
 #  Last Modified: 2017-12-25
@@ -12,16 +12,16 @@ import json
 import datetime
 import subprocess  # TODO: Use denite's proc
 
-from ..kind.openable import Kind as Openable
+from ..kind.directory import Kind as Directory
 from denite import util
 
 
-class Kind(Openable):
+class Kind(Directory):
     """Kind using JSON to persist data for projects."""
 
     def __init__(self, vim):
         super().__init__(vim)
-        self.name             = 'project'
+        self.name             = 'projectile'
         self.default_action   = 'open'
         self.persist_actions += ['delete']
         self.redraw_actions  += ['delete']
@@ -30,8 +30,6 @@ class Kind(Openable):
             'date_format':       '%d %b %Y %H:%M:%S',
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'user_cmd':          vim.vars.get('projectile#directory_command'),
-            'has_nerdtree':      vim.vars.get('loaded_nerdtree'),
-            'has_vimfiler':      vim.vars.get('loaded_vimfiler'),
         }
 
     def action_add(self, context):
@@ -52,11 +50,11 @@ class Kind(Openable):
             project_name = pj_name
 
         new_data = {
-            'name': project_name,
-            'root': project_root,
-            'timestamp': str(datetime.datetime.now().isoformat()),
+            'name':        project_name,
+            'root':        project_root,
+            'timestamp':   str(datetime.datetime.now().isoformat()),
             'description': '',
-            'vcs': os.path.isdir(f"{root_dir}/.git")  # TODO: Also check for .hg/ and .svn
+            'vcs':         os.path.isdir(f"{root_dir}/.git")  # TODO: Also check for .hg/ and .svn
         }
 
         with open(data_file, 'r') as g:
@@ -90,46 +88,52 @@ class Kind(Openable):
                 with open(data_file, 'w') as f:
                     json.dump(projects, f, indent=2)
 
-    def action_cd(self, context):
-        """Change cwd to the project's root."""
-        target = context['targets'][0]
-        if not os.access(target['action__path']):
+    def action_custom(self, context):
+        """Custom action defined by ``g:projectile#directory_command``.
+
+        Parameters
+        ----------
+        context : Object
+
+        """
+        target   = context['targets'][0]
+        user_cmd = self.vim.vars.get('projectile#directory_command')
+        if not os.path.isdir(target['action__path']):
             return
-        self.vim.command('lcd {}'.format(target['action__path']))
+        destination = util.expand(target['action__path'])
+        self.vim.call('execute', f'{user_cmd} {destination}')
 
-    def action_narrow(self, context):
-        """Traverse the path of a target."""
-        target = context['targets'][0]
-        context['sources_queue'].append([
-            {'name': 'file', 'args': []},
-            {'name': 'file', 'args': ['new']},
-        ])
-        context['path'] = target['action__path']
+    # def action_cd(self, context):
+    #     """Change cwd to the project's root."""
+    #     target = context['targets'][0]
+    #     if not os.access(target['action__path']):
+    #         return
+    #     self.vim.command('lcd {}'.format(target['action__path']))
 
-    def action_open(self, context):
-        """Open the target's action__path."""
-        for target in context['targets']:
-            path = target['action__path']
-            match_path = '^{0}$'.format(path)
+    # def action_narrow(self, context):
+    #     """Traverse the path of a target."""
+    #     target = context['targets'][0]
+    #     context['sources_queue'].append([
+    #         {'name': 'file', 'args': []},
+    #         {'name': 'file', 'args': ['new']},
+    #     ])
+    #     context['path'] = target['action__path']
 
-            if self.vim.call('bufwinnr', match_path) <= 0:
-                self.vim.call(
-                    'denite#util#execute_path', 'edit', path)
-            elif self.vim.call('bufwinnr',
-                               match_path) != self.vim.current.buffer:
-                self.vim.call(
-                    'denite#util#execute_path', 'buffer', path)
+    # def action_open(self, context):
+    #     """Open the target's action__path."""
+    #     for target in context['targets']:
+    #         path = target['action__path']
+    #         match_path = '^{0}$'.format(path)
+    #
+    #         if self.vim.call('bufwinnr', match_path) <= 0:
+    #             self.vim.call(
+    #                 'denite#util#execute_path', 'edit', path)
+    #         elif self.vim.call('bufwinnr',
+    #                            match_path) != self.vim.current.buffer:
+    #             self.vim.call(
+    #                 'denite#util#execute_path', 'buffer', path)
 
-    def __winid(self, target):
-        """Needed for openable actions."""
-        path = target['action__path']
-        bufnr = self.vim.call('bufnr', path)
-        if bufnr == -1:
-            return None
-        winids = self.vim.call('win_findbuf', bufnr)
-        return None if len(winids) == 0 else winids[0]
-
-    def __git_do(location, command):
+    def _git_do(location, command):
         """Run git commands from Python scripts.
 
         Arguments
@@ -155,7 +159,7 @@ class Kind(Openable):
             return []
         return p.stdout.decode('utf-8').split('\n')
 
-    def __get_length(array):
+    def _get_length(array):
         """Get the max string length for an attribute in a collection."""
         max_count = int(0)
         for item in array:
