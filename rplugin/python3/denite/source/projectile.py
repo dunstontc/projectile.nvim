@@ -3,22 +3,24 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-27
+#  Last Modified: 2017-12-29
 # ==============================================================================
 
 from os.path import expanduser, isdir
+import re
 import json
+from subprocess import run, PIPE, STDOUT, CalledProcessError
 
 from .base import Base
 from denite.util import error, expand
 
 SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'   },
-    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'  },
-    {'name': 'deniteSource_Projectile_Name',      'link': 'String'   },
-    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory'},
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'   },
-    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'    },
+    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
+    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
+    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
+    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
 ]
 
 SYNTAX_PATTERNS = [
@@ -46,11 +48,52 @@ class Source(Base):
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'user_cmd':          vim.vars.get('projectile#directory_command'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
+            'format_setting':    vim.vars.get('projectile#enable_formatting'),
+            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
         }
 
     def on_init(self, context):
         """Parse and accept user settings; gather file information from ``context``."""
         context['data_file'] = expand(self.vars['data_dir'] + '/projects.json')
+        if self.vars['icon_setting'] == 0:
+            self.vars['icons'] = {
+                'err': 'X ',
+                'vcs': ' ',
+                ' ':   '',
+                'M':   'M',
+                'A':   'A',
+                'D':   'D',
+                'R':   'R',
+                'C':   'C',
+                'U':   'U',
+                '??':  '??',
+            }
+        elif self.vars['icon_setting'] == 2:
+            self.vars['icons'] = {
+                'err': '✗ ',
+                'vcs': ' ',  # \ue0a0 -- Powerline branch symbol
+                ' ':   '✔',
+                'M':   '!',
+                'A':   '+',
+                'D':   '✘',
+                'R':   '»',
+                'C':   '»',
+                'U':   '⇡',
+                '??':  '?',
+            }
+        else:
+            self.vars['icons'] = {
+                'err': '✗ ',
+                'vcs': '⛕ ',
+                ' ':   '✔',
+                'M':   '!',
+                'A':   '+',
+                'D':   '✘',
+                'R':   '»',
+                'C':   '»',
+                'U':   '⇡',
+                '??':  '?',
+            }
 
     def gather_candidates(self, context):
         """Gather candidates from ``projectile#data_dir``/projects.json."""
@@ -61,12 +104,14 @@ class Source(Base):
 
                 for obj in config:
                     candidates.append({
-                        'word': obj['root'],
+                        'word':         obj['root'],
                         'action__path': obj['root'],
                         'name':         obj['name'],
-                        'is_vsc':       obj['vcs'],
-                        'short_root':   obj['root'].replace(expanduser('~'), '~'),
+                        'is_vcs':       obj['vcs'],
                         'timestamp':    obj['timestamp'],
+                        'git_branch':   self._get_branch(obj['root']),
+                        'git_stats':    self._get_stats(obj['root']),
+                        'short_root':   obj['root'].replace(expanduser('~'), '~'),
                     })
 
             except json.JSONDecodeError:
@@ -88,39 +133,32 @@ class Source(Base):
             A sexy source. Adds error mark if a source's path is inaccessible.
 
         """
-        name_len = self._get_length(candidates, 'name')
-        path_len = self._get_length(candidates, 'short_root')
-
-        if self.vars['icon_setting'] == 0:
-            err_icon = 'X '
-        else:
-            err_icon = '✗ '
-
-        if self.vars['icon_setting']   == 0:
-            vsc_icon = 'git'
-        elif self.vars['icon_setting'] == 1:
-            vsc_icon = '  '         # \ue0a0 -- Powerline branch symbol
-        elif self.vars['icon_setting'] == 2:
-            vsc_icon = '⛕  '
+        name_len   = self._get_length(candidates, 'name')
+        path_len   = self._get_length(candidates, 'short_root')
+        branch_len = self._get_length(candidates, 'git_branch')
+        stats_len  = self._get_length(candidates, 'git_stats')
 
         for candidate in candidates:
 
-            if candidate['is_vsc'] is True:
-                is_vsc = vsc_icon
-            else:
-                is_vsc = '   '
+            # if candidate['is_vcs'] is True:
+            #     is_vcs = self.vars['icons']['vcs']
+            # else:
+            #     is_vcs = '  '
 
             if not isdir(candidate['action__path']):
-                err_mark = err_icon
+                err_mark = self.vars['icons']['err']
             else:
                 err_mark = '  '
 
-            candidate['abbr'] = "{0}{1:<{name_len}} -- {err_mark}{2:<{path_len}} -- {3}".format(
-                is_vsc,
+            candidate['abbr'] = "{0:>{branch_len}} {1:^{stats_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
+                candidate['git_branch'],
+                candidate['git_stats'],
                 candidate['name'],
                 candidate['short_root'],
                 candidate['timestamp'],
                 name_len=name_len,
+                stats_len=stats_len,
+                branch_len=branch_len,
                 err_mark=err_mark,
                 path_len=(path_len),
             )
@@ -135,6 +173,117 @@ class Source(Base):
             if cur_len > max_count:
                 max_count = cur_len
         return max_count
+
+    def _get_branch(self, project_root):
+        """Return the current branch of a git repository.
+
+        Parameters
+        ----------
+        project_root : string
+            Path to the root folder of a git repository.
+            TODO: expand the root by default.
+
+        Returns
+        -------
+        string
+            Git branch
+
+        """
+        try:
+            q = run(f"git -C {project_root} branch",
+                    stdout=PIPE,
+                    stderr=STDOUT,
+                    shell=True)
+        except CalledProcessError:
+            return 'Error running "git branch"'
+
+        branch_res = q.stdout.decode('utf-8')
+        branches   = re.search(r'(?:\*?\s?)(?P<brunch>\S+)', branch_res)
+        branch     = ''
+        if branches and branches.group('brunch') != 'fatal:':
+            branch = self._maybe(branches.group('brunch'))
+
+        return branch
+
+    def _get_stats(self, project_root):
+        """Return an abbreviated git status summary.
+
+        Parameters
+        ----------
+        project_root : string
+            Path to the root folder of a git repository.
+
+        Returns
+        -------
+        string
+            Git status information
+
+        TODO
+        ----
+        - Ahead/Behind
+        - Diverged
+        - Stashed
+        - Unmerged
+
+        Notes
+        -----
+        - ' ' = unmodified
+        - M   = modified
+        - A   = added
+        - D   = deleted
+        - R   = renamed
+        - C   = copied
+        - U   = updated but unmerged
+
+        """
+        try:
+            p = run(f"git -C {project_root} status --porcelain",
+                    stdout=PIPE,
+                    stderr=STDOUT,
+                    shell=True)
+        except CalledProcessError:
+            return 'Error running "git status"'
+
+        status_res    = p.stdout.decode('utf-8').split('\n')
+        status_res[:] = [line.rstrip('\n') for line in status_res]
+        statuses      = ['??', 'M', 'A', 'D', 'R', 'C', 'U']
+        messages      = []
+        for line in status_res:
+            matches = re.search(r'(?:^\s?)(?P<info>\S+)(?:\s)', line)
+            if matches and matches.group('info') != 'fatal:' and matches.group('info') != '##':
+                for x in statuses:
+                    if matches.group('info') == x and self.vars['icons'][x] not in messages:
+                        messages.append(self.vars['icons'][x])
+
+        if not len(messages):
+            return f'{"".join(messages)}'
+        else:
+            return f'[{"".join(messages)}]'
+
+    def _maybe(self, match):
+        """Something possibly might be something else.
+
+        Used to wrap re.search().group(x) results.
+        Returns an empty string instead of raising an error.
+
+        Parameters
+        ----------
+        match : obj, str?
+            Possible Regular Expression match group
+
+        Returns
+        -------
+        value : str
+            If the match is not None, returns *match*.
+            If the match is None, returns ''.
+
+        """
+        if match is not None:
+            name = match
+        else:
+            name = ''
+
+        return name
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
