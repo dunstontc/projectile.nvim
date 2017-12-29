@@ -14,24 +14,6 @@ from subprocess import run, PIPE, STDOUT, CalledProcessError
 from .base import Base
 from denite.util import error, expand
 
-SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
-    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
-    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
-    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
-    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
-]
-
-SYNTAX_PATTERNS = [
-    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
-    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
-    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
-    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
-    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
-]
-
 
 class Source(Base):
     """Denite source for project directories."""
@@ -216,7 +198,7 @@ class Source(Base):
         Returns
         -------
         string
-            Git status information
+            Git status information [<info>]``
 
         TODO
         ----
@@ -298,3 +280,27 @@ class Source(Base):
         for match in SYNTAX_GROUPS:
             self.vim.command(f"highlight default link {match['name']} {match['link']}")
 
+
+SYNTAX_GROUPS = [
+    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
+    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
+    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
+    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
+    {'name': 'deniteSource_Projectile_Stats',     'link': 'WarningMsg'     },
+    {'name': 'deniteSource_Projectile_Branch',    'link': 'Keyword'   },
+]
+
+SYNTAX_PATTERNS = [
+    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
+    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained '
+                                   r'contains=deniteSource_Projectile_Branch,deniteSource_Projectile_Stats'},
+    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
+    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    {'name': 'Branch',    'regex': r'/\v(\S+)(\s\[.*]\s)@=/              contained '
+                                   r'contains=deniteSource_Projectile_Stats'},
+    {'name': 'Stats',    'regex': r'/\v\[.+]/                            contained'},
+    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
+    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
+]
