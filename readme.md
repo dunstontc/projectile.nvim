@@ -14,13 +14,13 @@
 
   - Projects
     - Keep a list of project locations with metadata
-    - Check version control status of Projects **(WIP)**
-    - List todos in a project
+    - Check version control status of Projects
+    - List todos in a project directory
   - Bookmarks
     - Keep a list of bookmarked locations
   - TODOs
     - List todos in the current project folder & jump to them
-    - List todos from a todo.txt file **(WIP)**
+    - List todos from a global or project todo.txt file **(WIP)**
     - Append todos to the quickfix or location list **(WIP)**
 
 
@@ -39,6 +39,8 @@
 ```viml
 let g:projectile#data_dir = $HOME.'.cache/.projectile'
 
+let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
+
 " Defaults to 'cd'
 let g:projectile#directory_command = 'VimFiler -explorer '
 
@@ -47,8 +49,6 @@ let g:projectile#search_prog = 'grep'
 
 " Options:  0 - No icons,  1 - Use Devicons,  2 - Use Unicode icons (Defaults to 0)
 let g:projectile#enable_devicons = 0
-
-let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
 ```
 
 
@@ -61,7 +61,7 @@ let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
   - *open (default)*
   - *directory_command*
     - Passes the project path to a command defined by `g:projectile#directory_command`.
-  - Extends `Directory`, so it supports all Directory kind actions. *(cd, narrow, ..)* 
+  - Extends `Directory`, so it supports all `Directory` kind actions. *(cd, narrow, .., ...)* 
 
 ```viml
 :Denite bookmark
@@ -69,13 +69,13 @@ let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
   - *add*
   - *remove*
   - *open (default)*
-  - Extends `File`, so it supports all File kind actions. *(jump, open, split, etc.)*
+  - Extends `File`, so it supports all `File` kind actions. *(jump, open, split, etc.)*
 
 ```viml
 :Denite todo
 ```
   - *open (default)*
-  - Like `bookmark`, it supports all File kind actions. *(jump, open, split, etc.)*
+  - Like `Bookmark`, it supports all `File` kind actions. *(jump, open, split, etc.)*
 
 
 ## Credit & Thanks ##
