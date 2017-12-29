@@ -96,6 +96,10 @@ CHANGELOG 					 	                    *projectile.nvim-changelog*
     - Updated documentation
     - Added changelog
 
+0.0.2    2017-12-29
+
+    - Added initial git info feature for projects.
+
 
 ==============================================================================
 vim:tw=78:ts=4:ft=help:norl:
