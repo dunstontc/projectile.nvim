@@ -2,7 +2,7 @@
 " FILE: projectile.vim
 " AUTHOR: Clay Dunston <dunstontc@gmail.com>
 " License: MIT license
-" Last Modified: December 22nd, 2017
+" Last Modified: December 27th, 2017
 " ==============================================================================
 ""
 " @section Settings, settings
@@ -12,37 +12,53 @@
 if !exists('g:projectile#data_dir')
 ""
 " @setting(g:projectile#data_dir)
-"   The location to store files containing saved projects & bookmarks.
-let g:projectile#data_dir = expand($XDG_CACHE_HOME !=? '' ?
-        \  $XDG_CACHE_HOME . '/projectile' : '~/.cache/projectile')
+" The location to store files containing saved projects & bookmarks.
+  let g:projectile#data_dir = expand($XDG_CACHE_HOME !=? '' ?
+          \  $XDG_CACHE_HOME . '/projectile' : '~/.cache/projectile')
 endif
 
 
 if !exists('g:projectile#directory_command')
 ""
 " @setting(g:projectile#directory_command)
-"   Command for opening projects.
-"   Will be passed the absolute path to a project's root directory.
-let g:projectile#directory_command = 'cd'
+" Command for opening projects.
+" Will be passed the absolute path to a project's root directory.
+  let g:projectile#directory_command = 'cd'
 endif
 
 
 if !exists('g:projectile#todo_terms')
 ""
 " @setting(g:projectile#todo_terms)
-"   An array of terms to search for with the *:Denite todo* command.
-let g:projectile#todo_terms = ['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']
+" An array of terms to search for with the *:Denite todo* command.
+  let g:projectile#todo_terms = ['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']
+endif
+
+
+if !exists('g:projectile#enable_highlighting')
+""
+" @setting(g:projectile#enable_highlights)
+" Controls the use of highlighting for Projectile's Denite sources.
+  let g:projectile#enable_highlighting = 1
+endif
+
+
+if !exists('g:projectile#enable_highlights')
+""
+" @setting(g:projectile#enable_formatting)
+" Controls the use of highlighting for Projectile's Denite sources.
+  let g:projectile#enable_formatting = 1
 endif
 
 
 if !exists('g:projectile#enable_devicons')
 ""
 " @setting(g:projectile#enable_devicons)
-"   Controls the use of icons in source results.
-"   Set to *0* to disable icons entirely.
-"   Set to *1* to use devicons. (requires nerdfonts)
-"   Set to *2* to use unicode icons. (Works with most fonts)
-let g:projectile#enable_devicons = 0
+" Controls the use of icons in source results.
+" Set to *0* to disable icons entirely.
+" Set to *1* to use devicons. (requires nerdfonts)
+" Set to *2* to use unicode icons. (Works with most fonts)
+  let g:projectile#enable_devicons = 0
 endif
 
 
@@ -65,14 +81,14 @@ endif
 
 ""
 " @setting(g:projectile#loaded)
-"   Used to check if Projectile is installed & loaded.
+" Used to check if Projectile is installed & loaded.
 let g:projectile#loaded = 1
 
 
 ""
 " @function(Projectile_Init)
-"   Checks for projects.json & bookmarks.json in {g:projectile#data_dir}.
-"   If those aren't there, or if the directory doesn't exist, it'll make them.
+" Checks for projects.json & bookmarks.json in {g:projectile#data_dir}.
+" If those aren't there, or if the directory doesn't exist, it'll make them.
 function Projectile_Init() abort
   let l:dir_path = expand(g:projectile#data_dir)
   let l:bookmark = '[{"name":"MYVIMRC","path":"'.expand("$MYVIMRC").'","line":1,"col":1,"timestamp":"123456","description":""}]'
@@ -97,7 +113,7 @@ endfunction
 
 ""
 " @command(ProjectileInit)
-"   Calls @function(Projectile_Init),
-"   Creates {g:projectile#data_dir}/bookmarks&projects.json
+" Calls @function(Projectile_Init),
+" Creates {g:projectile#data_dir}/*.json
 command -nargs=0 ProjectileInit call Projectile_Init()
 

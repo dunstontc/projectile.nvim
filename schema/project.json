@@ -43,15 +43,10 @@
                       "other"
                   ]
               },
-              "repo_type": {
-                  "description": "Who owns the repository",
-                  "type":        "string",
-                  "enum": [
-                      "origin",
-                      "clone",
-                      "fork",
-                      "other"
-                  ]
+              "repo_remotes": {
+                  "description": "Actively tracked remotes",
+                  "type":        "array, string",
+                  "format":      "url"
               },
               "repo_url": {
                   "description": "URL where the code is hosted",

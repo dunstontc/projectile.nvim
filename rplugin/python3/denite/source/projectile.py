@@ -12,7 +12,7 @@ import json
 from subprocess import run, PIPE, STDOUT, CalledProcessError
 
 from .base import Base
-from denite.util import error, expand
+from denite.util import error, expand, echo
 
 
 class Source(Base):
@@ -52,6 +52,8 @@ class Source(Base):
             }
         elif self.vars['icon_setting'] == 2:
             self.vars['icons'] = {
+                'behind': '⇣',
+                'ahead': '⇡',
                 'err': '✗ ',
                 'vcs': ' ',  # \ue0a0 -- Powerline branch symbol
                 ' ':   '✔',
@@ -65,9 +67,11 @@ class Source(Base):
             }
         else:
             self.vars['icons'] = {
-                'err': '✗ ',
+                'behind': '⇣',  # \u21e3 - Downwards Dashed Arrow
+                'ahead': '⇡',   # \u21e1 - Upwards Dashed Arrow
+                'err': '✗ ',    # \u2717 - Ballot x
                 'vcs': '⛕ ',
-                ' ':   '✔',
+                ' ':   '✔',     # \u2714 - Heavy Check Mark
                 'M':   '!',
                 'A':   '+',
                 'D':   '✘',
@@ -85,6 +89,7 @@ class Source(Base):
                 config = json.loads(fp.read())
 
                 for obj in config:
+                    self._get_pos(obj['root'])
                     candidates.append({
                         'word':         obj['root'],
                         'action__path': obj['root'],
@@ -100,6 +105,8 @@ class Source(Base):
                 err_string = 'Decode error for' + context['data_file']
                 error(self.vim, err_string)
 
+
+        # return candidates
         return self._convert(candidates)
 
     def _convert(self, candidates):
@@ -132,7 +139,7 @@ class Source(Base):
             else:
                 err_mark = '  '
 
-            candidate['abbr'] = "{0:>{branch_len}} {1:^{stats_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
+            candidate['abbr'] = "{0:<{branch_len}} {1:^{stats_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
                 candidate['git_branch'],
                 candidate['git_stats'],
                 candidate['name'],
@@ -180,12 +187,52 @@ class Source(Base):
             return 'Error running "git branch"'
 
         branch_res = q.stdout.decode('utf-8')
-        branches   = re.search(r'(?:\*?\s?)(?P<brunch>\S+)', branch_res)
+        branches   = re.search(r'(?:^\*\s)(?P<brunch>\S+)(.*$)', branch_res, re.M)
         branch     = ''
         if branches and branches.group('brunch') != 'fatal:':
             branch = self._maybe(branches.group('brunch'))
 
         return branch
+
+    def _get_pos(self, project_root):
+        """Return an abbreviated git status summary.
+
+        Parameters
+        ----------
+        project_root : string
+            Path to the root folder of a git repository.
+
+        TODO
+        ----
+        - Diverged
+        - Stashed
+        - Unmerged
+
+        """
+        # pos_pat = re.compile(r'^\*\s(?P<branch>\S+).+(?<=\[)(?P<pos>.*)(?:].+)', re.M)
+        # pos_pat = re.compile(r'(?:^\*\s)(?P<branch>\S+)(?:\s+\w+\s)(?=\[)(?P<position>.*)(?<=])', re.M)
+        pos_pat = re.compile(r'\*.+(?<=\[)(\w*)', re.M)
+        try:
+            q = run(f"git -C {project_root} branch -v",
+                    stdout=PIPE,
+                    stderr=STDOUT,
+                    shell=True)
+        except CalledProcessError:
+            return 'Error running "git branch -v"'
+
+        stat_res = q.stdout.decode('utf-8').split('\n')
+        for x in stat_res:
+                matches = pos_pat.search(x)
+                if matches:
+                    pos = self._maybe(matches.group(1))
+                    if pos == 'ahead':
+                        return self.vars['icons']['ahead']
+                    elif pos == 'behind':
+                        return self.vars['icons']['behind']
+                    else:
+                        return '-'
+                else:
+                    return ''
 
     def _get_stats(self, project_root):
         """Return an abbreviated git status summary.
@@ -198,26 +245,15 @@ class Source(Base):
         Returns
         -------
         string
-            Git status information [<info>]``
+            Git status information.
 
         TODO
         ----
-        - Ahead/Behind
         - Diverged
         - Stashed
-        - Unmerged
-
-        Notes
-        -----
-        - ' ' = unmodified
-        - M   = modified
-        - A   = added
-        - D   = deleted
-        - R   = renamed
-        - C   = copied
-        - U   = updated but unmerged
 
         """
+        position = self._get_pos(project_root)
         try:
             p = run(f"git -C {project_root} status --porcelain",
                     stdout=PIPE,
@@ -237,12 +273,12 @@ class Source(Base):
                     if matches.group('info') == x and self.vars['icons'][x] not in messages:
                         messages.append(self.vars['icons'][x])
 
-        if not len(messages):
+        if not len(messages) and not len(position):
             return f'{"".join(messages)}'
         else:
-            return f'[{"".join(messages)}]'
+            return f'[{position}{"".join(messages)}]'
 
-    def _maybe(self, match):
+    def _maybe(self, please):
         """Something possibly might be something else.
 
         Used to wrap re.search().group(x) results.
@@ -250,7 +286,7 @@ class Source(Base):
 
         Parameters
         ----------
-        match : obj, str?
+        please : obj, str?
             Possible Regular Expression match group
 
         Returns
@@ -260,8 +296,8 @@ class Source(Base):
             If the match is None, returns ''.
 
         """
-        if match is not None:
-            name = match
+        if please is not None:
+            name = please
         else:
             name = ''
 
@@ -298,7 +334,7 @@ SYNTAX_PATTERNS = [
                                    r'contains=deniteSource_Projectile_Branch,deniteSource_Projectile_Stats'},
     {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
     {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    {'name': 'Branch',    'regex': r'/\v(\S+)(\s\[.*]\s)@=/              contained '
+    {'name': 'Branch',    'regex': r'/\v(^\s)@<=(\S+)/                   contained '
                                    r'contains=deniteSource_Projectile_Stats'},
     {'name': 'Stats',    'regex': r'/\v\[.+]/                            contained'},
     {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},

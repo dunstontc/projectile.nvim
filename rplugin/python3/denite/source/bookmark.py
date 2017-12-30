@@ -3,7 +3,7 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-26
+#  Last Modified: 2017-12-29
 #  =============================================================================
 
 from os.path import exists, expanduser, isfile
@@ -13,12 +13,12 @@ from .base import Base
 from denite.util import error, expand
 
 SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'   },
-    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'  },
-    {'name': 'deniteSource_Projectile_Name',      'link': 'String'   },
-    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory'},
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'   },
-    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'    },
+    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
+    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
+    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
+    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
 ]
 
 SYNTAX_PATTERNS = [
@@ -46,6 +46,8 @@ class Source(Base):
             'date_format':       '%d %b %Y %H:%M:%S',
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
+            'format_setting':    vim.vars.get('projectile#enable_formatting'),
+            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
         }
 
     def on_init(self, context):
@@ -94,7 +96,7 @@ class Source(Base):
             A sexy source.
             Aligns candidate properties.
             Adds error mark if a source's path is inaccessible.
-            Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
+            Adds nerdfont icon if enabled.
 
         """
         path_len = self._get_length(candidates, 'short_path')
@@ -116,7 +118,7 @@ class Source(Base):
             else:
                 icon = '  '
 
-            candidate['abbr'] = "{0} {1:^{name_len}} -- {err_mark} {2:<{path_len}} -- {3}".format(
+            candidate['abbr'] = "{0} {1:<{name_len}} -- {err_mark} {2:<{path_len}} -- {3}".format(
                 icon,
                 candidate['name'],
                 candidate['short_path'],

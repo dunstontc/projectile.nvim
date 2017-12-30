@@ -1,6 +1,6 @@
 *projectile.nvim.txt*	     Various utilities to help keep track of projects
 
-Version:    0.0.1
+Version:    0.0.2
 Author:     Clay Dunston <dunstontc@gmail.com>
 License:    MIT License
 
@@ -8,20 +8,23 @@ License:    MIT License
 ==============================================================================
 CONTENTS                                             *projectile.nvim-contents*
 
-  1. Settings.......................................|projectile.nvim-settings|
-  2. Commands.......................................|projectile.nvim-commands|
-  3. Usage..........................................|projectile.nvim-usage|
-  4. Changelog......................................|projectile.nvim-changelog|
+  1. Settings............................................|projectile-settings|
+  2. Commands............................................|projectile-commands|
+  3. Usage...............................................|projectile-usage|
+  4. Denite Sources...............................|projectile-denite-sources|
+  5. Changelog...........................................|projectile-changelog|
 
 
 ==============================================================================
-SETTINGS                                             *projectile.nvim-settings*
+                                                     *projectile.nvim-settings*
+1. Settings~
+
 
                                                        *g:projectile#data_dir*
 |g:projectile#data_dir|
 
     Type: |String|
-    Default: `$XDG_CACHE_HOME/.cache/projectile`
+    Default: '$XDG_CACHE_HOME/.cache/projectile'
 
     The directory used to store files containing saved projects & bookmarks.
 
@@ -29,7 +32,7 @@ SETTINGS                                             *projectile.nvim-settings*
 |g:projectile#directory_command|
 
     Type: |String|
-    Default: `'cd'`
+    Default: 'cd'
 
     Command for opening projects.
     Will be passed the absolute path to a project's root directory.
@@ -38,7 +41,7 @@ SETTINGS                                             *projectile.nvim-settings*
 |g:projectile#todo_terms|
 
     Type: |List|
-    Default: `['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']`
+    Default: '['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']'
 
     An array of terms to search for with the ':Denite todo' command.
 
@@ -57,7 +60,7 @@ SETTINGS                                             *projectile.nvim-settings*
 |g:projectile#search_prog|
 
     Type: |String|
-    Default: `'grep'`
+    Default: 'grep'
     Current Options: 'ag', 'pt', 'rg', 'ack', 'grep'
 
     The command used to search for TODOs.
@@ -68,29 +71,32 @@ SETTINGS                                             *projectile.nvim-settings*
 |g:projectile#loaded|
 
     Type: |Number|
-    Default: `1`
+    Default: *1*
 
     Used to check if Projectile is installed & loaded.
 
 
 ==============================================================================
-COMMANDS				                             *projectile.nvim-commands*
+Commands
+*projectile.nvim-commands*
 
-|:ProjectileInit|
+`:ProjectileInit`
 
     Used to create the files for saving bookmarks & projects.
     NOTE: This will overwrite any existing projectile projects and bookmarks.
 
 ==============================================================================
-USAGE					                                *projectile.nvim-usage*
+                                                       *projectile.nvim-usage*
+4. Usage~
 
 
 ==============================================================================
-CHANGELOG 					 	                    *projectile.nvim-changelog*
+                                                   *projectile.nvim-changelog*
+5. Changelog~
 
 0.0.1    2017-12-27
 
-    - Refactored syntax highlighting for all |Denite| sources
+    - Refactored syntax highlighting for all |denite| sources
     - Extracted candidate formatting and conversion to a dedicated function
     - Added filetype detection for todo.txt files
     - Updated documentation

@@ -3,14 +3,15 @@
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2017-12-27
+#  Last Modified: 2017-12-28
 # ==============================================================================
 
 import re
 import subprocess  # FIXME: Use Denite's util.proc?
+from os.path import expanduser
 
 from .base import Base
-# from denite import util
+from denite.util import error
 
 
 class Source(Base):
@@ -38,18 +39,34 @@ class Source(Base):
 
     def on_init(self, context):
         """Parse user options and set up our search."""
-        # context['is_async'] = True
         context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)')
         context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)')
         context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)')
         context['terms']           = '|'.join(self.vars.get('todo_terms'))
 
-        a = self.vars['search_prog']
-        b = self.vars[f'{a}_options']
-        c = f"\s({context['terms']})\:\s"
-        d = self.vim.call('getcwd')
+        # if self.vim.call('getcwd') is not str(expanduser("~")):
+        if self.vim.call('getcwd') == expanduser("~"):
+            context['todos']       = []
+            context['is_async']    = True  # FIXME:
+            error(self.vim, 'You might not want to search in \'~\'...')
+        else:
+            context['searcher']   = self.vars['search_prog']
+            context['options']    = self.vars[f"{context['searcher']}_options"]
+            context['terms']      = f"\s({context['terms']})\:\s"
+            context['search_dir'] = self.vim.call('getcwd')
 
-        context['todos'] = self._run_search(a, b, c, d)
+            context['todos'] = self._run_search(
+                context['searcher'],
+                context['options'],
+                context['terms'],
+                context['search_dir']
+            )
+
+    # def on_close(self, context):
+    #     """Clean up our async process when finished."""
+    #     if context['__proc']:
+    #         context['__proc'].kill()
+    #         context['__proc'] = None
 
     def gather_candidates(self, context):
         """Parse segments out of our search results."""
