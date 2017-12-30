@@ -12,7 +12,7 @@ import json
 from subprocess import run, PIPE, STDOUT, CalledProcessError
 
 from .base import Base
-from denite.util import error, expand, echo
+from denite.util import error, expand
 
 
 class Source(Base):
@@ -39,46 +39,48 @@ class Source(Base):
         context['data_file'] = expand(self.vars['data_dir'] + '/projects.json')
         if self.vars['icon_setting'] == 0:
             self.vars['icons'] = {
-                'err': 'X ',
-                'vcs': ' ',
-                ' ':   '',
-                'M':   'M',
-                'A':   'A',
-                'D':   'D',
-                'R':   'R',
-                'C':   'C',
-                'U':   'U',
-                '??':  '??',
+                'behind': 'Ah',
+                'ahead':  'Bh',
+                'err':    'X ',
+                'vcs':    ' ',
+                ' ':      '',
+                'M':      'M',
+                'A':      'A',
+                'D':      'D',
+                'R':      'R',
+                'C':      'C',
+                'U':      'U',
+                '??':     '??',
             }
         elif self.vars['icon_setting'] == 2:
             self.vars['icons'] = {
                 'behind': '⇣',
-                'ahead': '⇡',
-                'err': '✗ ',
-                'vcs': ' ',  # \ue0a0 -- Powerline branch symbol
-                ' ':   '✔',
-                'M':   '!',
-                'A':   '+',
-                'D':   '✘',
-                'R':   '»',
-                'C':   '»',
-                'U':   '⇡',
-                '??':  '?',
+                'ahead':  '⇡',
+                'err':    '✗ ',
+                'vcs':    ' ',  # \ue0a0 -- Powerline branch symbol
+                ' ':      '✔',
+                'M':      '!',
+                'A':      '+',
+                'D':      '✘',
+                'R':      '»',
+                'C':      '»',
+                'U':      '⇡',
+                '??':     '?',
             }
         else:
             self.vars['icons'] = {
-                'behind': '⇣',  # \u21e3 - Downwards Dashed Arrow
-                'ahead': '⇡',   # \u21e1 - Upwards Dashed Arrow
-                'err': '✗ ',    # \u2717 - Ballot x
-                'vcs': '⛕ ',
-                ' ':   '✔',     # \u2714 - Heavy Check Mark
-                'M':   '!',
-                'A':   '+',
-                'D':   '✘',
-                'R':   '»',
-                'C':   '»',
-                'U':   '⇡',
-                '??':  '?',
+                'behind': '⇣',   # \u21e3 - Downwards Dashed Arrow
+                'ahead':  '⇡',   # \u21e1 - Upwards Dashed Arrow
+                'err':    '✗ ',  # \u2717 - Ballot x
+                'vcs':    '⛕ ',  # \u26d5 - Alternate One-way Left Way Traffic
+                ' ':      '✔',   # \u2714 - Heavy Check Mark
+                'M':      '!',
+                'A':      '+',
+                'D':      '✘',   # \u2718 - Heavy Ballot x
+                'R':      '»',   # \u00bb - Right-pointing Double Angle Quotation Mark
+                'C':      '»',   # \u00bb
+                'U':      '⇡',   # \u21e1
+                '??':     '?',
             }
 
     def gather_candidates(self, context):
@@ -105,8 +107,6 @@ class Source(Base):
                 err_string = 'Decode error for' + context['data_file']
                 error(self.vim, err_string)
 
-
-        # return candidates
         return self._convert(candidates)
 
     def _convert(self, candidates):
@@ -125,7 +125,7 @@ class Source(Base):
         name_len   = self._get_length(candidates, 'name')
         path_len   = self._get_length(candidates, 'short_root')
         branch_len = self._get_length(candidates, 'git_branch')
-        stats_len  = self._get_length(candidates, 'git_stats')
+        stat_len   = self._get_length(candidates, 'git_stats')
 
         for candidate in candidates:
 
@@ -139,14 +139,14 @@ class Source(Base):
             else:
                 err_mark = '  '
 
-            candidate['abbr'] = "{0:<{branch_len}} {1:^{stats_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
+            candidate['abbr'] = "{0:<{branch_len}} {1:<{stat_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
                 candidate['git_branch'],
                 candidate['git_stats'],
                 candidate['name'],
                 candidate['short_root'],
                 candidate['timestamp'],
                 name_len=name_len,
-                stats_len=stats_len,
+                stat_len=stat_len,
                 branch_len=branch_len,
                 err_mark=err_mark,
                 path_len=(path_len),
@@ -202,16 +202,11 @@ class Source(Base):
         project_root : string
             Path to the root folder of a git repository.
 
-        TODO
-        ----
-        - Diverged
-        - Stashed
-        - Unmerged
-
         """
         # pos_pat = re.compile(r'^\*\s(?P<branch>\S+).+(?<=\[)(?P<pos>.*)(?:].+)', re.M)
         # pos_pat = re.compile(r'(?:^\*\s)(?P<branch>\S+)(?:\s+\w+\s)(?=\[)(?P<position>.*)(?<=])', re.M)
         pos_pat = re.compile(r'\*.+(?<=\[)(\w*)', re.M)
+
         try:
             q = run(f"git -C {project_root} branch -v",
                     stdout=PIPE,
@@ -230,7 +225,7 @@ class Source(Base):
                     elif pos == 'behind':
                         return self.vars['icons']['behind']
                     else:
-                        return '-'
+                        return ''
                 else:
                     return ''
 
@@ -247,11 +242,6 @@ class Source(Base):
         string
             Git status information.
 
-        TODO
-        ----
-        - Diverged
-        - Stashed
-
         """
         position = self._get_pos(project_root)
         try:
@@ -262,11 +252,11 @@ class Source(Base):
         except CalledProcessError:
             return 'Error running "git status"'
 
-        status_res    = p.stdout.decode('utf-8').split('\n')
-        status_res[:] = [line.rstrip('\n') for line in status_res]
+        stat_res    = p.stdout.decode('utf-8').split('\n')
+        stat_res[:] = [line.rstrip('\n') for line in stat_res]
         statuses      = ['??', 'M', 'A', 'D', 'R', 'C', 'U']
         messages      = []
-        for line in status_res:
+        for line in stat_res:
             matches = re.search(r'(?:^\s?)(?P<info>\S+)(?:\s)', line)
             if matches and matches.group('info') != 'fatal:' and matches.group('info') != '##':
                 for x in statuses:
@@ -281,7 +271,7 @@ class Source(Base):
     def _maybe(self, please):
         """Something possibly might be something else.
 
-        Used to wrap re.search().group(x) results.
+        Used to wrap ``<compiled_regex>.search(...).group('x')`` results.
         Returns an empty string instead of raising an error.
 
         Parameters
@@ -300,7 +290,6 @@ class Source(Base):
             name = please
         else:
             name = ''
-
         return name
 
     def define_syntax(self):
@@ -324,7 +313,7 @@ SYNTAX_GROUPS = [
     {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
     {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
     {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
-    {'name': 'deniteSource_Projectile_Stats',     'link': 'WarningMsg'     },
+    {'name': 'deniteSource_Projectile_Stats',     'link': 'Error'     },
     {'name': 'deniteSource_Projectile_Branch',    'link': 'Keyword'   },
 ]
 
@@ -335,7 +324,7 @@ SYNTAX_PATTERNS = [
     {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
     {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
     {'name': 'Branch',    'regex': r'/\v(^\s)@<=(\S+)/                   contained '
-                                   r'contains=deniteSource_Projectile_Stats'},
+                                   r'contains=deniteSource_Projectile_Stats'       },
     {'name': 'Stats',    'regex': r'/\v\[.+]/                            contained'},
     {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
     {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},

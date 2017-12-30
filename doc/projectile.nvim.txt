@@ -1,35 +1,58 @@
 *projectile.nvim.txt*	     Various utilities to help keep track of projects
 
 Version:    0.0.2
-Author:     Clay Dunston <dunstontc@gmail.com>
 License:    MIT License
+Author:     Clay Dunston <dunstontc@gmail.com>
+Website:    https://github.com/dunstontc/projectile.nvim
+
+
+
+    ___       ___       ___       ___       ___       ___       ___
+   /\  \     /\  \     /\  \     /\  \     /\  \     /\  \     /\  \
+  /::\  \   /::\  \   /::\  \   _\:\  \   /::\  \   /::\  \    \:\  \
+ /::\:\__\ /::\:\__\ /:/\:\__\ /\/::\__\ /::\:\__\ /:/\:\__\   /::\__\
+ \/\::/  / \;:::/  / \:\/:/  / \::/\/__/ \:\:\/  / \:\ \/__/  /:/\/__/
+    \/__/   |:\/__/   \::/  /   \/__/     \:\/  /   \:\__\    \/__/
+             \|__|     \/__/               \/__/     \/__/
+    ___       ___       ___
+   /\  \     /\__\     /\  \
+  _\:\  \   /:/  /    /::\  \
+ /\/::\__\ /:/__/    /::\:\__\
+ \::/\/__/ \:\  \    \:\:\/  /
+  \:\__\    \:\__\    \:\/  /
+   \/__/     \/__/     \/__/.nvim
 
 
 ==============================================================================
-CONTENTS                                             *projectile.nvim-contents*
-
-  1. Settings............................................|projectile-settings|
-  2. Commands............................................|projectile-commands|
-  3. Usage...............................................|projectile-usage|
-  4. Denite Sources...............................|projectile-denite-sources|
+CONTENTS                                              *projectile.nvim-contents*
+------------------------------------------------------------------------------
+  1. Settings.............................................|projectile-settings|
+  2. Commands.............................................|projectile-commands|
+  3. Usage...................................................|projectile-usage|
+  4. Denite Sources.................................|projectile-denite-sources|
   5. Changelog...........................................|projectile-changelog|
 
 
 ==============================================================================
-                                                     *projectile.nvim-settings*
+                                                           *projectile-settings*
 1. Settings~
 
 
+==============================================================================
+                                                          *projectile-variables*
+1.1 Global Variables~
+------------------------------------------------------------------------------
+
                                                        *g:projectile#data_dir*
-|g:projectile#data_dir|
+'g:projectile#data_dir'
 
     Type: |String|
-    Default: '$XDG_CACHE_HOME/.cache/projectile'
+    Default: '~/.cache/projectile'
 
     The directory used to store files containing saved projects & bookmarks.
 
                                               *g:projectile#directory_command*
-|g:projectile#directory_command|
+'g:projectile#directory_command'
 
     Type: |String|
     Default: 'cd'
@@ -38,7 +61,7 @@ CONTENTS                                             *projectile.nvim-contents*
     Will be passed the absolute path to a project's root directory.
 
                                                      *g:projectile#todo_terms*
-|g:projectile#todo_terms|
+'g:projectile#todo_terms'
 
     Type: |List|
     Default: '['BUG', 'FIXME', 'HACK', 'NOTE', 'OPTIMIZE', 'TODO', 'XXX']'
@@ -46,7 +69,7 @@ CONTENTS                                             *projectile.nvim-contents*
     An array of terms to search for with the ':Denite todo' command.
 
                                                 *g:projectile#enable_devicons*
-|g:projectile#enable_devicons|
+'g:projectile#enable_devicons'
 
     Type: |Number|
     Default: `0`
@@ -57,7 +80,7 @@ CONTENTS                                             *projectile.nvim-contents*
     Set to *2* to use unicode icons. (Works with most fonts)
 
                                                     *g:projectile#search_prog*
-|g:projectile#search_prog|
+'g:projectile#search_prog'
 
     Type: |String|
     Default: 'grep'
@@ -68,32 +91,96 @@ CONTENTS                                             *projectile.nvim-contents*
     the first of these search programs found.
 
                                                          *g:projectile#loaded*
-|g:projectile#loaded|
+'g:projectile#loaded'
 
     Type: |Number|
     Default: *1*
 
     Used to check if Projectile is installed & loaded.
 
+==============================================================================
+                                                              *projectile-icons*
+1.2 Icons~
+------------------------------------------------------------------------------
+
+  - 'behind'
+    - Unpulled changes
+    - '⇣' - \u21e3 - Downwards Dashed Arrow
+  - 'ahead'
+    - Unpushed changes
+    - '⇡' - \u21e1 - Upwards Dashed Arrow
+  - 'err'
+    - Incorrect path
+    - '✗' - \u2717 - Ballot x
+  - 'vcs'
+    - Indicates Repository
+    - '⛕' - \u26d5 - Alternate One-way Left Way Traffic
+  - ' ' (none)
+    - No Changes
+    - '✔' - \u2714 - Heavy Check Mark
+  - 'M'
+    - Modified
+    - '!' - \u0021 - Exclamation Mark
+  - 'A'
+    - Added
+    - '+' - \u002B - Plus Sign
+  - 'D'
+    - Deleted
+    - '✘' - \u2718 - Heavy Ballot x
+  - 'R'
+    - Renamed
+    - '»' - \u00bb - Right-pointing Double Angle Quotation Mark
+  - 'C'
+    - Copied
+    - '«' - \u00ba - Left-Double Angle Quotation Mark
+  - 'U'
+    - Unmerged
+    - '‽' - \u203d - Interrobang
+  - '??'
+    - Untracked
+    - '?' - \u003f - Question Mark
 
 ==============================================================================
-Commands
-*projectile.nvim-commands*
+1.3 Highlighting~
+------------------------------------------------------------------------------
+- 'deniteSource_Projectile_Project'   (|Normal|)
+- 'deniteSource_Projectile_Noise'     (|Comment|)
+- 'deniteSource_Projectile_Name'      (|Identifier|)
+- 'deniteSource_Projectile_Path'      (|Directory|)
+- 'deniteSource_Projectile_Timestamp' (|Number|)
+- 'deniteSource_Projectile_Err'       (|Error|)
+- 'deniteSource_Projectile_Stats'     (|Error|)
+- 'deniteSource_Projectile_Branch'    (|Keyword|)
+- 'deniteSource_Todo':         'Normal'
+- 'deniteSource_Todo_Noise':   'Comment'
+- 'deniteSource_Todo_Path':    'Directory'
+- 'deniteSource_Todo_Pos':     'Number'
+- 'deniteSource_Todo_Word':    'Type'
+- 'deniteSource_Todo_String':  'String'
 
+
+==============================================================================
+                                                           *projectile-commands*
+2. Commands~
+------------------------------------------------------------------------------
 `:ProjectileInit`
 
     Used to create the files for saving bookmarks & projects.
     NOTE: This will overwrite any existing projectile projects and bookmarks.
 
-==============================================================================
-                                                       *projectile.nvim-usage*
-4. Usage~
-
 
 ==============================================================================
-                                                   *projectile.nvim-changelog*
+                                                              *projectile-usage*
+3. Usage~
+------------------------------------------------------------------------------
+==============================================================================
+                                                     *projectile-denite-sources*
+4. Denite Sources~
+------------------------------------------------------------------------------
+==============================================================================
+                                                          *projectile-changelog*
 5. Changelog~
-
+------------------------------------------------------------------------------
 0.0.1    2017-12-27
 
     - Refactored syntax highlighting for all |denite| sources
@@ -105,6 +192,8 @@ Commands
 0.0.2    2017-12-29
 
     - Added initial git info feature for projects.
+    - Added initial implementation of denite todo.txt source
+    - Updated documentation
 
 
 ==============================================================================

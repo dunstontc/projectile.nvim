@@ -43,10 +43,10 @@ if !exists('g:projectile#enable_highlighting')
 endif
 
 
-if !exists('g:projectile#enable_highlights')
+if !exists('g:projectile#enable_formatting')
 ""
 " @setting(g:projectile#enable_formatting)
-" Controls the use of highlighting for Projectile's Denite sources.
+" Controls the use of formatting for Projectile's Denite sources.
   let g:projectile#enable_formatting = 1
 endif
 
