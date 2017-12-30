@@ -1,0 +1,229 @@
+*projectile.txt* 	          Various utilities to help keep track of projects
+
+Version:    0.0.3
+License:    MIT License
+Author:     Clay Dunston <dunstontc@gmail.com>
+Website:    https://github.com/dunstontc/projectile.nvim
+
+
+    ___       ___       ___       ___       ___       ___       ___     ~
+   /\  \     /\  \     /\  \     /\  \     /\  \     /\  \     /\  \    ~
+  /::\  \   /::\  \   /::\  \   _\:\  \   /::\  \   /::\  \    \:\  \   ~
+ /::\:\__\ /::\:\__\ /:/\:\__\ /\/::\__\ /::\:\__\ /:/\:\__\   /::\__\  ~
+ \/\::/  / \;:::/  / \:\/:/  / \::/\/__/ \:\:\/  / \:\ \/__/  /:/\/__/ ~
+    \/__/   |:\/__/   \::/  /   \/__/     \:\/  /   \:\__\    \/__/    ~
+             \|__|     \/__/               \/__/     \/__/             ~
+    ___       ___       ___                                            ~
+   /\  \     /\__\     /\  \                                           ~
+  _\:\  \   /:/  /    /::\  \                                          ~
+ /\/::\__\ /:/__/    /::\:\__\                                         ~
+ \::/\/__/ \:\  \    \:\:\/  /                                         ~
+  \:\__\    \:\__\    \:\/  /                                          ~
+   \/__/     \/__/     \/__/.nvim                                      ~
+
+
+
+==============================================================================
+CONTENTS                                                 *projectile-contents*
+
+
+    1. Settings.....................................|projectile-settings|
+        1.1 Global Variables........................|projectile-variables|
+        1.2 Icons...................................|projectile-variables|
+        1.3 Highlighting............................|projectile-variables|
+    2. Commands.....................................|projectile-commands|
+    3. Usage........................................|projectile-usage|
+    4. Denite Sources...............................|projectile-denite-sources|
+    5. Changelog....................................|projectile-changelog|
+
+
+
+==============================================================================
+1. Settings                                              *projectile-settings*
+
+==============================================================================
+1.1 Global Variables                                    *projectile-variables*
+
+                                                       *g:projectile#data_dir*
+    Type: |String|
+    Default: >
+    let g:projectile#data_dir = expand($XDG_CACHE_HOME).'~/.cache/projectile'
+<
+        The directory used to store files containing
+        saved projects & bookmarks.
+
+
+                                              *g:projectile#directory_command*
+    Type: |String|
+    Default: >
+    let g:projectile#directory_command = 'cd '
+<
+        Command for opening projects.
+        Will be passed the absolute path to a project's root directory.
+
+
+                                                     *g:projectile#todo_terms*
+    Type: |List|
+    Default: >
+    let g:projectile#todo_terms =  [
+      \ 'BUG',
+      \ 'COMBAK',
+      \ 'FIXME',
+      \ 'HACK',
+      \ 'NOTE',
+      \ 'OPTIMIZE',
+      \ 'TODO',
+      \ 'XXX'
+    \ ]
+<
+        An array of terms to search for with the `:Denite todo` command.
+
+
+                                                *g:projectile#enable_devicons*
+    Type: |Number|
+    Default: >
+    let g:projectile#enable_highlighting = 0
+<
+        Controls the use of icons in source results.
+        Set to *0* to disable icons entirely.
+        Set to *1* to use |devicons|. (requires a *Nerd-Font* )
+        Set to *2* to use unicode icons. (Works with most fonts)
+
+
+                                            *g:projectile#enable_highlighting*
+    Type: |Number|
+    Default: >
+    let g:projectile#enable_highlighting = 1
+<
+        Controls the use of highlighting for Projectile's Denite sources.
+
+
+                                              *g:projectile#enable_formatting*
+    Type: |Number|
+    Default: >
+    let g:projectile#enable_formatting = 1
+<
+        Controls the use of formatting for Projectile's Denite sources.
+
+
+                                                    *g:projectile#search_prog*
+    Type: |String|
+    Current Options: 'ag', 'pt', 'rg', 'ack', 'grep'
+    Default: >
+    let g:projectile#search_prog = 'grep'
+<
+        The command used to search for TODOs.
+        Checks for executables in the listed order and defaults to
+        the first of these search programs found.
+
+                                                         *g:projectile#loaded*
+    Type: |Number|
+    Default: >
+    let g:projectile#enabled = 1
+<
+        Used to check/verify if Projectile is installed & loaded.
+
+
+==============================================================================
+1.2 Icons                                                   *projectile-icons*
+
+    If enabled, Projectile will use the following default icons:
+
+VARIABLE	MEANING					DEFAULT~
+------------------------------------------------------------------------------
+`behind`	Unpulled Changes		⇣   *\u21e3*  Downwards Dashed Arrow
+`ahead`		Unpushed Changes		⇡   *\u21e1*  Upwards Dashed Arrow
+`err`		Incorrect Path			✗   *\u2717*  Ballot x
+`vcs`		Indicates Repository	⛕   *\u26d5*  Alt One-way Left Way Traffic
+`''`		No Changes				✔   *\u2714*  Heavy Check Mark
+`M`			Modified				!   *\u0021*  Exclamation Mark
+`A`			Added					+   *\u002B*  Plus Sign
+`D`			Deleted					✘   *\u2718*  Heavy Ballot x
+`R`			Renamed					»   *\u00bb*  Right Dbl Angle Quotation Mark
+`C`			Copied					«   *\u00ba*  Left Dbl Angle Quotation Mark
+`U`			Unmerged				‽   *\u203d*  Interrobang
+`??`		Untracked				?   *\u003f*  Question Mark
+
+
+==============================================================================
+1.3 Highlighting                                     *projectile-highlighting*
+
+    If enabled, Projectile will define the following highlight groups:
+
+GROUP                             DEFAULT~
+------------------------------------------------------------------------------
+*deniteSource_Projectile_Project*   |Normal|
+*deniteSource_Projectile_Noise*     |Comment|
+*deniteSource_Projectile_Name*      |Identifier|
+*deniteSource_Projectile_Path*      |Directory|
+*deniteSource_Projectile_Timestamp* |Number|
+*deniteSource_Projectile_Err*       |Error|
+*deniteSource_Projectile_Stats*     |Error|
+*deniteSource_Projectile_Branch*    |Keyword|
+*deniteSource_Todo*                 |Normal|
+*deniteSource_Todo_Noise*           |Comment|
+*deniteSource_Todo_Path*            |Directory|
+*deniteSource_Todo_Pos*             |Number|
+*deniteSource_Todo_Word*            |Type|
+*deniteSource_Todo_String*          |String|
+
+
+
+==============================================================================
+2. Commands                                              *projectile-commands*
+
+
+`:ProjectileInit`
+    Used to create the files for saving bookmarks & projects.
+    NOTE: This will overwrite any existing projectile projects and bookmarks.
+
+
+
+==============================================================================
+3. Usage                                                    *projectile-usage*
+
+
+
+==============================================================================
+4. Denite Sources                                  *projectile-denite-sources*
+
+------------------------------------------------------------------------------
+    4.1 `:Denite projectile`                               *denite-projectile*
+
+------------------------------------------------------------------------------
+    4.2 `:Denite bookmarks`                                 *denite-bookmarks*
+
+------------------------------------------------------------------------------
+    4.3 `:Denite todo`                                           *denite-todo*
+
+------------------------------------------------------------------------------
+    4.4 `:Denite todotxt`                                     *denite-todotxt*
+
+------------------------------------------------------------------------------
+    4.5 `:Denite sauce`                                         *denite-sauce*
+
+
+==============================================================================
+5. Changelog                                            *projectile-changelog*
+
+------------------------------------------------------------------------------
+0.0.1    2017-12-27
+
+    - Refactored syntax highlighting for all |denite| sources
+    - Extracted candidate formatting and conversion to a dedicated function
+    - Added filetype detection for todo.txt files
+    - Updated documentation
+    - Added changelog
+
+0.0.2    2017-12-29
+
+    - Added initial git info feature for projects
+    - Added initial implementation of denite todo.txt source
+    - Updated documentation
+
+0.0.3    2017-12-30
+
+    - Added |denite| source `sauce`
+
+==============================================================================
+vim:tw=78:ts=4:ft=help:norl:
