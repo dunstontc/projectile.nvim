@@ -37,7 +37,8 @@
 ### Configuration ###
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
 ```viml
-let g:projectile#data_dir = $HOME.'.cache/.projectile'
+let g:projectile#data_dir = $HOME.'/.cache/.projectile'
+
 
 let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
 
@@ -53,9 +54,8 @@ let g:projectile#enable_devicons = 0
 
 
 ## Denite Sources ##
-```viml
-:Denite projectile
-```
+- Name: `projectile`
+- Actions:
   - *add*
   - *remove*
   - *open (default)*
@@ -63,17 +63,17 @@ let g:projectile#enable_devicons = 0
     - Passes the project path to a command defined by `g:projectile#directory_command`.
   - Extends `Directory`, so it supports all `Directory` kind actions. *(cd, narrow, .., ...)* 
 
-```viml
-:Denite bookmark
-```
+
+- Name: `bookmark`
+- Actions:
   - *add*
   - *remove*
   - *open (default)*
   - Extends `File`, so it supports all `File` kind actions. *(jump, open, split, etc.)*
 
-```viml
-:Denite todo
-```
+
+- Name: `todo`
+- Actions: 
   - *open (default)*
   - Like `Bookmark`, it supports all `File` kind actions. *(jump, open, split, etc.)*
 
