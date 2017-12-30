@@ -45,6 +45,22 @@ if !exists('g:projectile#enable_devicons')
 let g:projectile#enable_devicons = 0
 endif
 
+""
+" @setting(g:projectile#enable_formatting)
+if !exists('g:projectile#enable_formatting')
+  let g:projectile#enable_formatting = 0
+endif
+""
+" @setting(g:projectile#enable_highlighting)
+if !exists('g:projectile#enable_highlighting')
+  let g:projectile#enable_highlighting = 1
+endif
+""
+"   Controls the use of icons in source results.
+"   Set to *0* to disable icons entirely.
+"   Set to *1* to use devicons. (requires nerdfonts)
+"   Set to *2* to use unicode icons. (Works with most fonts)
+endif
 
 if !exists('g:projectile#search_prog')
 ""
