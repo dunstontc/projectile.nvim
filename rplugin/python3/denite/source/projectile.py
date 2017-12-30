@@ -39,42 +39,48 @@ class Source(Base):
         context['data_file'] = expand(self.vars['data_dir'] + '/projects.json')
         if self.vars['icon_setting'] == 0:
             self.vars['icons'] = {
-                'err': 'X ',
-                'vcs': ' ',
-                ' ':   '',
-                'M':   'M',
-                'A':   'A',
-                'D':   'D',
-                'R':   'R',
-                'C':   'C',
-                'U':   'U',
-                '??':  '??',
+                'behind': 'Ah',
+                'ahead':  'Bh',
+                'err':    'X ',
+                'vcs':    ' ',
+                ' ':      '',
+                'M':      'M',
+                'A':      'A',
+                'D':      'D',
+                'R':      'R',
+                'C':      'C',
+                'U':      'U',
+                '??':     '??',
             }
         elif self.vars['icon_setting'] == 2:
             self.vars['icons'] = {
-                'err': '✗ ',
-                'vcs': ' ',  # \ue0a0 -- Powerline branch symbol
-                ' ':   '✔',
-                'M':   '!',
-                'A':   '+',
-                'D':   '✘',
-                'R':   '»',
-                'C':   '»',
-                'U':   '⇡',
-                '??':  '?',
+                'behind': '⇣',
+                'ahead':  '⇡',
+                'err':    '✗ ',
+                'vcs':    ' ',  # \ue0a0 -- Powerline branch symbol
+                ' ':      '✔',
+                'M':      '!',
+                'A':      '+',
+                'D':      '✘',
+                'R':      '»',
+                'C':      '»',
+                'U':      '⇡',
+                '??':     '?',
             }
         else:
             self.vars['icons'] = {
-                'err': '✗ ',
-                'vcs': '⛕ ',
-                ' ':   '✔',
-                'M':   '!',
-                'A':   '+',
-                'D':   '✘',
-                'R':   '»',
-                'C':   '»',
-                'U':   '⇡',
-                '??':  '?',
+                'behind': '⇣',   # \u21e3 - Downwards Dashed Arrow
+                'ahead':  '⇡',   # \u21e1 - Upwards Dashed Arrow
+                'err':    '✗ ',  # \u2717 - Ballot x
+                'vcs':    '⛕ ',  # \u26d5 - Alternate One-way Left Way Traffic
+                ' ':      '✔',   # \u2714 - Heavy Check Mark
+                'M':      '!',
+                'A':      '+',
+                'D':      '✘',   # \u2718 - Heavy Ballot x
+                'R':      '»',   # \u00bb - Right-pointing Double Angle Quotation Mark
+                'C':      '»',   # \u00bb
+                'U':      '⇡',   # \u21e1
+                '??':     '?',
             }
 
     def gather_candidates(self, context):
@@ -85,6 +91,7 @@ class Source(Base):
                 config = json.loads(fp.read())
 
                 for obj in config:
+                    self._get_pos(obj['root'])
                     candidates.append({
                         'word':         obj['root'],
                         'action__path': obj['root'],
@@ -104,21 +111,18 @@ class Source(Base):
 
     def _convert(self, candidates):
         """Format and add metadata to gathered candidates.
-
         Parameters
         ----------
         candidates : list
-
         Returns
         -------
         candidates : list
             A sexy source. Adds error mark if a source's path is inaccessible.
-
         """
         name_len   = self._get_length(candidates, 'name')
         path_len   = self._get_length(candidates, 'short_root')
         branch_len = self._get_length(candidates, 'git_branch')
-        stats_len  = self._get_length(candidates, 'git_stats')
+        stat_len   = self._get_length(candidates, 'git_stats')
 
         for candidate in candidates:
 
@@ -132,14 +136,14 @@ class Source(Base):
             else:
                 err_mark = '  '
 
-            candidate['abbr'] = "{0:>{branch_len}} {1:^{stats_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
+            candidate['abbr'] = "{0:<{branch_len}} {1:<{stat_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
                 candidate['git_branch'],
                 candidate['git_stats'],
                 candidate['name'],
                 candidate['short_root'],
                 candidate['timestamp'],
                 name_len=name_len,
-                stats_len=stats_len,
+                stat_len=stat_len,
                 branch_len=branch_len,
                 err_mark=err_mark,
                 path_len=(path_len),
@@ -158,18 +162,15 @@ class Source(Base):
 
     def _get_branch(self, project_root):
         """Return the current branch of a git repository.
-
         Parameters
         ----------
         project_root : string
             Path to the root folder of a git repository.
             TODO: expand the root by default.
-
         Returns
         -------
         string
             Git branch
-
         """
         try:
             q = run(f"git -C {project_root} branch",
@@ -180,44 +181,58 @@ class Source(Base):
             return 'Error running "git branch"'
 
         branch_res = q.stdout.decode('utf-8')
-        branches   = re.search(r'(?:\*?\s?)(?P<brunch>\S+)', branch_res)
+        branches   = re.search(r'(?:^\*\s)(?P<brunch>\S+)(.*$)', branch_res, re.M)
         branch     = ''
         if branches and branches.group('brunch') != 'fatal:':
             branch = self._maybe(branches.group('brunch'))
 
         return branch
 
-    def _get_stats(self, project_root):
+    def _get_pos(self, project_root):
         """Return an abbreviated git status summary.
-
         Parameters
         ----------
         project_root : string
             Path to the root folder of a git repository.
+        """
+        # pos_pat = re.compile(r'^\*\s(?P<branch>\S+).+(?<=\[)(?P<pos>.*)(?:].+)', re.M)
+        # pos_pat = re.compile(r'(?:^\*\s)(?P<branch>\S+)(?:\s+\w+\s)(?=\[)(?P<position>.*)(?<=])', re.M)
+        pos_pat = re.compile(r'\*.+(?<=\[)(\w*)', re.M)
 
+        try:
+            q = run(f"git -C {project_root} branch -v",
+                    stdout=PIPE,
+                    stderr=STDOUT,
+                    shell=True)
+        except CalledProcessError:
+            return 'Error running "git branch -v"'
+
+        stat_res = q.stdout.decode('utf-8').split('\n')
+        for x in stat_res:
+                matches = pos_pat.search(x)
+                if matches:
+                    pos = self._maybe(matches.group(1))
+                    if pos == 'ahead':
+                        return self.vars['icons']['ahead']
+                    elif pos == 'behind':
+                        return self.vars['icons']['behind']
+                    else:
+                        return ''
+                else:
+                    return ''
+
+    def _get_stats(self, project_root):
+        """Return an abbreviated git status summary.
+        Parameters
+        ----------
+        project_root : string
+            Path to the root folder of a git repository.
         Returns
         -------
         string
-            Git status information [<info>]``
-
-        TODO
-        ----
-        - Ahead/Behind
-        - Diverged
-        - Stashed
-        - Unmerged
-
-        Notes
-        -----
-        - ' ' = unmodified
-        - M   = modified
-        - A   = added
-        - D   = deleted
-        - R   = renamed
-        - C   = copied
-        - U   = updated but unmerged
-
+            Git status information.
         """
+        position = self._get_pos(project_root)
         try:
             p = run(f"git -C {project_root} status --porcelain",
                     stdout=PIPE,
@@ -226,45 +241,40 @@ class Source(Base):
         except CalledProcessError:
             return 'Error running "git status"'
 
-        status_res    = p.stdout.decode('utf-8').split('\n')
-        status_res[:] = [line.rstrip('\n') for line in status_res]
+        stat_res    = p.stdout.decode('utf-8').split('\n')
+        stat_res[:] = [line.rstrip('\n') for line in stat_res]
         statuses      = ['??', 'M', 'A', 'D', 'R', 'C', 'U']
         messages      = []
-        for line in status_res:
+        for line in stat_res:
             matches = re.search(r'(?:^\s?)(?P<info>\S+)(?:\s)', line)
             if matches and matches.group('info') != 'fatal:' and matches.group('info') != '##':
                 for x in statuses:
                     if matches.group('info') == x and self.vars['icons'][x] not in messages:
                         messages.append(self.vars['icons'][x])
 
-        if not len(messages):
+        if not len(messages) and not len(position):
             return f'{"".join(messages)}'
         else:
-            return f'[{"".join(messages)}]'
+            return f'[{position}{"".join(messages)}]'
 
-    def _maybe(self, match):
+    def _maybe(self, please):
         """Something possibly might be something else.
-
-        Used to wrap re.search().group(x) results.
+        Used to wrap ``<compiled_regex>.search(...).group('x')`` results.
         Returns an empty string instead of raising an error.
-
         Parameters
         ----------
-        match : obj, str?
+        please : obj, str?
             Possible Regular Expression match group
-
         Returns
         -------
         value : str
             If the match is not None, returns *match*.
             If the match is None, returns ''.
-
         """
-        if match is not None:
-            name = match
+        if please is not None:
+            name = please
         else:
             name = ''
-
         return name
 
     def define_syntax(self):
@@ -288,7 +298,7 @@ SYNTAX_GROUPS = [
     {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
     {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
     {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
-    {'name': 'deniteSource_Projectile_Stats',     'link': 'WarningMsg'     },
+    {'name': 'deniteSource_Projectile_Stats',     'link': 'Error'     },
     {'name': 'deniteSource_Projectile_Branch',    'link': 'Keyword'   },
 ]
 
@@ -298,9 +308,10 @@ SYNTAX_PATTERNS = [
                                    r'contains=deniteSource_Projectile_Branch,deniteSource_Projectile_Stats'},
     {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
     {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    {'name': 'Branch',    'regex': r'/\v(\S+)(\s\[.*]\s)@=/              contained '
-                                   r'contains=deniteSource_Projectile_Stats'},
+    {'name': 'Branch',    'regex': r'/\v(^\s)@<=(\S+)/                   contained '
+                                   r'contains=deniteSource_Projectile_Stats'       },
     {'name': 'Stats',    'regex': r'/\v\[.+]/                            contained'},
     {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
     {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
 ]
+

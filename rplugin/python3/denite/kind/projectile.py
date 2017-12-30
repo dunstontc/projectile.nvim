@@ -7,7 +7,7 @@
 #  =============================================================================
 
 import json
-from datetime.datetime import now
+import datetime
 from os.path import basename, isdir, normpath
 
 from ..kind.directory import Kind as Directory
@@ -51,7 +51,7 @@ class Kind(Directory):
         new_data = {
             'name':        project_name,
             'root':        project_root,
-            'timestamp':   str(now().isoformat()),
+            'timestamp':   str(datetime.datetime.now().isoformat()),
             'description': '',
             'vcs':         isdir(f"{root_dir}/.git")  # TODO: Also check for .hg/ and .svn
         }
@@ -95,5 +95,8 @@ class Kind(Directory):
             return
         destination = expand(target['action__path'])
         self.vim.call('execute', f'{user_cmd} {destination}')
+
+
+
 
 
