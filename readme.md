@@ -23,41 +23,30 @@
     - List todos in the current project folder & jump to them
     - List todos from a global or project todo.txt file **(WIP)**
     - Append todos to the quickfix or location list **(WIP)**
-    - Syntax highlighting & filetype detection for `todo.txt` files.
-  - Some handy additional sources for Denite including:
-    - A source for Denite sources.
+    - Syntax highlighting & filetype detection for `todo.txt` files
+  - Sweet sweet Denite sources:
+    - `projectile` - A source for projectile projects.
+    - `bookmark` - A source for projectile bookmarks.
+    - `todo` - A source for finding TODOs, FIXMEs, ANYTHINGs.
+    - `sauce` - A source for Denite sources.
 
 
-## Usage ##
-
-### Requirements ###
+## Requirements ##
   - [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
   - Neovim (or Vim8) with Python3 support
 
 
-### Installation ###
+## Installation ##
+  - Install with your favorite plugin manager or management method.
   - Run `:ProjectileInit` to create a directory at `g:projectile#data_dir` containing `bookmarks.json` & `projects.json`
   - **NOTE:** Running this function more than once will reset your list of bookmarks & projects saved with projectile.
 
 
-### Configuration ###
+## Configuration ##
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
     If you'd like it elsewhere, define that path using `g:projectile#data_dir` before
     running `:ProjectileInit`
   - See the documentation for more configuration options.
-
-
-## Denite Sources ##
-  - See the documentation for a more complete description of the sources.
-
-#### projectile ####
-
-#### bookmark  ####
-
-#### todo ####
-
-#### sauce ####
-
 
 
 ## Credit & Thanks ##
@@ -71,12 +60,15 @@
 
 ## Related Projects ##
   - [projectile](https://github.com/bbatsov/projectile)
+    - Projectile is a project interaction library for Emacs.
   - [vim-rooter](https://github.com/airblade/vim-rooter)
+    - Rooter changes the working directory to the project root when you open a file or directory.
   - [vim-projectionist](https://github.com/tpope/vim-projectionist)
   - [vim-bookmarks](https://github.com/MattesGroeger/vim-bookmarks)
+    - This vim plugin allows toggling bookmarks per line.
   - [TaskList.vim](https://github.com/vim-scripts/TaskList.vim)
   - [searchtasks.vim](https://github.com/gilsondev/searchtasks.vim)
-  - [todolist.vim](vim-scripts/todolist.vim)
+  - [todolist.vim](https://github.com/vim-scripts/todolist.vim)
   - [vim-todo](https://github.com/codegram/vim-todo)
   - [gather-todo.txt-vim](https://github.com/lgalke/gather-todo.txt-vim)
 
