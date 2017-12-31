@@ -23,6 +23,9 @@
     - List todos in the current project folder & jump to them
     - List todos from a global or project todo.txt file **(WIP)**
     - Append todos to the quickfix or location list **(WIP)**
+    - Syntax highlighting & filetype detection for `todo.txt` files.
+  - Some handy additional sources for Denite including:
+    - A source for Denite sources.
 
 
 ## Usage ##

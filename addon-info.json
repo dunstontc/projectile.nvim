@@ -1,6 +1,0 @@
-{
-  "name": "projectile.nvim",
-  "description": "Various utilities to help keep track of projects.",
-  "author": "Clay Dunston <dunstontc@gmail.com>",
-  "repository": {"type": "git", "url": "git://github.com/dunstontc/projectile.nvim"}
-}
