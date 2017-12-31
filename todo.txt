@@ -1,3 +1,23 @@
+(A) 2017-12-18 Make sure the correct (absolute) file path is jumped to when opening a @todo. id:16
+(A) 2017-12-28 Handle @todo.txt source timeout. id:29
+(B) 2017-12-06 Parse todo.txt files. id:7
+(B) 2017-12-31 Make a dedicated action for passing a @project path to any command. id:31
+(B) 2017-12-18 Append todos to qflist or loclist id:2
+(B) 2017-12-23 Better handle actions when sources are empty. id:25
+(B) 2017-12-21 Properly handle changed file paths for @bookmarks & @projects id:24
+(B) 2017-12-25 Efficiently update cached candidates for variable/status changes. id:28
+(B) 2017-12-12 Find a more consistent way of identifying the active buffer. id:11
+(B) 2017-12-21 Make gifs for @readme.md id:22
+(C) 2017-12-06 Document default_action for opening projects @denite#custom#action (check for nerdtree/vimfiler) id:9
+(C) 2017-12-28 Modify highlighting function to take keywords. id:30
+(C) 2017-12-06 Automatically add version controlled projects. (Make optional) id:3
+(C) 2017-12-25 Add option to automatically remove bookmarks if the file is deleted. id:27
+(D) 2017-12-15 Define @Vim variables for number of @todos in current dir & active file @statusline @extensible id:13
+(D) 2017-12-07 Integrate with @Startify id:10
+(E) 2017-12-21 Generate @projections.json files for projects. id:23
+(E) 2017-12-06 Provide a FZF source for projects. @Optional id:5
+
+
 x 2017-12-06 Add projects to projectile/projects.json automatically id:2 (Duplicate)
 x 2017-12-06 2017-12-06 List projects id:1
 x 2017-12-06 Provide a @Denite source for projects id:4
@@ -12,23 +32,3 @@ x 2017-12-27 (A) 2017-12-14 Find a better way to handle errors for regex non mat
 x 2017-12-27 (B) 2017-12-23 Clean up `gather_candidates` in @todos.py . id:26
 x 2017-12-27 (C) 2017-12-16 Write a reusable highlighting function id:14
 x 2017-12-29 (C) 2017-12-20 Get git status for projects. id:20
-x 2017-12-29 (C) 2017-12-29 Show unpushed changes in project status. id:31
-
-(A) 2017-12-18 Make sure the correct (absolute) file path is jumped to when opening a @todo. id:16
-(A) 2017-12-28 Handle @todo.txt source timeout. id:29
-(B) 2017-12-06 Parse todo.txt files. id:7
-(B) 2017-12-18 Append todos to qflist or loclist id:2
-(B) 2017-12-23 Better handle actions when sources are empty. id:25
-(B) 2017-12-21 Properly handle changed file paths for @bookmarks & @projects id:24
-(B) 2017-12-25 Efficiently update cached candidates for variable/status changes. id:28
-(B) 2017-12-12 Find a more consistent way of identifying the active buffer. id:11
-(B) 2017-12-21 Make gifs for @readme.md id:22
-(C) 2017-12-06 @Document default_action for opening projects @denite#custom#action (check for nerdtree/vimfiler) id:9
-(C) 2017-12-28 Modify highlighting function to take keywords. id:30
-(C) 2017-12-06 Automatically add version controlled projects. (Make optional) id:3
-(C) 2017-12-25 Add option to automatically remove bookmarks if the file is deleted. id:27
-(C) 2017-12-29 Show stashed changes in project status. id:32
-(D) 2017-12-15 Define @Vim variables for number of @todos in current dir & active file @statusline @extensible id:13
-(D) 2017-12-07 Integrate with @Startify id:10
-(E) 2017-12-21 Generate @projections.json files for projects. id:23
-(E) 2017-12-06 Provide a FZF source for projects. @Optional id:5
