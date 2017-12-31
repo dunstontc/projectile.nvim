@@ -23,17 +23,18 @@ class Source(Base):
 
     def on_init(self, context):
         """I will travel across the land, searching far and wide."""
-        context['__sauces'] = self.vim.call('projectile#GetCommandCompletion', 'Denite ')
+        context['__sauces'] = self.vim.call('projectile#CommandCompletion', 'Denite ')
 
     def gather_candidates(self, context):
         """Each Denite source, to understand, the power that's insiiide."""
         candidates = []
 
         for sauce in context['__sauces']:
-            candidates.append({
-                'word': sauce,
-                'action__command': 'Denite ' + sauce,
-            })
+            if sauce != 'Denite':
+                candidates.append({
+                    'word': sauce,
+                    'action__command': 'Denite ' + sauce,
+                })
 
         return candidates
 

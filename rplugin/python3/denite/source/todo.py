@@ -62,12 +62,6 @@ class Source(Base):
                 context['search_dir']
             )
 
-    # def on_close(self, context):
-    #     """Clean up our async process when finished."""
-    #     if context['__proc']:
-    #         context['__proc'].kill()
-    #         context['__proc'] = None
-
     def gather_candidates(self, context):
         """Parse segments out of our search results."""
         cur_dir_len = len(self.vim.call('getcwd'))
