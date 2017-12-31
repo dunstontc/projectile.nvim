@@ -14,7 +14,8 @@
 
   - Projects
     - Keep a list of project locations with metadata
-    - Check version control status of Projects
+    - Easily access the root directory of a project with a customizable action.
+    - Check version control status for all added projects
     - List todos in a project directory
   - Bookmarks
     - Keep a list of bookmarked locations
@@ -22,6 +23,9 @@
     - List todos in the current project folder & jump to them
     - List todos from a global or project todo.txt file **(WIP)**
     - Append todos to the quickfix or location list **(WIP)**
+    - Syntax highlighting & filetype detection for `todo.txt` files.
+  - Some handy additional sources for Denite including:
+    - A source for Denite sources.
 
 
 ## Usage ##
@@ -30,52 +34,30 @@
   - [Shougo/denite.nvim](https://github.com/Shougo/denite.nvim)
   - Neovim (or Vim8) with Python3 support
 
+
 ### Installation ###
   - Run `:ProjectileInit` to create a directory at `g:projectile#data_dir` containing `bookmarks.json` & `projects.json`
   - **NOTE:** Running this function more than once will reset your list of bookmarks & projects saved with projectile.
 
+
 ### Configuration ###
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
-```viml
-let g:projectile#data_dir = $HOME.'/.cache/.projectile'
-
-
-let g:todo_plugin#todo_terms = ['TODO', 'FIXME', 'XXX']
-
-" Defaults to 'cd'
-let g:projectile#directory_command = 'VimFiler -explorer '
-
-" Options: grep, ag, pt, rg, or ack. (Defaults to the first of these found.)
-let g:projectile#search_prog = 'grep'
-
-" Options:  0 - No icons,  1 - Use Devicons,  2 - Use Unicode icons (Defaults to 0)
-let g:projectile#enable_devicons = 0
-```
+    If you'd like it elsewhere, define that path using `g:projectile#data_dir` before
+    running `:ProjectileInit`
+  - See the documentation for more configuration options.
 
 
 ## Denite Sources ##
-- Name: `projectile`
-- Actions:
-  - *add*
-  - *remove*
-  - *open (default)*
-  - *directory_command*
-    - Passes the project path to a command defined by `g:projectile#directory_command`.
-  - Extends `Directory`, so it supports all `Directory` kind actions. *(cd, narrow, .., ...)* 
+  - See the documentation for a more complete description of the sources.
 
+#### projectile ####
 
-- Name: `bookmark`
-- Actions:
-  - *add*
-  - *remove*
-  - *open (default)*
-  - Extends `File`, so it supports all `File` kind actions. *(jump, open, split, etc.)*
+#### bookmark  ####
 
+#### todo ####
 
-- Name: `todo`
-- Actions: 
-  - *open (default)*
-  - Like `Bookmark`, it supports all `File` kind actions. *(jump, open, split, etc.)*
+#### sauce ####
+
 
 
 ## Credit & Thanks ##
