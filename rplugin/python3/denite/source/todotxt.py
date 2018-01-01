@@ -44,9 +44,7 @@ class Source(Base):
         boofer  = self.vim.current.buffer.name
         pj_root = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
         context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        for file in listdir(pj_root):
-            if fnmatch.fnmatch(file, '*todo.txt'):
-                print(file)
+
 
         # context['data_file'] = expand(self.vars['data_dir'] + '/todo.json')
         # if not exists(context['data_file']):
@@ -56,31 +54,21 @@ class Source(Base):
     def gather_candidates(self, context):
         """Gather candidates from todo.txt files."""
         candidates = []
-        # linenr = int(0)
-        boofer  = self.vim.current.buffer.name
-        pj_root = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        for file in listdir(pj_root):
-            if fnmatch.fnmatch(file, '*todo.txt'):
-                candidates.append({'word': expand(pj_root + '/' + file)})
+        linenr = int(0)
 
-        # with open(self.vars['TODO_FILE'], 'r') as f:
-        # with open('/Users/clay/todo.txt', 'r') as f:
-        #     # try:
-        #     todos = f.read().split('\n')
-        #     # except json.JSONDecodeError:
-        #     #     err_string = 'Decode error for' + self.vars['TODO_FILE']
-        #     #     error(self.vim, err_string)
-        #
-        #     for x in todos:
-        #         linenr += 1
-        #         candidates.append({
-        #             'word': x,
-        #             'action__line': str(linenr),
-        #             # 'action__path': obj['path'],
-        #             # 'action__line': obj['line'],
-        #             # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
-        #         })
+        with open(self.vars['TODO_FILE'], 'r') as f:
+            todos = f.read().split('\n')
+
+            for x in todos:
+                if len(x) > 1:
+                    linenr += 1
+                    candidates.append({
+                        'word': x,
+                        'action__line': str(linenr),
+                        # 'action__path': obj['path'],
+                        # 'action__line': obj['line'],
+                        # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
+                    })
 
         # return self._convert(candidates).append({})
         return candidates

@@ -3,8 +3,6 @@
 [![License](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
 [![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
 
-> Collection of utilities similar to those provided by [Projectile](https://github.com/bbatsov/projectile) utilizing [denite.nvim](https://github.com/Shougo/denite.nvim).
-
 <div align="center">
     <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" alt="mission-control"/>
 </div>
@@ -14,7 +12,7 @@
 
   - Projects
     - Keep a list of project locations with metadata
-    - Easily access the root directory of a project with a customizable action.
+    - Easily access the root directory of a project with a customizable action
     - Check version control status for all added projects
     - List todos in a project directory
   - Bookmarks
@@ -25,10 +23,10 @@
     - Append todos to the quickfix or location list **(WIP)**
     - Syntax highlighting & filetype detection for `todo.txt` files
   - Sweet sweet Denite sources:
-    - `projectile` - A source for projectile projects.
-    - `bookmark` - A source for projectile bookmarks.
-    - `todo` - A source for finding TODOs, FIXMEs, ANYTHINGs.
-    - `sauce` - A source for Denite sources.
+    - `projectile` - A source for projectile projects
+    - `bookmark` - A source for projectile bookmarks
+    - `todo` - A source for finding TODOs, FIXMEs, ANYTHINGs
+    - `sauce` - A source for Denite sources
 
 
 ## Requirements ##
@@ -46,7 +44,7 @@
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
     If you'd like it elsewhere, define that path using `g:projectile#data_dir` before
     running `:ProjectileInit`
-  - See the documentation for more configuration options.
+  - See the documentation for more detailed options.
 
 
 ## Credit & Thanks ##
@@ -64,10 +62,13 @@
   - [vim-rooter](https://github.com/airblade/vim-rooter)
     - Rooter changes the working directory to the project root when you open a file or directory.
   - [vim-projectionist](https://github.com/tpope/vim-projectionist)
+    - Projectionist provides granular project configuration using "projections".
   - [vim-bookmarks](https://github.com/MattesGroeger/vim-bookmarks)
     - This vim plugin allows toggling bookmarks per line.
   - [TaskList.vim](https://github.com/vim-scripts/TaskList.vim)
+    - Script based on the eclipse Task List.
   - [searchtasks.vim](https://github.com/gilsondev/searchtasks.vim)
+    - Plugin to search the labels often used as TODO, FIXME and XXX.
   - [todolist.vim](https://github.com/vim-scripts/todolist.vim)
   - [vim-todo](https://github.com/codegram/vim-todo)
   - [gather-todo.txt-vim](https://github.com/lgalke/gather-todo.txt-vim)
