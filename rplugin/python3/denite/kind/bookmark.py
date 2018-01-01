@@ -35,6 +35,7 @@ class Kind(File):
     """
 
     def __init__(self, vim):
+        """Initialize thyself."""
         super().__init__(vim)
         self.name             = 'bookmark'
         self.default_action   = 'open'
@@ -44,16 +45,18 @@ class Kind(File):
         self._previewed_buffers = {}
         self.vars = {
             'exclude_filetypes': ['denite'],
-            'date_format': '%d %b %Y %H:%M:%S',
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'has_devicons': vim.vars.get('loaded_devicons'),
+            'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'user_cmd':          vim.vars.get('projectile#directory_command'),
+            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
+            'format_setting':    vim.vars.get('projectile#enable_formatting'),
+            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
         }
 
     def action_add(self, context):
         """Add a bookmark to ``projectile#data_dir``/bookmarks.json"""
         data_file = util.expand(self.vars['data_dir'] + '/bookmarks.json')
-        boofer = self.vim.current.buffer.name
-        linenr = self.vim.current.window.cursor[0]
+        boofer    = self.vim.current.buffer.name
+        linenr    = self.vim.current.window.cursor[0]
 
         bookmark_path = util.input(self.vim, context, 'Bookmark Path: ', boofer)
         if not len(bookmark_path):
@@ -83,7 +86,7 @@ class Kind(File):
             json.dump(json_info, f, indent=2)
 
     def action_delete(self, context):
-        """Remove a bookmark from ``projectile#data_dir``/bookmarks.json"""
+        """Remove a bookmark from `projectile#data_dir`/bookmarks.json."""
         target       = context['targets'][0]
         target_date  = target['timestamp']
         data_file    = util.expand(self.vars['data_dir'] + '/bookmarks.json')

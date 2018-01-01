@@ -112,7 +112,6 @@ class Source(Base):
 
         """
         cur_dir_len = len(self.vim.call('getcwd'))
-
         path_len = self._get_length(candidates, 'short_path')
 
         for candidate in candidates:

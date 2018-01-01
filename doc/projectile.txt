@@ -117,9 +117,9 @@ NOTE: If you want the folder elsewhere, you need to set
 
         Type:	|Number|
 	Options:
-		Set to *0* to disable icons entirely.
-		Set to *1* to use |devicons|.	(requires a Nerd-Font)
-		Set to *2* to use unicode icons.  (works with most fonts)
+		Set to '0' to disable icons entirely.
+		Set to '1' to use |devicons|.	(requires a Nerd-Font)
+		Set to '2' to use unicode icons.  (works with most fonts)
 	Default:
 >
 	let g:projectile#enable_devicons = 2
@@ -131,8 +131,8 @@ NOTE: If you want the folder elsewhere, you need to set
 
         Type:	|Number|
 	Options:
-		Set to *0* to disable entirely.
-		Set to *1* to use highlighting.
+		Set to '0' to disable entirely.
+		Set to '1' to use highlighting.
 	Default:
 >
 	let g:projectile#enable_highlighting = 1
@@ -254,10 +254,10 @@ GROUP					DEFAULT~
 	Extends |denite-kind-directory|.
 
 	Source Actions:
-		*add*
-		*remove*
-		*open* (default)
-		*directory_command*
+		'add'
+		'remove'
+		'open' (default)
+		'directory_command'
 			- Passes the project path to a command
 			  defined with |projectile#directory_command|
 	Format: >
@@ -278,9 +278,9 @@ GROUP					DEFAULT~
 	Extends |denite-kind-file|.
 
 	Source Actions:
-		*add*
-		*remove*
-		*open* (default)
+		'add'
+		'remove'
+		'open' (default)
         Format: >
 		<icon> <name> -- <path> -- <timestamp>
 <
@@ -295,7 +295,7 @@ GROUP					DEFAULT~
 	Uses |denite-kind-file|.
 
 	Source Actions:
-		*open* (default)
+		'open' (default)
         Format: >
 		<relative_path> <icon> <line/col> -- TERM: <added_text>
 <
@@ -305,10 +305,10 @@ GROUP					DEFAULT~
 	Extends |denite-kind-command|.
 
 	Source Actions:
-		*add*
-		*complete*
-		*qf_list*
-		*loc_list*
+		'add'
+		'complete'
+		'qf_list'
+		'loc_list'
 
 ------------------------------------------------------------------------------
 `sauce`                                                    *denite-source-sauce*
@@ -320,9 +320,28 @@ GROUP					DEFAULT~
 	Uses |denite-kind-command|.
 
 	Source Actions:
-		*execute* (default)
+		'execute' (default)
 			- Executes `:Denite <candidate_name>`
 
+------------------------------------------------------------------------------
+                                                      *projectile-denite-tips*
+If you havn't already made the following mappings,
+I'd suggest adding them to you configuration.
+>
+ call denite#custom#map(
+       \ 'normal',
+       \ 'a',
+       \ '<denite:do_action:add>',
+       \ 'noremap'
+       \)
+
+ call denite#custom#map(
+      \ 'normal',
+      \ 'd',
+      \ '<denite:do_action:delete>',
+      \ 'noremap'
+      \)
+<
 
 
 ==============================================================================

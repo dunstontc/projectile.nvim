@@ -1,20 +1,16 @@
-"""Denite source for todo.txt files."""
+"""Denite source for *.todo.txt files."""
 #  =============================================================================
-#  FILE: todotxt.py
+#  FILE: todotxt_local.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-31
+#  Last Modified: 2018-01-01
 #  =============================================================================
 
-# import json
 import re
 import fnmatch
 from os import listdir
-# from os.path import exists, expanduser, isfile
-# from os.path import basename
 
 from .base import Base
-# from denite.util import error, expand
 from denite.util import expand, path2project
 
 
@@ -25,7 +21,7 @@ class Source(Base):
         """Initialize thyself."""
         super().__init__(vim)
 
-        self.name = 'todotxt'
+        self.name = 'todotxt_local'
         self.kind = 'word'
         self.syntax_name = 'deniteSource_Todo'
         self.vars = {
@@ -46,41 +42,26 @@ class Source(Base):
         context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
         for file in listdir(pj_root):
             if fnmatch.fnmatch(file, '*todo.txt'):
-                print(file)
-
-        # context['data_file'] = expand(self.vars['data_dir'] + '/todo.json')
-        # if not exists(context['data_file']):
-        #     error(self.vim, f'Error accessing {context["data_file"]}')
-        #     return
+                context['TODO_FILE'] = expand(pj_root + '/' + file)
 
     def gather_candidates(self, context):
         """Gather candidates from todo.txt files."""
         candidates = []
-        # linenr = int(0)
-        boofer  = self.vim.current.buffer.name
-        pj_root = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        for file in listdir(pj_root):
-            if fnmatch.fnmatch(file, '*todo.txt'):
-                candidates.append({'word': expand(pj_root + '/' + file)})
+        linenr = int(0)
 
-        # with open(self.vars['TODO_FILE'], 'r') as f:
-        # with open('/Users/clay/todo.txt', 'r') as f:
-        #     # try:
-        #     todos = f.read().split('\n')
-        #     # except json.JSONDecodeError:
-        #     #     err_string = 'Decode error for' + self.vars['TODO_FILE']
-        #     #     error(self.vim, err_string)
-        #
-        #     for x in todos:
-        #         linenr += 1
-        #         candidates.append({
-        #             'word': x,
-        #             'action__line': str(linenr),
-        #             # 'action__path': obj['path'],
-        #             # 'action__line': obj['line'],
-        #             # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
-        #         })
+        with open(context['TODO_FILE'], 'r') as f:
+            todos = f.read().split('\n')
+
+            for x in todos:
+                if len(x) > 1:
+                    # linenr += 1
+                    candidates.append({
+                        'word': x,
+                        'action__line': str(linenr),
+                        # 'action__path': obj['path'],
+                        # 'action__line': obj['line'],
+                        # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
+                    })
 
         # return self._convert(candidates).append({})
         return candidates
@@ -139,8 +120,8 @@ class Source(Base):
             #     icon = '  '
 
             # candidate['abbr'] = f" -- {priority} -- {date} -- {content}"
-            # candidate['abbr'] = f" {done}{done_date} {priority} -- {date} -- {content}"
-            candidate['abbr'] = candidate['word']
+            candidate['abbr'] = f" {done}{done_date} {priority} -- {date} -- {content}"
+            # candidate['abbr'] = candidate['word']
         return candidates
 
     def _maybe(self, match):
@@ -182,6 +163,8 @@ class Source(Base):
                          f'containedin={self.syntax_name} contains={",".join(items)}')
         for pattern in SYNTAX_PATTERNS:
             self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+            self.vim.command(r'syntax cluster TodoData  contains=deniteSource_Todo_Date,deniteSource_Todo_Project,deniteSource_Todo_Context,deniteSource_Todo_Extra,deniteSource_Todo_ID,deniteSource_Todo_String')
+            # self.vim.command(r'syntax cluster todoPriority   contains=todoPriorityA,todoPriorityB,todoPriorityC,todoPriorityD,todoPriorityE,todoPriorityF')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
@@ -208,7 +191,6 @@ SYNTAX_GROUPS = [
 ]
 
 SYNTAX_PATTERNS = [
-    {'name': 'Noise',     'regex': r'/\S*\%\(--\)\s/              contained'},
     {'name': 'Done',      'regex': r'/^\s[xX]\s.\+$/              contained'},
     {'name': 'ID',        'regex': r'/id\:\d\+/                   contained'},
     {'name': 'Context',   'regex': r'/\(^\|\W\)@[^[:blank:]]\+/   contained'},
@@ -216,10 +198,10 @@ SYNTAX_PATTERNS = [
     {'name': 'Date',      'regex': r'/\d\{4\}-\d\{2\}-\d\{2\}/    contained'},
     {'name': 'String',    'regex': r'/\s`\S\+`/                   contained'},
     {'name': 'Extra',     'regex': r'/\(due\|t\|rec\|link\)\:\S*/ contained'},
-    {'name': 'PriorityA', 'regex': r'/^\s([aA])\s.\+$/            contained'},
-    {'name': 'PriorityB', 'regex': r'/^\s([bB])\s.\+$/            contained'},
-    {'name': 'PriorityC', 'regex': r'/^\s([cC])\s.\+$/            contained'},
-    {'name': 'PriorityD', 'regex': r'/^\s([dD])\s.\+$/            contained'},
-    {'name': 'PriorityE', 'regex': r'/^\s([eE])\s.\+$/            contained'},
-    {'name': 'PriorityF', 'regex': r'/^\s([fF])\s.\+$/            contained'},
+    {'name': 'PriorityA', 'regex': r'/^\s([aA])\s.\+$/            contained contains=@TodoData '},
+    {'name': 'PriorityB', 'regex': r'/^\s([bB])\s.\+$/            contained contains=@TodoData '},
+    {'name': 'PriorityC', 'regex': r'/^\s([cC])\s.\+$/            contained contains=@TodoData '},
+    {'name': 'PriorityD', 'regex': r'/^\s([dD])\s.\+$/            contained contains=@TodoData '},
+    {'name': 'PriorityE', 'regex': r'/^\s([eE])\s.\+$/            contained contains=@TodoData '},
+    {'name': 'PriorityF', 'regex': r'/^\s([fF])\s.\+$/            contained contains=@TodoData '},
 ]

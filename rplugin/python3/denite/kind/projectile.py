@@ -36,7 +36,7 @@ class Kind(Directory):
         data_file = expand(self.vars['data_dir'] + '/projects.json')
         root_dir  = self.vim.call('getcwd')
         boofer    = self.vim.current.buffer.name
-        pj_root   = path2project(self.vim, boofer, '.git')
+        pj_root   = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
         pj_name   = basename(normpath(pj_root))
         new_data  = {}
 
