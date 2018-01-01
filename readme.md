@@ -26,6 +26,8 @@
     - `projectile` - A source for projectile projects
     - `bookmark` - A source for projectile bookmarks
     - `todo` - A source for finding TODOs, FIXMEs, ANYTHINGs
+    - `todotxt` - A source for your `$TODO_FILE`
+    - `todotxt_local` - A source for your todo.txt files
     - `sauce` - A source for Denite sources
 
 
