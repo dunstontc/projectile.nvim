@@ -38,15 +38,14 @@
 
 ## Installation ##
   - Install with your favorite plugin manager or management method.
-  - Run `:ProjectileInit` to create a directory at `g:projectile#data_dir` containing `bookmarks.json` & `projects.json`
-  - **NOTE:** Running this function more than once will reset your list of bookmarks & projects saved with projectile.
 
 
 ## Configuration ##
   - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
-    If you'd like it elsewhere, define that path using `g:projectile#data_dir` before
-    running `:ProjectileInit`
-  - See the documentation for more detailed options.
+  - If you'd like it elsewhere, you can set an alternate path in one of two ways:
+    - `g:projectile#data_dir = '<wherever>'`
+    - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
+  - Check out documentation for more detailed options.
 
 
 ## Credit & Thanks ##
@@ -71,7 +70,8 @@
     - Script based on the eclipse Task List.
   - [searchtasks.vim](https://github.com/gilsondev/searchtasks.vim)
     - Plugin to search the labels often used as TODO, FIXME and XXX.
+  - [gather-todo.txt-vim](https://github.com/lgalke/gather-todo.txt-vim)
+    - Gather contents of todo.txt files from a directory tree to display a kind of agenda view in a scratch buffer.
   - [todolist.vim](https://github.com/vim-scripts/todolist.vim)
   - [vim-todo](https://github.com/codegram/vim-todo)
-  - [gather-todo.txt-vim](https://github.com/lgalke/gather-todo.txt-vim)
 

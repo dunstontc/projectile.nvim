@@ -9,9 +9,10 @@
 import re
 import fnmatch
 from os import listdir
+from os.path import isfile
 
 from .base import Base
-from denite.util import expand, path2project
+from denite.util import error, expand, path2project
 
 
 class Source(Base):
@@ -38,30 +39,33 @@ class Source(Base):
     def on_init(self, context):
         """Check for local *todo.txt files."""
         boofer  = self.vim.current.buffer.name
-        pj_root = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
         context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        for file in listdir(pj_root):
+        for file in listdir(context['cur_pj_root']):
             if fnmatch.fnmatch(file, '*todo.txt'):
-                context['TODO_FILE'] = expand(pj_root + '/' + file)
+                context['TODO_FILE'] = expand(context['cur_pj_root'] + '/' + file)
+
 
     def gather_candidates(self, context):
         """Gather candidates from todo.txt files."""
         candidates = []
         linenr = int(0)
 
-        with open(context['TODO_FILE'], 'r') as f:
-            todos = f.read().split('\n')
+        try:
+            with open(context['TODO_FILE'], 'r') as f:
+                todos = f.read().split('\n')
+                for x in todos:
+                    if len(x) > 1:
+                        # linenr += 1
+                        candidates.append({
+                            'word': x,
+                            'action__line': str(linenr),
+                            # 'action__path': obj['path'],
+                            # 'action__line': obj['line'],
+                            # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
+                        })
+        except KeyError:
+            error(self.vim, f'Error accessing todo file in {context["cur_pj_root"]}')
 
-            for x in todos:
-                if len(x) > 1:
-                    # linenr += 1
-                    candidates.append({
-                        'word': x,
-                        'action__line': str(linenr),
-                        # 'action__path': obj['path'],
-                        # 'action__line': obj['line'],
-                        # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
-                    })
 
         # return self._convert(candidates).append({})
         return candidates

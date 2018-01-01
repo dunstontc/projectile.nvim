@@ -3,11 +3,15 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-29
+#  Last Modified: 2018-01-01
 #  =============================================================================
 
+
+import errno
+import datetime
+from os import makedirs
 from os.path import exists, expanduser, isfile
-import json
+from json import dump, load, JSONDecodeError
 
 from .base import Base
 from denite.util import error, expand
@@ -43,7 +47,6 @@ class Source(Base):
         self.syntax_name = 'deniteSource_Projectile'
         self.vars = {
             'exclude_filetypes': ['denite'],
-            'date_format':       '%d %b %Y %H:%M:%S',
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
             'format_setting':    vim.vars.get('projectile#enable_formatting'),
@@ -53,18 +56,32 @@ class Source(Base):
     def on_init(self, context):
         """Parse and accept user settings."""
         context['data_file'] = expand(self.vars['data_dir'] + '/bookmarks.json')
-        if not exists(context['data_file']):
-            error(self.vim, f'Error accessing {context["data_file"]}')
-            return
+
+        if not exists(context['data_file']):  # FIXME: Pull *.json creation into its own function
+            bookmark_template = [{
+                'name': 'MYVIMRC',
+                'path': self.vim.eval('$MYVIMRC'),
+                'line': 1, 'col': 1,
+                'timestamp': str(datetime.datetime.now().isoformat()),
+                'description': "" }]
+
+            if not exists(self.vars['data_dir']):
+                try:
+                    makedirs(self.vars['data_dir'])
+                except OSError as e:
+                    if e.errno != errno.EEXIST:
+                        raise
+            with open(context['data_file'], 'w+') as nf:
+                dump(bookmark_template, nf, indent=2)
 
     def gather_candidates(self, context):
-        """Gather candidates from ``projectile#data_dir``/projects.json."""
+        """Gather candidates from `projectile#data_dir`/bookmarks.json."""
         candidates = []
 
         with open(context['data_file'], 'r') as fp:
             try:
-                config = json.load(fp)
-            except json.JSONDecodeError:
+                config = load(fp)
+            except JSONDecodeError:
                 err_string = 'Decode error for' + context['data_file']
                 error(self.vim, err_string)
                 config = []
@@ -139,16 +156,16 @@ class Source(Base):
                 max_count = cur_len
         return max_count
 
-    def define_syntax(self):
-        """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f'containedin={self.syntax_name} contains={",".join(items)}')
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
-
-    def highlight(self):
-        """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+    # def define_syntax(self):
+    #     """Define Vim regular expressions for syntax highlighting."""
+    #     items = [x['name'] for x in SYNTAX_GROUPS]
+    #     self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+    #                      f'containedin={self.syntax_name} contains={",".join(items)}')
+    #     for pattern in SYNTAX_PATTERNS:
+    #         self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+    #
+    # def highlight(self):
+    #     """Link highlight groups to existing attributes."""
+    #     for match in SYNTAX_GROUPS:
+    #         self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 

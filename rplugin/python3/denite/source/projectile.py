@@ -3,12 +3,15 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-29
+#  Last Modified: 2018-01-01
 # ==============================================================================
 
-from os.path import expanduser, isdir
 import re
-import json
+import errno
+import datetime
+from os import makedirs
+from os.path import exists, expanduser, isdir
+from json import dump, load, JSONDecodeError
 from subprocess import run, PIPE, STDOUT, CalledProcessError
 
 from .base import Base
@@ -35,77 +38,51 @@ class Source(Base):
         }
 
     def on_init(self, context):
-        """Parse and accept user settings; gather file information from ``context``."""
+        """Parse and accept user settings; gather file information from `context`."""
         context['data_file'] = expand(self.vars['data_dir'] + '/projects.json')
-        if self.vars['icon_setting'] == 0:
-            self.vars['icons'] = {
-                'behind': 'Ah',
-                'ahead':  'Bh',
-                'err':    'X ',
-                'vcs':    ' ',
-                ' ':      '',
-                'M':      'M',
-                'A':      'A',
-                'D':      'D',
-                'R':      'R',
-                'C':      'C',
-                'U':      'U',
-                '??':     '??',
-            }
-        elif self.vars['icon_setting'] == 2:
-            self.vars['icons'] = {
-                'behind': '⇣',
-                'ahead':  '⇡',
-                'err':    '✗ ',
-                'vcs':    ' ',  # \ue0a0 -- Powerline branch symbol
-                ' ':      '✔',
-                'M':      '!',
-                'A':      '+',
-                'D':      '✘',
-                'R':      '»',
-                'C':      '»',
-                'U':      '⇡',
-                '??':     '?',
-            }
-        else:
-            self.vars['icons'] = {
-                'behind': '⇣',   # \u21e3 - Downwards Dashed Arrow
-                'ahead':  '⇡',   # \u21e1 - Upwards Dashed Arrow
-                'err':    '✗ ',  # \u2717 - Ballot x
-                'vcs':    '⛕ ',  # \u26d5 - Alternate One-way Left Way Traffic
-                ' ':      '✔',   # \u2714 - Heavy Check Mark
-                'M':      '!',
-                'A':      '+',
-                'D':      '✘',   # \u2718 - Heavy Ballot x
-                'R':      '»',   # \u00bb - Right-pointing Double Angle Quotation Mark
-                'C':      '»',   # \u00bb
-                'U':      '⇡',   # \u21e1
-                '??':     '?',
-            }
+        self._get_icons()
+
+        if not exists(context['data_file']):  # FIXME: Pull *.json creation into its own function
+            project_template = [{
+                'name': 'MYVIMRC',
+                'root': self.vim.eval('$VIMRUNTIME'),
+                'timestamp': str(datetime.datetime.now().isoformat()),
+                'vcs': False,
+                'description': "",
+            }]
+            if not exists(self.vars['data_dir']):
+                try:
+                    makedirs(self.vars['data_dir'])
+                except OSError as e:
+                    if e.errno != errno.EEXIST:
+                        raise
+            with open(context['data_file'], 'w+') as nf:
+                dump(project_template, nf, indent=2)
 
     def gather_candidates(self, context):
-        """Gather candidates from ``projectile#data_dir``/projects.json."""
+        """Gather candidates from `projectile#data_dir`/projects.json."""
         candidates = []
+
         with open(context['data_file'], 'r') as fp:
             try:
-                config = json.loads(fp.read())
-
-                for obj in config:
-                    self._get_pos(obj['root'])
-                    candidates.append({
-                        'word':         obj['root'],
-                        'action__path': obj['root'],
-                        'name':         obj['name'],
-                        'is_vcs':       obj['vcs'],
-                        'timestamp':    obj['timestamp'],
-                        'git_branch':   self._get_branch(obj['root']),
-                        'git_stats':    self._get_stats(obj['root']),
-                        'short_root':   obj['root'].replace(expanduser('~'), '~'),
-                    })
-
-            except json.JSONDecodeError:
+                config = load(fp)
+            except JSONDecodeError:
                 err_string = 'Decode error for' + context['data_file']
                 error(self.vim, err_string)
+                config = []
+
+            for obj in config:
+                self._get_pos(obj['root'])
+                candidates.append({
+                    'word':         obj['root'],
+                    'action__path': obj['root'],
+                    'name':         obj['name'],
+                    'is_vcs':       obj['vcs'],
+                    'timestamp':    obj['timestamp'],
+                    'git_branch':   self._get_branch(obj['root']),
+                    'git_stats':    self._get_stats(obj['root']),
+                    'short_root':   obj['root'].replace(expanduser('~'), '~'),
+                })
 
         return self._convert(candidates)
 
@@ -124,7 +101,6 @@ class Source(Base):
         """
         stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
         # 2017-12-12T01:00:10.504356
-
 
         name_len   = self._get_length(candidates, 'name')
         path_len   = self._get_length(candidates, 'short_root')
@@ -298,6 +274,53 @@ class Source(Base):
         else:
             name = ''
         return name
+
+    def _get_icons(self):
+        if self.vars['icon_setting'] == 0:
+            self.vars['icons'] = {
+                'behind': 'Ah',
+                'ahead':  'Bh',
+                'err':    'X ',
+                'vcs':    ' ',
+                ' ':      '',
+                'M':      'M',
+                'A':      'A',
+                'D':      'D',
+                'R':      'R',
+                'C':      'C',
+                'U':      'U',
+                '??':     '??',
+            }
+        elif self.vars['icon_setting'] == 2:
+            self.vars['icons'] = {
+                'behind': '⇣',
+                'ahead':  '⇡',
+                'err':    '✗ ',
+                'vcs':    ' ',  # \ue0a0 -- Powerline branch symbol
+                ' ':      '✔',
+                'M':      '!',
+                'A':      '+',
+                'D':      '✘',
+                'R':      '»',
+                'C':      '»',
+                'U':      '⇡',
+                '??':     '?',
+            }
+        else:
+            self.vars['icons'] = {
+                'behind': '⇣',   # \u21e3 - Downwards Dashed Arrow
+                'ahead':  '⇡',   # \u21e1 - Upwards Dashed Arrow
+                'err':    '✗ ',  # \u2717 - Ballot x
+                'vcs':    '⛕ ',  # \u26d5 - Alternate One-way Left Way Traffic
+                ' ':      '✔',   # \u2714 - Heavy Check Mark
+                'M':      '!',
+                'A':      '+',
+                'D':      '✘',   # \u2718 - Heavy Ballot x
+                'R':      '»',   # \u00bb - Right-pointing Double Angle Quotation Mark
+                'C':      '»',   # \u00bb
+                'U':      '⇡',   # \u21e1
+                '??':     '?',
+            }
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
