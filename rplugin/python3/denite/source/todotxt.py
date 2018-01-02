@@ -3,7 +3,7 @@
 #  FILE: todotxt.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-01
+#  Last Modified: 2018-01-02
 #  =============================================================================
 
 # import json
@@ -29,9 +29,9 @@ class Source(Base):
         self.syntax_name = 'deniteSource_Todo'
         self.vars = {
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting':    vim.vars.get('projectile#enable_formatting'),
+            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
             'TODOTXT_CFG_FILE':  vim.call('expand', r'$TODOTXT_CFG_FILE'),
             'TODO_FILE':         vim.call('expand', r'$TODO_FILE'),
             'DONE_FILE':         vim.call('expand', r'$DONE_FILE'),
@@ -170,16 +170,18 @@ class Source(Base):
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f'containedin={self.syntax_name} contains={",".join(items)}')
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
 SYNTAX_GROUPS = [
