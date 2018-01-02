@@ -3,7 +3,7 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-01
+#  Last Modified: 2018-01-02
 # ==============================================================================
 
 import re
@@ -42,7 +42,7 @@ class Source(Base):
         context['data_file'] = expand(self.vars['data_dir'] + '/projects.json')
         self._get_icons()
 
-        if not exists(context['data_file']):  # FIXME: Pull *.json creation into its own function
+        if not exists(context['data_file']):  # FIXME: Pull `projects.json` creation into its own function
             project_template = [{
                 'name': 'MYVIMRC',
                 'root': self.vim.eval('$VIMRUNTIME'),
@@ -324,16 +324,23 @@ class Source(Base):
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f"containedin={self.syntax_name} contains={','.join(items)}")
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f"syntax match {self.syntax_name}_{pattern['name']} {pattern['regex']}")
+        # self.vim.command(r'syntax match deniteSource_Projectile_Err /^.*✗.*$/')
+        # self.vim.command(r'syntax match deniteSource_Projectile_Err /^.*\sX\s.*$/')
+
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                             f"containedin={self.syntax_name} contains={','.join(items)}")
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f"syntax match {self.syntax_name}_{pattern['name']} {pattern['regex']}")
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f"highlight default link {match['name']} {match['link']}")
+        # self.vim.command(r'highlight default link deniteSource_Projectile_Err  Error')
+
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f"highlight default link {match['name']} {match['link']}")
 
 
 SYNTAX_GROUPS = [
@@ -355,7 +362,7 @@ SYNTAX_PATTERNS = [
     {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
     {'name': 'Branch',    'regex': r'/\v(^\s)@<=(\S+)/                   contained '
                                    r'contains=deniteSource_Projectile_Stats'       },
-    {'name': 'Stats',    'regex': r'/\v\[.+]/                            contained'},
-    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
-    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
+    {'name': 'Stats',    'regex':  r'/\v\[.+]/                           contained'},
+    {'name': 'Err',      'regex':  r'/^.*✗.*$/                           contained'},
+    {'name': 'Err',      'regex':  r'/^.*\sX\s.*$/                       contained'},
 ]

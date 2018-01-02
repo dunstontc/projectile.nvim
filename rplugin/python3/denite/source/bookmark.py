@@ -3,7 +3,7 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-01
+#  Last Modified: 2018-01-02
 #  =============================================================================
 
 
@@ -57,7 +57,7 @@ class Source(Base):
         """Parse and accept user settings."""
         context['data_file'] = expand(self.vars['data_dir'] + '/bookmarks.json')
 
-        if not exists(context['data_file']):  # FIXME: Pull *.json creation into its own function
+        if not exists(context['data_file']):  # TODO: Pull `*.json` creation into its own function
             bookmark_template = [{
                 'name': 'MYVIMRC',
                 'path': self.vim.eval('$MYVIMRC'),
@@ -156,16 +156,18 @@ class Source(Base):
                 max_count = cur_len
         return max_count
 
-    # def define_syntax(self):
-    #     """Define Vim regular expressions for syntax highlighting."""
-    #     items = [x['name'] for x in SYNTAX_GROUPS]
-    #     self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-    #                      f'containedin={self.syntax_name} contains={",".join(items)}')
-    #     for pattern in SYNTAX_PATTERNS:
-    #         self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
-    #
-    # def highlight(self):
-    #     """Link highlight groups to existing attributes."""
-    #     for match in SYNTAX_GROUPS:
-    #         self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+    def define_syntax(self):
+        """Define Vim regular expressions for syntax highlighting."""
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+
+    def highlight(self):
+        """Link highlight groups to existing attributes."""
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
