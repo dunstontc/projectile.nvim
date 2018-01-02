@@ -51,6 +51,7 @@ class Source(Base):
 
     def gather_candidates(self, context):
         """Gather candidates from todo.txt files."""
+
         candidates = []
         linenr = int(0)
 
@@ -71,6 +72,24 @@ class Source(Base):
         return candidates
 
     def _convert(self, candidates):
+        """Format and add metadata to gathered candidates.
+
+        Parameters
+        ----------
+        candidates : list
+            Our raw source.
+
+        Returns
+        -------
+        candidates : list
+            A sexy source.
+            Aligns candidate properties.
+            Adds error mark if a source's path is inaccessible.
+            Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
+
+        """
+        # path_len = self._get_length(candidates, 'short_path')
+        # name_len = self._get_length(candidates, 'name')
         # PRJ_CON_PATTERN = r'\B(?:\+|@)(?:\S*\w)'
         # TAG_PATTERN     = r'\b\S+:[^/\s]\S*\b'
         # URL_PATTERN     = r'(?:^|\s)(?:\w+:){1}(?://\S+)'
@@ -101,13 +120,20 @@ class Source(Base):
                 else:
                     done = False
 
+            # if not isfile(candidate['action__path']):
+            #     err_mark = err_icon
+            # else:
+            #     err_mark = '  '
+
             # candidate['abbr'] = f" -- {priority} -- {date} -- {content}"
+            # candidate['abbr'] = f" {done}{done_date} {priority} -- {date} -- {todo_id}"
             candidate['__done']      = done
             candidate['__done_date'] = done_date
             candidate['__date']      = date
             candidate['__priority']  = priority
             candidate['__content']   = content
             candidate['__id']        = todo_id
+            # candidate['abbr'] = candidate['word']
         return candidates
 
     def _maybe(self, match):

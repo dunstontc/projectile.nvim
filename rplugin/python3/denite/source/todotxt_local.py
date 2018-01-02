@@ -3,16 +3,15 @@
 #  FILE: todotxt_local.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-01
+#  Last Modified: 2018-01-02
 #  =============================================================================
 
 import re
 import fnmatch
 from os import listdir
-# from os.path import isfile
 
 from .base import Base
-from denite.util import error, expand, path2project
+from denite.util import expand, path2project
 
 
 class Source(Base):
@@ -27,9 +26,9 @@ class Source(Base):
         self.syntax_name = 'deniteSource_Todo'
         self.vars = {
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting':    vim.vars.get('projectile#enable_formatting'),
+            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
             'TODOTXT_CFG_FILE':  vim.call('expand', r'$TODOTXT_CFG_FILE'),
             'TODO_FILE':         vim.call('expand', r'$TODO_FILE'),
             'DONE_FILE':         vim.call('expand', r'$DONE_FILE'),
@@ -164,18 +163,19 @@ class Source(Base):
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f'containedin={self.syntax_name} contains={",".join(items)}')
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
-            self.vim.command(r'syntax cluster TodoData  contains=deniteSource_Todo_Date,deniteSource_Todo_Project,deniteSource_Todo_Context,deniteSource_Todo_Extra,deniteSource_Todo_ID,deniteSource_Todo_String')
-            # self.vim.command(r'syntax cluster todoPriority   contains=todoPriorityA,todoPriorityB,todoPriorityC,todoPriorityD,todoPriorityE,todoPriorityF')
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                            f'containedin={self.syntax_name} contains={",".join(items)}')
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+                self.vim.command(r'syntax cluster TodoData  contains=deniteSource_Todo_Date,deniteSource_Todo_Project,deniteSource_Todo_Context,deniteSource_Todo_Extra,deniteSource_Todo_ID,deniteSource_Todo_String')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
 SYNTAX_GROUPS = [

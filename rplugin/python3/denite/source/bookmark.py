@@ -48,9 +48,9 @@ class Source(Base):
         self.vars = {
             'exclude_filetypes': ['denite'],
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
-            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
-            'format_setting':    vim.vars.get('projectile#enable_formatting'),
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
+            'format_setting':    vim.vars.get('projectile#enable_formatting'),
+            'icon_setting':      vim.vars.get('projectile#enable_devicons'),
         }
 
     def on_init(self, context):
