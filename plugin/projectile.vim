@@ -2,7 +2,7 @@
 " FILE: projectile.vim
 " AUTHOR: Clay Dunston <dunstontc@gmail.com>
 " License: MIT license
-" Last Modified: December 27th, 2017
+" Last Modified: January 2nd, 2018
 " ==============================================================================
 ""
 " @section Settings, settings
@@ -37,7 +37,7 @@ endif
 
 if !exists('g:projectile#enable_highlighting')
 ""
-" @setting(g:projectile#enable_highlights)
+" @setting(g:projectile#enable_highlighting)
 " Controls the use of highlighting for Projectile's Denite sources.
   let g:projectile#enable_highlighting = 1
 endif
