@@ -47,6 +47,7 @@
     - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
   - Check out documentation.
 
+
 ## Issues ##
 If you run into any bugs or if you have a feature request, feel free to
  [open an issue](https://github.com/dunstontc/projectile.nvim/issues)
