@@ -3,19 +3,18 @@
 #  FILE: todotxt.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-31
+#  Last Modified: 2018-01-01
 #  =============================================================================
 
 # import json
 import re
-import fnmatch
-from os import listdir
+# import fnmatch
+# from os import listdir
 # from os.path import exists, expanduser, isfile
 # from os.path import basename
 
 from .base import Base
-# from denite.util import error, expand
-from denite.util import expand, path2project
+# from denite.util import expand, path2project
 
 
 class Source(Base):
@@ -41,10 +40,9 @@ class Source(Base):
 
     def on_init(self, context):
         """Check for local *todo.txt files."""
-        boofer  = self.vim.current.buffer.name
-        pj_root = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-        context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
-
+        # boofer  = self.vim.current.buffer.name
+        # pj_root = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
+        # context['cur_pj_root'] = path2project(self.vim, boofer, ['.git', '.svn', '.hg'])
 
         # context['data_file'] = expand(self.vars['data_dir'] + '/todo.json')
         # if not exists(context['data_file']):
@@ -58,7 +56,6 @@ class Source(Base):
 
         with open(self.vars['TODO_FILE'], 'r') as f:
             todos = f.read().split('\n')
-
             for x in todos:
                 if len(x) > 1:
                     linenr += 1
@@ -70,28 +67,10 @@ class Source(Base):
                         # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
                     })
 
-        # return self._convert(candidates).append({})
+        return self._convert(candidates)
         return candidates
 
     def _convert(self, candidates):
-        """Format and add metadata to gathered candidates.
-
-        Parameters
-        ----------
-        candidates : list
-            Our raw source.
-
-        Returns
-        -------
-        candidates : list
-            A sexy source.
-            Aligns candidate properties.
-            Adds error mark if a source's path is inaccessible.
-            Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
-
-        """
-        # path_len = self._get_length(candidates, 'short_path')
-        # name_len = self._get_length(candidates, 'name')
         # PRJ_CON_PATTERN = r'\B(?:\+|@)(?:\S*\w)'
         # TAG_PATTERN     = r'\b\S+:[^/\s]\S*\b'
         # URL_PATTERN     = r'(?:^|\s)(?:\w+:){1}(?://\S+)'
@@ -104,31 +83,31 @@ class Source(Base):
             (?P<date>\d{4}-\d{2}-\d{2})              # Date added
             \s                                       # Single space
             (?P<content>.*)                          # Contents of the TODO
+            (?P<todo_id>(?<=id:)(\d+))               # Todo ID
             ''', re.X)
 
         for candidate in candidates:
-
             matches = TODO_PATTERN.search(candidate['word'])
             if matches:
-                date = self._maybe(matches.group('date'))
-                done = self._maybe(matches.group('done'))
-                priority = self._maybe(matches.group('priority'))
+                date      = self._maybe(matches.group('date'))
+                done      = self._maybe(matches.group('done'))
+                priority  = self._maybe(matches.group('priority'))
                 done_date = self._maybe(matches.group('done_date'))
-                content = self._maybe(matches.group('content'))
+                content   = self._maybe(matches.group('content'))
+                todo_id   = self._maybe(matches.group('todo_id'))
 
-            # if not isfile(candidate['action__path']):
-            #     err_mark = err_icon
-            # else:
-            #     err_mark = '  '
-
-            # if self.vars['icon_setting'] == 1:
-            #     icon = self.vim.funcs.WebDevIconsGetFileTypeSymbol(candidate['action__path'])
-            # else:
-            #     icon = '  '
+                if len(done) > 1:
+                    done = True
+                else:
+                    done = False
 
             # candidate['abbr'] = f" -- {priority} -- {date} -- {content}"
-            # candidate['abbr'] = f" {done}{done_date} {priority} -- {date} -- {content}"
-            candidate['abbr'] = candidate['word']
+            candidate['__done']      = done
+            candidate['__done_date'] = done_date
+            candidate['__date']      = date
+            candidate['__priority']  = priority
+            candidate['__content']   = content
+            candidate['__id']        = todo_id
         return candidates
 
     def _maybe(self, match):
