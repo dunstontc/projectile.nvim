@@ -11,24 +11,24 @@
 ## Features ##
 
   - Projects
-    - Keep a list of project locations with metadata
-    - Easily access the root directory of a project with a customizable action
+    - Keep a list of projects
+    - Access the root directory of a project with a customizable action
     - Check version control status for all added projects
     - List todos in a project directory
   - Bookmarks
     - Keep a list of bookmarked locations
   - TODOs
     - List todos in the current project folder & jump to them
-    - List todos from a global or project todo.txt file **(WIP)**
+    - List todos from a global or project todo.txt file
     - Append todos to the quickfix or location list **(WIP)**
     - Syntax highlighting & filetype detection for `todo.txt` files
   - Sweet sweet Denite sources:
-    - `projectile` - A source for projectile projects
-    - `bookmark` - A source for projectile bookmarks
-    - `todo` - A source for finding TODOs, FIXMEs, ANYTHINGs
-    - `todotxt` - A source for your `$TODO_FILE`
-    - `todotxt_local` - A source for your todo.txt files
-    - `sauce` - A source for Denite sources
+    - `projectile` - Source for projectile projects
+    - `bookmark` - Source for projectile bookmarks
+    - `todo` - Source for finding TODOs, FIXMEs, ANYTHINGs
+    - `todotxt` - Source for `$TODO_FILE`
+    - `todotxt_local` - Source for any todo.txt file
+    - `sauce` - Source for Denite sources
 
 
 ## Requirements ##
@@ -45,7 +45,11 @@
   - If you'd like it elsewhere, you can set an alternate path in one of two ways:
     - `g:projectile#data_dir = '<wherever>'`
     - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
-  - Check out documentation for more detailed options.
+  - Check out documentation.
+
+## Issues ##
+If you run into any bugs or if you have a feature request, feel free to
+ [open an issue](https://github.com/dunstontc/projectile.nvim/issues)
 
 
 ## Credit & Thanks ##

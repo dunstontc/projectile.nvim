@@ -1,12 +1,6 @@
 *projectile.txt*
 
-Version:    0.0.3
-License:    MIT License
-Author:     Clay Dunston <dunstontc@gmail.com>
-Website:    https://github.com/dunstontc/projectile.nvim
 
-
-------------------------------------------------------------------------------~
 
     ___       ___       ___       ___       ___       ___       ___     ~
    /\  \     /\  \     /\  \     /\  \     /\  \     /\  \     /\  \    ~
@@ -23,7 +17,6 @@ Website:    https://github.com/dunstontc/projectile.nvim
   \:\__\    \:\__\    \:\/  /                                          ~
    \/__/     \/__/     \/__/.nvim                                      ~
 
-------------------------------------------------------------------------------~
 
 
 ==============================================================================
@@ -32,47 +25,50 @@ CONTENTS                                                 *projectile-contents*
 
 1. Installation.............................|projectile-installation|
 2. Settings.................................|projectile-settings|
-        2.1 Global Variables................|projectile-variables|
-        2.2 Icons...........................|projectile-icons|
-        2.3 Highlighting....................|projectile-highlighting|
+    2.1 Global Variables....................|projectile-variables|
+    2.2 Icons...............................|projectile-icons|
+    2.3 Highlighting........................|projectile-highlighting|
 3. Commands.................................|projectile-commands|
 4. Denite Sources...........................|projectile-denite-sources|
-5. Changelog................................|projectile-changelog|
+5. Issues...................................|projectile-issues|
+6. Changelog................................|projectile-changelog|
+
 
 
 ==============================================================================
 1. Installation					     *projectile-installation*
 
+
 Install Projectile with your preferred manager or method.
-Once it is in your |runtimepath| you'll need to run `:ProjectileInit` to
-create the folder and files for saving your data.
-If you would for this folder to be made in a place other
-than your `$XDG_CACHE_HOME`, use the |projectile#data_dir| variable
+
+Once it is in your |runtimepath| you'll have access to a number
+of new |denite| sources. Upon first use, `bookmark` & `projectile` will
+create |projectile#data_dir|/bookmarks.json & projects.json respectively.
+
+If you would for this folder to be made in a place other than
+your `$XDG_CACHE_HOME`, you can use the |projectile#data_dir| variable
 to set the path to a different location.
 
-When bookmarks.json & projecs.json are written, they will each have one
-item automatically added ($MVIMRC for bookmarks & $VIMRUNTIME for projects).
+When bookmarks.json & projecs.json are written they'll each have one
+item added (|$MVIMRC| for bookmarks and |$VIMRUNTIME| for projects).
 This is due to an issue with |denite| where an action can't be made unless
-there are existing candidates for the source. I'm currently working on
+there are existing candidates for a given source. I'm currently working on
 a better wat to handle this, but this is how it currently works.
-That being said, you can delete these initial items,
-but make sure that you add at least one other project or bookmark
-before doing so.
 
-NOTE: If you want the folder elsewhere, you need to set
-      |g:projectile#data_dir| BEFORE running `:ProjectileInit`
-      as the command will create the folder based on the
-      variable's value.
+That being said, you can delete these initial items, but make sure that
+you add at least one other project or bookmark before doing so.
+
 
 
 ==============================================================================
 2. Settings                                              *projectile-settings*
 
+
 ==============================================================================
 2.1 Global Variables                                    *projectile-variables*
 
 
-{data_directory}                                         *projectile#data_dir*
+g:projectile#data_dir                                    *projectile#data_dir*
 	The directory used to store files containing
 	saved projects & bookmarks.
 
@@ -83,7 +79,7 @@ NOTE: If you want the folder elsewhere, you need to set
 <
 
 
-{directory_command}                             *projectile#directory_command*
+g:projectile#directory_command                  *projectile#directory_command*
 	Command for opening projects.
 	Will be passed the absolute path to a project's root directory.
 
@@ -93,7 +89,7 @@ NOTE: If you want the folder elsewhere, you need to set
 	let g:projectile#directory_command = 'cd '
 <
 
-{todo_terms}                                         *projectile#todo_terms*
+g:projectile#todo_terms                                *projectile#todo_terms*
 	An array of terms to search for with the
 	`:Denite todo` command.
 
@@ -112,7 +108,7 @@ NOTE: If you want the folder elsewhere, you need to set
 	\ ]
 <
 
-{devicons}                                      *projectile#enable_devicons*
+g:projectile#enable_devicons                      *projectile#enable_devicons*
 	Control the use of icons in Denite source results.
 
         Type:	|Number|
@@ -120,12 +116,12 @@ NOTE: If you want the folder elsewhere, you need to set
 		Set to '0' to disable icons entirely.
 		Set to '1' to use |devicons|.	(requires a Nerd-Font)
 		Set to '2' to use unicode icons.  (works with most fonts)
-	Default:
+	Default: '0'
 >
 	let g:projectile#enable_devicons = 2
 <
 
-{highlighting}                              *projectile#enable_highlighting*
+g:projectile#enable_highlighting              *projectile#enable_highlighting*
 	Control the use of highlighting
 	in Projectile's Denite sources.
 
@@ -133,22 +129,22 @@ NOTE: If you want the folder elsewhere, you need to set
 	Options:
 		Set to '0' to disable entirely.
 		Set to '1' to use highlighting.
-	Default:
+	Default: '1'
 >
 	let g:projectile#enable_highlighting = 1
 <
 
-{formatting}                                  *projectile#enable_formatting*
+g:projectile#enable_formatting                 *projectile#enable_formatting*
 	Control the use of formatting
 	for Projectile's Denite sources.
 
 	Type:	|Number|
-	Default:
+	Default: '1'
 >
 	let g:projectile#enable_formatting = 1
 <
 
-{search_program}                                     *projectile#search_prog*
+g:projectile#search_prog                              *projectile#search_prog*
 	The command used to search for TODOs.
     	Checks for executables in the listed order and defaults to
     	the first of the search programs found.
@@ -165,7 +161,7 @@ NOTE: If you want the folder elsewhere, you need to set
 	let g:projectile#search_prog = 'grep'
 <
 
-{loaded}                                                  *projectile#loaded*
+g:projectile#loaded                                        *projectile#loaded*
 	Used to check/verify if Projectile is installed & loaded.
 
         Type:	|Number|
@@ -184,18 +180,18 @@ If enabled with *projectile#enable_devicons,* the following icons are used:
 
 VARIABLE	MEANING			DEFAULT~
 ------------------------------------------------------------------------------
-`behind`	Unpulled Changes	⇣   *\u21e3*  Downwards Dashed Arrow
-`ahead`		Unpushed Changes	⇡   *\u21e1*  Upwards Dashed Arrow
-`err`		Incorrect Path		✗   *\u2717*  Ballot x
-`vcs`		Indicates Repository	⛕   *\u26d5*  Alt One-way Left Traffic
-`''`		No Changes		✔   *\u2714*  Heavy Check Mark
-`M`		Modified		!   *\u0021*  Exclamation Mark
-`A`		Added			+   *\u002B*  Plus Sign
-`D`		Deleted			✘   *\u2718*  Heavy Ballot x
-`R`		Renamed			»   *\u00bb*  Rt Dbl Angle Quotation Mark
-`C`		Copied			«   *\u00ba*  Lt Dbl Angle Quotation Mark
-`U`		Unmerged		‽   *\u203d*  Interrobang
-`??`		Untracked		?   *\u003f*  Question Mark
+`behind`	Unpulled Changes	⇣   '\u21e3'  Downwards Dashed Arrow
+`ahead`		Unpushed Changes	⇡   '\u21e1'  Upwards Dashed Arrow
+`err`		Incorrect Path		✗   '\u2717'  Ballot x
+`vcs`		Indicates Repository	⛕   '\u26d5'  Alt One-way Left Traffic
+`''`		No Changes		✔   '\u2714'  Heavy Check Mark
+`M`		Modified		!   '\u0021'  Exclamation Mark
+`A`		Added			+   '\u002B'  Plus Sign
+`D`		Deleted			✘   '\u2718'  Heavy Ballot x
+`R`		Renamed			»   '\u00bb'  Rt Dbl Angle Quotes
+`C`		Copied			«   '\u00ba'  Lt Dbl Angle Quotes
+`U`		Unmerged		‽   '\u203d'  Interrobang
+`??`		Untracked		?   '\u003f'  Question Mark
 
 
 
@@ -203,12 +199,18 @@ VARIABLE	MEANING			DEFAULT~
 2.3 Highlighting                                     *projectile-highlighting*
 
 
-If enabled with *projectile#enable_highlighting,*
+If enabled with *projectile#enable_highlighting*
 Projectile will define and link the following highlight groups:
 
 
 GROUP					DEFAULT~
 ------------------------------------------------------------------------------
+*deniteSource_Todo*			|Normal|
+*deniteSource_Todo_Noise*		|Comment|
+*deniteSource_Todo_Path*		|Directory|
+*deniteSource_Todo_Pos*			|Number|
+*deniteSource_Todo_Word*		|Type|
+*deniteSource_Todo_String*		|String|
 *deniteSource_Projectile_Project*	|Normal|
 *deniteSource_Projectile_Noise*		|Comment|
 *deniteSource_Projectile_Name*		|Identifier|
@@ -217,12 +219,6 @@ GROUP					DEFAULT~
 *deniteSource_Projectile_Err*		|Error|
 *deniteSource_Projectile_Stats*		|Error|
 *deniteSource_Projectile_Branch*	|Keyword|
-*deniteSource_Todo*			|Normal|
-*deniteSource_Todo_Noise*		|Comment|
-*deniteSource_Todo_Path*		|Directory|
-*deniteSource_Todo_Pos*			|Number|
-*deniteSource_Todo_Word*		|Type|
-*deniteSource_Todo_String*		|String|
 
 
 
@@ -231,14 +227,14 @@ GROUP					DEFAULT~
 
 
 `:ProjectileInit`
-	Used to create the files for saving bookmarks & projects.
+	Used to make or reset files for saving bookmarks & projects.
 	NOTE: This will overwrite any existing projectile
-	      projects and bookmarks.
+	      projects & bookmarks.
 
 
 
 ==============================================================================
-4. Denite Sources (and Kinds)                      *projectile-denite-sources*
+4. Denite Sources                                  *projectile-denite-sources*
 
 
 ------------------------------------------------------------------------------
@@ -250,14 +246,15 @@ GROUP					DEFAULT~
 		- An absolute path to a project's root directory.
 		- A timestamp used to identify the project.
 	If a project is moved, the candidate will have an 'X'
-	marking its path as broken and will be highlighted as an |Error|.
+	marking its path as broken and will be highlighted as an |Error|
+	if enabled with |projectile#enable_highlighting|.
 	Extends |denite-kind-directory|.
 
 	Source Actions:
-		'add'
-		'remove'
-		'open' (default)
-		'directory_command'
+		add
+		remove
+		open (default)
+		directory_command
 			- Passes the project path to a command
 			  defined with |projectile#directory_command|
 	Format: >
@@ -275,12 +272,13 @@ GROUP					DEFAULT~
 		- A timestamp used to identify the bookmark.
 	If a bookmarked file is moved, the bookmark will have an 'X'
 	marking its path as broken and will be highlighted as an |Error|.
+	if enabled with |projectile#enable_highlighting|.
 	Extends |denite-kind-file|.
 
 	Source Actions:
-		'add'
-		'remove'
-		'open' (default)
+		add
+		remove
+		open (default)
         Format: >
 		<icon> <name> -- <path> -- <timestamp>
 <
@@ -295,7 +293,7 @@ GROUP					DEFAULT~
 	Uses |denite-kind-file|.
 
 	Source Actions:
-		'open' (default)
+		open (default)
         Format: >
 		<relative_path> <icon> <line/col> -- TERM: <added_text>
 <
@@ -305,10 +303,10 @@ GROUP					DEFAULT~
 	Extends |denite-kind-command|.
 
 	Source Actions:
-		'add'
-		'complete'
-		'qf_list'
-		'loc_list'
+		add
+		complete
+		qf_list
+		loc_list
 
 ------------------------------------------------------------------------------
 `sauce`                                                    *denite-source-sauce*
@@ -320,12 +318,12 @@ GROUP					DEFAULT~
 	Uses |denite-kind-command|.
 
 	Source Actions:
-		'execute' (default)
+		execute (default)
 			- Executes `:Denite <candidate_name>`
 
 ------------------------------------------------------------------------------
                                                       *projectile-denite-tips*
-If you havn't already made the following mappings,
+If you haven't already made the following mappings,
 I'd suggest adding them to you configuration.
 >
  call denite#custom#map(
@@ -345,10 +343,23 @@ I'd suggest adding them to you configuration.
 
 
 ==============================================================================
-5. Changelog                                            *projectile-changelog*
+5. Issues                                                  *projectile-issues*
+
+
+If you run into any bugs or if you have a feature request, feel free to
+open an issue at https://github.com/dunstontc/projectile.nvim/issues
+
+
+
+==============================================================================
+6. Changelog                                            *projectile-changelog*
 
 
 ------------------------------------------------------------------------------
+0.0.4	2018-01-02
+	- Added options to disable highlighting & formatting
+
+
 0.0.3	2017-12-31
 
         - Added |denite| source `sauce`
@@ -372,5 +383,11 @@ I'd suggest adding them to you configuration.
         - Added changelog
 
 
+
 ==============================================================================
+Version:    0.0.4
+License:    MIT License
+Author:     Clay Dunston <dunstontc@gmail.com>
+Website:    https://github.com/dunstontc/projectile.nvim
+
 vim:tw=78:ts=8:ft=help:norl:
