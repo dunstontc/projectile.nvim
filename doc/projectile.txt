@@ -358,6 +358,8 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 ------------------------------------------------------------------------------
 0.0.4	2018-01-02
 	- Added options to disable highlighting & formatting
+	- Added stable todotxt & todotxt_local |sources|
+	- Updated documentation
 
 
 0.0.3	2017-12-31
@@ -370,7 +372,7 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 0.0.2	2017-12-29
 
 	- Added initial git info feature for projects
-    	- Added initial implementation of denite todo.txt source
+    	- Added initial implementation of |denite| todo.txt source
     	- Updated documentation
 
 
