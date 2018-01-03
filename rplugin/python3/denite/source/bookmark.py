@@ -6,29 +6,15 @@
 #  Last Modified: 2018-01-03
 #  =============================================================================
 
+
+import errno
+import datetime
+from os import makedirs
 from os.path import exists, expanduser, isfile
-import json
+from json import dump, load, JSONDecodeError
 
 from .base import Base
 from denite.util import error, expand
-
-SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'   },
-    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'  },
-    {'name': 'deniteSource_Projectile_Name',      'link': 'String'   },
-    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory'},
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'   },
-    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'    },
-]
-
-SYNTAX_PATTERNS = [
-    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
-    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
-    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
-    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
-    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
-]
 
 
 class Source(Base):
@@ -42,27 +28,42 @@ class Source(Base):
         self.kind = 'bookmark'
         self.syntax_name = 'deniteSource_Projectile'
         self.vars = {
+            'exclude_filetypes': ['denite'],
+            'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting':    vim.vars.get('projectile#enable_formatting'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
-            'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
         }
 
     def on_init(self, context):
         """Parse and accept user settings."""
         context['data_file'] = expand(self.vars['data_dir'] + '/bookmarks.json')
-        if not exists(context['data_file']):
-            error(self.vim, f'Error accessing {context["data_file"]}')
-            return
+
+        if not exists(context['data_file']):  # TODO: Pull `*.json` creation into its own function
+            bookmark_template = [{
+                'name': 'MYVIMRC',
+                'path': self.vim.eval('$MYVIMRC'),
+                'line': 1, 'col': 1,
+                'timestamp': str(datetime.datetime.now().isoformat()),
+                'description': "" }]
+
+            if not exists(self.vars['data_dir']):
+                try:
+                    makedirs(self.vars['data_dir'])
+                except OSError as e:
+                    if e.errno != errno.EEXIST:
+                        raise
+            with open(context['data_file'], 'w+') as nf:
+                dump(bookmark_template, nf, indent=2)
 
     def gather_candidates(self, context):
-        """Gather candidates from ``projectile#data_dir``/projects.json."""
+        """Gather candidates from `projectile#data_dir`/bookmarks.json."""
         candidates = []
 
         with open(context['data_file'], 'r') as fp:
             try:
-                config = json.load(fp)
-            except json.JSONDecodeError:
+                config = load(fp)
+            except JSONDecodeError:
                 err_string = 'Decode error for' + context['data_file']
                 error(self.vim, err_string)
                 config = []
@@ -94,7 +95,7 @@ class Source(Base):
             A sexy source.
             Aligns candidate properties.
             Adds error mark if a source's path is inaccessible.
-            Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
+            Adds nerdfont icon if enabled.
 
         """
         path_len = self._get_length(candidates, 'short_path')
@@ -116,7 +117,7 @@ class Source(Base):
             else:
                 icon = '  '
 
-            candidate['abbr'] = "{0} {1:^{name_len}} -- {err_mark} {2:<{path_len}} -- {3}".format(
+            candidate['abbr'] = "{0} {1:<{name_len}} -- {err_mark} {2:<{path_len}} -- {3}".format(
                 icon,
                 candidate['name'],
                 candidate['short_path'],
@@ -152,3 +153,21 @@ class Source(Base):
             for match in SYNTAX_GROUPS:
                 self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
+
+SYNTAX_GROUPS = [
+    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
+    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
+    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
+    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
+]
+
+SYNTAX_PATTERNS = [
+    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
+    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
+    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
+    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
+    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
+]
