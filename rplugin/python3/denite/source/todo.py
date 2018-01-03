@@ -3,14 +3,13 @@
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2017-12-27
+#  Last Modified: 2018-01-03
 # ==============================================================================
 
 import re
-import subprocess  # FIXME: Use Denite's util.proc?
+import subprocess
 
 from .base import Base
-# from denite import util
 
 
 class Source(Base):
@@ -24,11 +23,13 @@ class Source(Base):
         self.kind        = 'file'
         self.matchers    = ['matcher_fuzzy']
         self.vars = {
-            'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
+            'format_setting': vim.vars.get('projectile#enable_formatting'),
             'icon_setting': vim.vars.get('projectile#enable_devicons'),
-            'search_prog':  vim.vars.get('projectile#search_prog'),
-            'todo_terms':   vim.vars.get('projectile#todo_terms'),
-            'encoding':     'utf-8',
+            'search_prog': vim.vars.get('projectile#search_prog'),
+            'todo_terms': vim.vars.get('projectile#todo_terms'),
+            'encoding': 'utf-8',
 
             'ack_options'  : ['-r'],
             'ag_options'   : ['-s', '--nocolor', '--nogroup', '--vimgrep'],
@@ -38,7 +39,6 @@ class Source(Base):
 
     def on_init(self, context):
         """Parse user options and set up our search."""
-        # context['is_async'] = True
         context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)')
         context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)')
         context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)')
@@ -101,8 +101,7 @@ class Source(Base):
 
         """
         cur_dir_len = len(self.vim.call('getcwd'))
-
-        path_len = self._get_length(candidates, 'short_path')
+        path_len    = self._get_length(candidates, 'short_path')
 
         for candidate in candidates:
 
@@ -117,7 +116,6 @@ class Source(Base):
                 candidate['action__path'][cur_dir_len:],
                 icon,
                 todo_pos,
-                # candidate['action__col'],
                 candidate['content'],
                 path_len=path_len
             )
@@ -148,16 +146,18 @@ class Source(Base):
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f'containedin={self.syntax_name} contains={",".join(items)}')
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
 SYNTAX_GROUPS = [

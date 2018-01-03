@@ -3,7 +3,7 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2017-12-29
+#  Last Modified: 2018-01-02
 # ==============================================================================
 
 from os.path import expanduser, isdir
@@ -28,10 +28,10 @@ class Source(Base):
         self.vars = {
             'exclude_filetypes': ['denite'],
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
+            'format_setting':    vim.vars.get('projectile#enable_formatting'),
             'user_cmd':          vim.vars.get('projectile#directory_command'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
-            'format_setting':    vim.vars.get('projectile#enable_formatting'),
-            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
         }
 
     def on_init(self, context):
@@ -126,11 +126,6 @@ class Source(Base):
 
         for candidate in candidates:
 
-            # if candidate['is_vcs'] is True:
-            #     is_vcs = self.vars['icons']['vcs']
-            # else:
-            #     is_vcs = '  '
-
             if not isdir(candidate['action__path']):
                 err_mark = self.vars['icons']['err']
             else:
@@ -195,8 +190,6 @@ class Source(Base):
         project_root : string
             Path to the root folder of a git repository.
         """
-        # pos_pat = re.compile(r'^\*\s(?P<branch>\S+).+(?<=\[)(?P<pos>.*)(?:].+)', re.M)
-        # pos_pat = re.compile(r'(?:^\*\s)(?P<branch>\S+)(?:\s+\w+\s)(?=\[)(?P<position>.*)(?<=])', re.M)
         pos_pat = re.compile(r'\*.+(?<=\[)(\w*)', re.M)
 
         try:
@@ -277,18 +270,22 @@ class Source(Base):
             name = ''
         return name
 
+
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f"containedin={self.syntax_name} contains={','.join(items)}")
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f"syntax match {self.syntax_name}_{pattern['name']} {pattern['regex']}")
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f"highlight default link {match['name']} {match['link']}")
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+
 
 
 SYNTAX_GROUPS = [
