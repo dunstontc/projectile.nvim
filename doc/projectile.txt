@@ -199,7 +199,7 @@ VARIABLE	MEANING			DEFAULT~
 2.3 Highlighting                                     *projectile-highlighting*
 
 
-If enabled with *projectile#enable_highlighting*
+If enabled with |projectile#enable_highlighting|
 Projectile will define and link the following highlight groups:
 
 
