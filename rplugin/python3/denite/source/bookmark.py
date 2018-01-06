@@ -7,6 +7,7 @@
 #  =============================================================================
 
 
+import re
 import errno
 import datetime
 from os import makedirs
@@ -98,6 +99,8 @@ class Source(Base):
             Adds nerdfont icon if enabled.
 
         """
+        stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
+
         path_len = self._get_length(candidates, 'short_path')
         name_len = self._get_length(candidates, 'name')
         if self.vars['icon_setting'] == 0:
@@ -106,6 +109,9 @@ class Source(Base):
             err_icon = '✗ '
 
         for candidate in candidates:
+
+            matchez = stamp_pat.search(candidate['timestamp'])
+            nice_date = self._maybe(matchez.group('date')) + '  ' + self._maybe(matchez.group('time'))
 
             if not isfile(candidate['action__path']):
                 err_mark = err_icon
@@ -121,7 +127,7 @@ class Source(Base):
                 icon,
                 candidate['name'],
                 candidate['short_path'],
-                candidate['timestamp'],
+                nice_date,
                 name_len=name_len,
                 err_mark=err_mark,
                 path_len=(path_len + 3),
@@ -138,6 +144,27 @@ class Source(Base):
                 max_count = cur_len
         return max_count
 
+    def _maybe(self, please):
+        """Wrap regex return objects to handle errors.
+
+        Parameters
+        ----------
+        please : obj, str?
+            Possible Regular Expression match group
+
+        Returns
+        -------
+        value : str
+            If the match is not None, returns *match*.
+            If the match is None, returns ''.
+
+        """
+        if please is not None:
+            name = please
+        else:
+            name = ''
+        return name
+
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
         if self.vars['highlight_setting'] == 1:
@@ -151,23 +178,30 @@ class Source(Base):
         """Link highlight groups to existing attributes."""
         if self.vars['highlight_setting'] == 1:
             for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link deniteSource_Projectile Number')
                 self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
 SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
     {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
     {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
     {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },  # FIXME: is this hack pay for itself in speed?
     {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
 ]
 
 SYNTAX_PATTERNS = [
     {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
-    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
-    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
-    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    # {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
+    {'name': 'Name',      'regex': r'/^\(\s\S.\+\)\( -- \)\@=/               contained '
+    # {'name': 'Name',      'regex': r'/^\(\s\S \?\s.\+\)\( -- \)\@=/               contained '
+                                   r'contains=deniteSource_Projectile_Path,deniteSource_Projectile_Noise'},
+    # {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
+    # {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\([\w\|\-\|\.]\+\)\(.* -- \)\@=/ contained'},
+    {'name': 'Path',      'regex': r'/ --    [0-9a-zA-z~\/\-\.]\+/         contained contains=deniteSource_Projectile_Noise'},
+    # {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    # {'name': 'Timestamp', 'regex': r'/\v(-- .+ -- .+)@<=(.*)/             contained'},
+    # {'name': 'Timestamp', 'regex': r'/\v(-- .+ -- .+)@<=(.*)/             contained'},
     {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
     {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
 ]

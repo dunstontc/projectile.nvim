@@ -100,7 +100,6 @@ class Source(Base):
 
         """
         stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
-        # 2017-12-12T01:00:10.504356
 
         name_len   = self._get_length(candidates, 'name')
         path_len   = self._get_length(candidates, 'short_root')

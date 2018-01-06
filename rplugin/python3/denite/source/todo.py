@@ -3,15 +3,14 @@
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2017-12-28
+#  Last Modified: 2018-01-06
 # ==============================================================================
 
 import re
-import subprocess  # FIXME: Use Denite's util.proc?
+import subprocess
 from os.path import expanduser
 
 from .base import Base
-from denite.util import error
 
 
 class Source(Base):
@@ -26,6 +25,8 @@ class Source(Base):
         self.matchers    = ['matcher_fuzzy']
         self.vars = {
             'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
+            'format_setting': vim.vars.get('projectile#enable_formatting'),
             'icon_setting': vim.vars.get('projectile#enable_devicons'),
             'search_prog':  vim.vars.get('projectile#search_prog'),
             'todo_terms':   vim.vars.get('projectile#todo_terms'),
@@ -127,7 +128,6 @@ class Source(Base):
                 candidate['action__path'][cur_dir_len:],
                 icon,
                 todo_pos,
-                # candidate['action__col'],
                 candidate['content'],
                 path_len=path_len
             )
@@ -158,16 +158,18 @@ class Source(Base):
 
     def define_syntax(self):
         """Define Vim regular expressions for syntax highlighting."""
-        items = [x['name'] for x in SYNTAX_GROUPS]
-        self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                         f'containedin={self.syntax_name} contains={",".join(items)}')
-        for pattern in SYNTAX_PATTERNS:
-            self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+        if self.vars['highlight_setting'] == 1:
+            items = [x['name'] for x in SYNTAX_GROUPS]
+            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
+                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            for pattern in SYNTAX_PATTERNS:
+                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
-        for match in SYNTAX_GROUPS:
-            self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+        if self.vars['highlight_setting'] == 1:
+            for match in SYNTAX_GROUPS:
+                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
 SYNTAX_GROUPS = [
@@ -183,7 +185,7 @@ SYNTAX_PATTERNS = [
     {'name': 'Word',   'regex': r'/\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained'},
     {'name': 'Path',   'regex': r'/\%(^\s\)\@<=\(.*\)\%(\[\)\@=/                contained'},
     {'name': 'Noise',  'regex': r'/\S*\%\(--\)\s/                               contained'},
-    {'name': 'Noise',  'regex': r'/\[\|\]/                                      contained'},
-    {'name': 'Pos',    'regex': r'/\d\+\(:\d\+\)\?/                             contained'},
+    {'name': 'Noise',  'regex': r'/\[\|\]\|:/                                   contained'},
+    {'name': 'Pos',    'regex': r'/\d\+\(:\d\+\)\?/                             contained contains=deniteSource_Todo_Noise'},
     {'name': 'String', 'regex': r'/\s`\S\+`/                                    contained'},
 ]
