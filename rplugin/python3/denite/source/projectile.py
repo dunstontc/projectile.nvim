@@ -366,3 +366,4 @@ SYNTAX_PATTERNS = [
     {'name': 'Err',      'regex':  r'/^.*✗.*$/                           contained'},
     {'name': 'Err',      'regex':  r'/^.*\sX\s.*$/                       contained'},
 ]
+
