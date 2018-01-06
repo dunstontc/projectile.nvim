@@ -23,3 +23,7 @@ dontreadme.md
 **/__pycache__/**
 .todo.bak
 
+# Different files
+.projections.json
+schema/**
+
