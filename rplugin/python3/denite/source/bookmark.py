@@ -3,7 +3,7 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-02
+#  Last Modified: 2018-01-06
 #  =============================================================================
 
 
@@ -15,24 +15,6 @@ from json import dump, load, JSONDecodeError
 
 from .base import Base
 from denite.util import error, expand
-
-SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
-    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
-    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
-    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
-    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
-]
-
-SYNTAX_PATTERNS = [
-    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
-    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
-    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
-    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
-    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
-]
 
 
 class Source(Base):
@@ -171,3 +153,21 @@ class Source(Base):
             for match in SYNTAX_GROUPS:
                 self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
+
+SYNTAX_GROUPS = [
+    {'name': 'deniteSource_Projectile_Project',   'link': 'Normal'    },
+    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
+    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
+    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
+    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
+]
+
+SYNTAX_PATTERNS = [
+    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
+    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
+    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
+    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
+    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
+]
