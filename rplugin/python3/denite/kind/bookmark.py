@@ -89,9 +89,10 @@ class Kind(File):
         """Remove a bookmark from `projectile#data_dir`/bookmarks.json."""
         target       = context['targets'][0]
         target_date  = target['timestamp']
+        target_name  = target['name']
         data_file    = util.expand(self.vars['data_dir'] + '/bookmarks.json')
 
-        confirmation = self.vim.call('confirm', "Delete bookmark?", "&Yes\n&No")
+        confirmation = self.vim.call('confirm', f"Delete bookmark: '{target_name}' ?", "&Yes\n&No")
         if confirmation == 2:
             return
         else:
