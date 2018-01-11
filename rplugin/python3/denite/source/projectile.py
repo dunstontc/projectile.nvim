@@ -3,7 +3,7 @@
 #  FILE: projectile.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-02
+#  Last Modified: 2018-01-11
 # ==============================================================================
 
 import re
@@ -99,7 +99,7 @@ class Source(Base):
             A sexy source. Adds error mark if a source's path is inaccessible.
 
         """
-        stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
+        # stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
 
         name_len   = self._get_length(candidates, 'name')
         path_len   = self._get_length(candidates, 'short_root')
@@ -113,20 +113,20 @@ class Source(Base):
             # else:
             #     is_vcs = '  '
 
-            matchez = stamp_pat.search(candidate['timestamp'])
-            nice_date = self._maybe(matchez.group('date')) + '  ' + self._maybe(matchez.group('time'))
+            # matchez = stamp_pat.search(candidate['timestamp'])
+            # nice_date = self._maybe(matchez.group('date')) + '  ' + self._maybe(matchez.group('time'))
 
             if not isdir(candidate['action__path']):
                 err_mark = self.vars['icons']['err']
             else:
                 err_mark = '  '
 
-            candidate['abbr'] = "{0:<{branch_len}} {1:<{stat_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}} -- {4}".format(
+            candidate['abbr'] = "{0:<{branch_len}} {1:<{stat_len}}  {2:<{name_len}} -- {err_mark}{3:<{path_len}}".format(
                 candidate['git_branch'],
                 candidate['git_stats'],
                 candidate['name'],
                 candidate['short_root'],
-                nice_date,
+                # nice_date,
                 name_len=name_len,
                 stat_len=stat_len,
                 branch_len=branch_len,
@@ -347,7 +347,7 @@ SYNTAX_GROUPS = [
     {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
     {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
     {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
+    # {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },
     {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
     {'name': 'deniteSource_Projectile_Stats',     'link': 'Error'     },
     {'name': 'deniteSource_Projectile_Branch',    'link': 'Keyword'   },
@@ -355,10 +355,11 @@ SYNTAX_GROUPS = [
 
 SYNTAX_PATTERNS = [
     {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
-    {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained '
+    {'name': 'Name',      'regex': r'/^\(.*\)\(.* -- \)\@=/     contained '
                                    r'contains=deniteSource_Projectile_Branch,deniteSource_Projectile_Stats'},
-    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
-    {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
+    # {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
+    {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)/ contained'},
+    # {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
     {'name': 'Branch',    'regex': r'/\v(^\s)@<=(\S+)/                   contained '
                                    r'contains=deniteSource_Projectile_Stats'       },
     {'name': 'Stats',    'regex':  r'/\v\[.+]/                           contained'},

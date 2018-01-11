@@ -3,14 +3,15 @@
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2018-01-06
+#  Last Modified: 2018-01-08
 # ==============================================================================
 
 import re
 import subprocess
-from os.path import expanduser
+from os.path import basename, expanduser
 
 from .base import Base
+from denite.util import error
 
 
 class Source(Base):
@@ -21,16 +22,16 @@ class Source(Base):
         super().__init__(vim)
         self.name        = 'todo'
         self.syntax_name = 'deniteSource_Todo'
-        self.kind        = 'file'
+        self.kind        = 'todo'
         self.matchers    = ['matcher_fuzzy']
         self.vars = {
             'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting': vim.vars.get('projectile#enable_formatting'),
             'icon_setting': vim.vars.get('projectile#enable_devicons'),
-            'search_prog':  vim.vars.get('projectile#search_prog'),
-            'todo_terms':   vim.vars.get('projectile#todo_terms'),
-            'encoding':     'utf-8',
+            'search_prog': vim.vars.get('projectile#search_prog'),
+            'todo_terms': vim.vars.get('projectile#todo_terms'),
+            'encoding': 'utf-8',
 
             'ack_options'  : ['-r'],
             'ag_options'   : ['-s', '--nocolor', '--nogroup', '--vimgrep'],
@@ -40,12 +41,16 @@ class Source(Base):
 
     def on_init(self, context):
         """Parse user options and set up our search."""
+        context['__bufnr']         = self.vim.current.buffer.number
+        context['__bufname']       = self.vim.current.buffer.name
+        context['__filename']      = basename(context['__bufname'])
+        context['__winnr']         = self.vim.eval('bufwinnr("' + context['__bufname'] + '")')
+
         context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)')
         context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)')
-        context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)')
         context['terms']           = '|'.join(self.vars.get('todo_terms'))
+        context['content_pattern'] = re.compile(f"({context['terms']})+(.*$)")
 
-        # if self.vim.call('getcwd') is not str(expanduser("~")):
         if self.vim.call('getcwd') == expanduser("~"):
             context['todos']       = []
             context['is_async']    = True  # FIXME:
@@ -90,7 +95,7 @@ class Source(Base):
                     'action__path': todo_path,
                     'action__line': todo_line,
                     'action__col':  todo_col,
-                    'content':      todo_content,
+                    'action__text': todo_content,
                     'short_path':   todo_path[cur_dir_len:],
                 })
 
@@ -128,7 +133,7 @@ class Source(Base):
                 candidate['action__path'][cur_dir_len:],
                 icon,
                 todo_pos,
-                candidate['content'],
+                candidate['action__text'],
                 path_len=path_len
             )
         return candidates

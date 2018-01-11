@@ -29,10 +29,10 @@ class Source(Base):
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting':    vim.vars.get('projectile#enable_formatting'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
-            'TODOTXT_CFG_FILE':  vim.call('expand', r'$TODOTXT_CFG_FILE'),
-            'TODO_FILE':         vim.call('expand', r'$TODO_FILE'),
-            'DONE_FILE':         vim.call('expand', r'$DONE_FILE'),
-            'TODO_DIR':          vim.call('expand', r'$TODO_DIR'),
+            'todotxt_cfg_file':  vim.call('expand', r'$TODOTXT_CFG_FILE'),
+            'todo_file':         vim.call('expand', r'$TODO_FILE'),
+            'done_file':         vim.call('expand', r'$DONE_FILE'),
+            'todo_dir':          vim.call('expand', r'$TODO_DIR'),
         }
 
     def on_init(self, context):
@@ -41,7 +41,7 @@ class Source(Base):
         context['cur_pj_root'] = path2project(self.vim, boofer, str(['.git', '.svn', '.hg']))
         for file in listdir(context['cur_pj_root']):
             if fnmatch.fnmatch(file, '*todo.txt'):
-                context['TODO_FILE'] = expand(context['cur_pj_root'] + '/' + file)
+                context['todo_file'] = expand(context['cur_pj_root'] + '/' + file)
 
     def gather_candidates(self, context):
         """Gather candidates from todo.txt files."""
@@ -49,7 +49,7 @@ class Source(Base):
         linenr = int(0)
 
         try:
-            with open(context['TODO_FILE'], 'r') as f:
+            with open(context['todo_file'], 'r') as f:
                 todos = f.read().split('\n')
                 for x in todos:
                     if len(x) > 1:
@@ -166,7 +166,7 @@ class Source(Base):
         if self.vars['highlight_setting'] == 1:
             items = [x['name'] for x in SYNTAX_GROUPS]
             self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                            f'containedin={self.syntax_name} contains={",".join(items)}')
+                             f'containedin={self.syntax_name} contains={",".join(items)}')
             for pattern in SYNTAX_PATTERNS:
                 self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
                 self.vim.command(r'syntax cluster TodoData  contains=deniteSource_Todo_Date,deniteSource_Todo_Project,deniteSource_Todo_Context,deniteSource_Todo_Extra,deniteSource_Todo_ID,deniteSource_Todo_String')

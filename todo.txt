@@ -20,7 +20,7 @@
 (D) 2018-01-02 Find out why formatting isn't uniform with highlighting disabled. id:34
 (E) 2017-12-21 Generate @projections.json files for projects. id:23
 (E) 2017-12-06 Provide a FZF source for projects. @Optional id:5
-
+(D) 2018-01-11 Create local todo.txt files. id:37
 
 x 2017-12-06 Add projects to projectile/projects.json automatically id:2 (Duplicate)
 x 2017-12-06 2017-12-06 List projects id:1

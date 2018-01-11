@@ -177,7 +177,7 @@ class Source(Base):
         """Link highlight groups to existing attributes."""
         if self.vars['highlight_setting'] == 1:
             for match in SYNTAX_GROUPS:
-                self.vim.command(f'highlight link deniteSource_Projectile Number')
+                self.vim.command(f'highlight link {self.syntax_name} Normal')
                 self.vim.command(f'highlight link {match["name"]} {match["link"]}')
 
 
