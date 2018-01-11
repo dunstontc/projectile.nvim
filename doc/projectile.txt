@@ -341,7 +341,6 @@ GROUP					DEFAULT~
 
 	Source actions:
 		add                    add a new todo item
-
 		complete               mark a todo as complete
 
 
