@@ -1,12 +1,18 @@
+" ==============================================================================
+" FILE: projectile.vim
+" AUTHOR: Clay Dunston <dunstontc@gmail.com>
+" License: MIT license
+" Last Modified: 2018-01-11
+" ==============================================================================
+
 ""
 " @section Functions, functions
-" Functions mostly for internal use.
-
+" Functions mostly for internal use
 
 ""
 " @function(projectile#Init)
-" Checks for projects.json & bookmarks.json in {g:projectile#data_dir}.
-" If those aren't there, or if the directory doesn't exist, it'll make them.
+" Checks for projects.json & bookmarks.json in {g:projectile#data_dir}
+" If those aren't there, or if the directory doesn't exist, it'll make them
 function projectile#Init() abort
   let l:dir_path = expand(g:projectile#data_dir)
   let l:bookmark = '[{"name":"MYVIMRC","path":"' . expand("$MYVIMRC") . '","line":1,"col":1,"timestamp":"123456","description":""}]'
@@ -30,7 +36,8 @@ endfunction
 
 
 ""
-" @function(projectile#CommandCompletion({base}))
+" @function(projectile#CommandCompletion)
+" Used by denite_source_sauce
 " From 'https://stackoverflow.com/questions/21117615/how-to-obtain-command-completion-list'
 function! projectile#CommandCompletion( base ) abort
   silent execute "normal! :" a:base . "\<C-a>')\<C-b>return split('\<CR>"
