@@ -185,7 +185,7 @@ SYNTAX_GROUPS = [
     {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
     {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
     {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },  # FIXME: is this hack pay for itself in speed?
+    # {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },  # FIXME: is this hack pay for itself in speed?
     {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
 ]
 

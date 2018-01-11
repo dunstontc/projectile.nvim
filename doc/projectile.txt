@@ -215,20 +215,34 @@ Projectile will define and link the following highlight groups:
 
 GROUP					DEFAULT~
 ------------------------------------------------------------------------------
+*deniteSource_Projectile_Project*	|Normal|
+*deniteSource_Projectile_Noise*		|Comment|
+*deniteSource_Projectile_Name*		|Identifier|
+*deniteSource_Projectile_Path*		|Directory|
+*deniteSource_Projectile_Err*		|Error|
+*deniteSource_Projectile_Stats*		|Error|
+*deniteSource_Projectile_Branch*	|Keyword|
+------------------------------------------------------------------------------
 *deniteSource_Todo*			|Normal|
 *deniteSource_Todo_Noise*		|Comment|
 *deniteSource_Todo_Path*		|Directory|
 *deniteSource_Todo_Pos*			|Number|
 *deniteSource_Todo_Word*		|Type|
 *deniteSource_Todo_String*		|String|
-*deniteSource_Projectile_Project*	|Normal|
-*deniteSource_Projectile_Noise*		|Comment|
-*deniteSource_Projectile_Name*		|Identifier|
-*deniteSource_Projectile_Path*		|Directory|
-*deniteSource_Projectile_Timestamp*	|Number|
-*deniteSource_Projectile_Err*		|Error|
-*deniteSource_Projectile_Stats*		|Error|
-*deniteSource_Projectile_Branch*	|Keyword|
+------------------------------------------------------------------------------
+*deniteSource_Todo_Done*                  |todoDone|
+*deniteSource_Todo_ID*                    |todoID|
+*deniteSource_Todo_Context*               |todoContext|
+*deniteSource_Todo_Project*               |todoProject|
+*deniteSource_Todo_Date*                  |Comment|
+*deniteSource_Todo_String*                |String|
+*deniteSource_Todo_Extra*                 |todoExtra|
+*deniteSource_Todo_PriorityA*             |todoPriorityA|
+*deniteSource_Todo_PriorityB*             |todoPriorityB|
+*deniteSource_Todo_PriorityC*             |todoPriorityC|
+*deniteSource_Todo_PriorityD*             |todoPriorityD|
+*deniteSource_Todo_PriorityE*             |todoPriorityE|
+*deniteSource_Todo_PriorityF*             |todoPriorityF|
 
 
 
@@ -270,7 +284,6 @@ GROUP					DEFAULT~
 	Format: >
 		<branch> <stats> -- <name> -- <path>
 <
-
 
 `bookmark`                                             *denite-source-bookmark*
 
