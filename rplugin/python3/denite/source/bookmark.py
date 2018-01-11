@@ -3,11 +3,11 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-06
+#  Last Modified: 2018-01-11
 #  =============================================================================
 
 
-import re
+# import re
 import errno
 import datetime
 from os import makedirs
@@ -77,7 +77,7 @@ class Source(Base):
                     'action__col':  obj['col'],
                     'name':         obj['name'],
                     'short_path':   obj['path'].replace(expanduser('~'), '~'),
-                    'timestamp':    obj['timestamp'],
+                    # 'timestamp':    obj['timestamp'],
                 })
 
         return self._convert(candidates)
@@ -99,7 +99,7 @@ class Source(Base):
             Adds nerdfont icon if enabled.
 
         """
-        stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
+        # stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
 
         path_len = self._get_length(candidates, 'short_path')
         name_len = self._get_length(candidates, 'name')
@@ -110,8 +110,8 @@ class Source(Base):
 
         for candidate in candidates:
 
-            matchez = stamp_pat.search(candidate['timestamp'])
-            nice_date = self._maybe(matchez.group('date')) + '  ' + self._maybe(matchez.group('time'))
+            # matchez = stamp_pat.search(candidate['timestamp'])
+            # nice_date = self._maybe(matchez.group('date')) + '  ' + self._maybe(matchez.group('time'))
 
             if not isfile(candidate['action__path']):
                 err_mark = err_icon
@@ -123,11 +123,10 @@ class Source(Base):
             else:
                 icon = '  '
 
-            candidate['abbr'] = "{0} {1:<{name_len}} -- {err_mark} {2:<{path_len}} -- {3}".format(
+            candidate['abbr'] = "{0} {1:<{name_len}} -- {err_mark} {2:<{path_len}}".format(
                 icon,
                 candidate['name'],
                 candidate['short_path'],
-                nice_date,
                 name_len=name_len,
                 err_mark=err_mark,
                 path_len=(path_len + 3),
@@ -191,16 +190,11 @@ SYNTAX_GROUPS = [
 ]
 
 SYNTAX_PATTERNS = [
-    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                        contained'},
-    # {'name': 'Name',      'regex': r'/^\(.*\)\(\(.* -- \)\{2\}\)\@=/     contained'},
+    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                            contained'},
     {'name': 'Name',      'regex': r'/^\(\s\S.\+\)\( -- \)\@=/               contained '
-    # {'name': 'Name',      'regex': r'/^\(\s\S \?\s.\+\)\( -- \)\@=/               contained '
                                    r'contains=deniteSource_Projectile_Path,deniteSource_Projectile_Noise'},
-    # {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\(.*\)\(.* -- \)\@=/ contained'},
-    # {'name': 'Path',      'regex': r'/\(.* -- \)\@<=\([\w\|\-\|\.]\+\)\(.* -- \)\@=/ contained'},
     {'name': 'Path',      'regex': r'/ --    [0-9a-zA-z~\/\-\.]\+/         contained contains=deniteSource_Projectile_Noise'},
     # {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    # {'name': 'Timestamp', 'regex': r'/\v(-- .+ -- .+)@<=(.*)/             contained'},
     # {'name': 'Timestamp', 'regex': r'/\v(-- .+ -- .+)@<=(.*)/             contained'},
     {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
     {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
