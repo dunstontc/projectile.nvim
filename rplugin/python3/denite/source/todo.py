@@ -3,13 +3,15 @@
 #  FILE: todo.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT license
-#  Last Modified: 2018-01-03
+#  Last Modified: 2018-01-08
 # ==============================================================================
 
 import re
 import subprocess
+from os.path import basename, expanduser
 
 from .base import Base
+from denite.util import error
 
 
 class Source(Base):
@@ -20,10 +22,10 @@ class Source(Base):
         super().__init__(vim)
         self.name        = 'todo'
         self.syntax_name = 'deniteSource_Todo'
-        self.kind        = 'file'
+        self.kind        = 'todo'
         self.matchers    = ['matcher_fuzzy']
         self.vars = {
-            'data_dir': vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
+            'data_dir':     vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting': vim.vars.get('projectile#enable_formatting'),
             'icon_setting': vim.vars.get('projectile#enable_devicons'),
@@ -39,17 +41,32 @@ class Source(Base):
 
     def on_init(self, context):
         """Parse user options and set up our search."""
+        context['__bufnr']         = self.vim.current.buffer.number
+        context['__bufname']       = self.vim.current.buffer.name
+        context['__filename']      = basename(context['__bufname'])
+        context['__winnr']         = self.vim.eval('bufwinnr("' + context['__bufname'] + '")')
+
         context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)')
         context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)')
-        context['content_pattern'] = re.compile(r'(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)+(.*$)')
         context['terms']           = '|'.join(self.vars.get('todo_terms'))
+        context['content_pattern'] = re.compile(f"({context['terms']})+(.*$)")
 
-        a = self.vars['search_prog']
-        b = self.vars[f'{a}_options']
-        c = f"\s({context['terms']})\:\s"
-        d = self.vim.call('getcwd')
+        if self.vim.call('getcwd') == expanduser("~"):
+            context['todos']       = []
+            context['is_async']    = True  # FIXME:
+            error(self.vim, 'You might not want to search in \'~\'...')
+        else:
+            context['searcher']   = self.vars['search_prog']
+            context['options']    = self.vars[f"{context['searcher']}_options"]
+            context['terms']      = f"\s({context['terms']})\:\s"
+            context['search_dir'] = self.vim.call('getcwd')
 
-        context['todos'] = self._run_search(a, b, c, d)
+            context['todos'] = self._run_search(
+                context['searcher'],
+                context['options'],
+                context['terms'],
+                context['search_dir']
+            )
 
     def gather_candidates(self, context):
         """Parse segments out of our search results."""
@@ -78,7 +95,7 @@ class Source(Base):
                     'action__path': todo_path,
                     'action__line': todo_line,
                     'action__col':  todo_col,
-                    'content':      todo_content,
+                    'action__text': todo_content,
                     'short_path':   todo_path[cur_dir_len:],
                 })
 
@@ -101,7 +118,7 @@ class Source(Base):
 
         """
         cur_dir_len = len(self.vim.call('getcwd'))
-        path_len    = self._get_length(candidates, 'short_path')
+        path_len = self._get_length(candidates, 'short_path')
 
         for candidate in candidates:
 
@@ -116,7 +133,7 @@ class Source(Base):
                 candidate['action__path'][cur_dir_len:],
                 icon,
                 todo_pos,
-                candidate['content'],
+                candidate['action__text'],
                 path_len=path_len
             )
         return candidates
@@ -173,7 +190,7 @@ SYNTAX_PATTERNS = [
     {'name': 'Word',   'regex': r'/\v(BUG|FIXME|HACK|NOTE|OPTIMIZE|TODO|XXX)\:/ contained'},
     {'name': 'Path',   'regex': r'/\%(^\s\)\@<=\(.*\)\%(\[\)\@=/                contained'},
     {'name': 'Noise',  'regex': r'/\S*\%\(--\)\s/                               contained'},
-    {'name': 'Noise',  'regex': r'/\[\|\]/                                      contained'},
-    {'name': 'Pos',    'regex': r'/\d\+\(:\d\+\)\?/                             contained'},
+    {'name': 'Noise',  'regex': r'/\[\|\]\|:/                                   contained'},
+    {'name': 'Pos',    'regex': r'/\d\+\(:\d\+\)\?/                             contained contains=deniteSource_Todo_Noise'},
     {'name': 'String', 'regex': r'/\s`\S\+`/                                    contained'},
 ]

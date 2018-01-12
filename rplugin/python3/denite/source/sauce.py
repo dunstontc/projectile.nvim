@@ -38,4 +38,3 @@ class Source(Base):
 
         return candidates
 
-

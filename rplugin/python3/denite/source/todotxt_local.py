@@ -29,10 +29,10 @@ class Source(Base):
             'highlight_setting': vim.vars.get('projectile#enable_highlighting'),
             'format_setting':    vim.vars.get('projectile#enable_formatting'),
             'icon_setting':      vim.vars.get('projectile#enable_devicons'),
-            'TODOTXT_CFG_FILE':  vim.call('expand', r'$TODOTXT_CFG_FILE'),
-            'TODO_FILE':         vim.call('expand', r'$TODO_FILE'),
-            'DONE_FILE':         vim.call('expand', r'$DONE_FILE'),
-            'TODO_DIR':          vim.call('expand', r'$TODO_DIR'),
+            'todotxt_cfg_file':  vim.call('expand', r'$TODOTXT_CFG_FILE'),
+            'todo_file':         vim.call('expand', r'$TODO_FILE'),
+            'done_file':         vim.call('expand', r'$DONE_FILE'),
+            'todo_dir':          vim.call('expand', r'$TODO_DIR'),
         }
 
     def on_init(self, context):
@@ -41,7 +41,7 @@ class Source(Base):
         context['cur_pj_root'] = path2project(self.vim, boofer, str(['.git', '.svn', '.hg']))
         for file in listdir(context['cur_pj_root']):
             if fnmatch.fnmatch(file, '*todo.txt'):
-                context['TODO_FILE'] = expand(context['cur_pj_root'] + '/' + file)
+                context['todo_file'] = expand(context['cur_pj_root'] + '/' + file)
 
     def gather_candidates(self, context):
         """Gather candidates from todo.txt files."""
@@ -49,18 +49,24 @@ class Source(Base):
         linenr = int(0)
 
         try:
-            with open(context['TODO_FILE'], 'r') as f:
+            with open(context['todo_file'], 'r') as f:
                 todos = f.read().split('\n')
                 for x in todos:
                     if len(x) > 1:
                         linenr += 1
                         candidates.append({
                             'word': x,
+                            'action__line': str(linenr),
+                            # 'action__path': obj['path'],
+                            # 'action__line': obj['line'],
+                            # 'short_path':   obj['path'].replace(expanduser('~'), '~'),
                         })
         except KeyError:
+            # error(self.vim, f'Error accessing {context["cur_pj_root"]}/*todo.txt')
 
             return candidates
         return self._convert(candidates)
+        # return candidates
 
     def _convert(self, candidates):
         """Format and add metadata to gathered candidates.
@@ -79,6 +85,12 @@ class Source(Base):
             Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.
 
         """
+        # path_len = self._get_length(candidates, 'short_path')
+        # name_len = self._get_length(candidates, 'name')
+        # PRJ_CON_PATTERN = r'\B(?:\+|@)(?:\S*\w)'
+        # TAG_PATTERN     = r'\b\S+:[^/\s]\S*\b'
+        # URL_PATTERN     = r'(?:^|\s)(?:\w+:){1}(?://\S+)'
+        # BASIC_PRIORITY  = r'(?:^)(\([a-zA-Z]\))'
         TODO_PATTERN = re.compile(
             '''
             (?P<done>x\s)?   # Optional done mark
@@ -106,6 +118,8 @@ class Source(Base):
                 else:
                     is_done = False
 
+                # candidate['abbr'] = f" -- {priority} -- {date} -- {content}"
+                # candidate['abbr'] = candidate['word']
                 candidate['__done']      = is_done
                 candidate['__done_date'] = done_date
                 candidate['__date']      = date
@@ -197,4 +211,3 @@ SYNTAX_PATTERNS = [
     {'name': 'PriorityE', 'regex': r'/^\s([eE])\s.\+$/            contained contains=@TodoData '},
     {'name': 'PriorityF', 'regex': r'/^\s([fF])\s.\+$/            contained contains=@TodoData '},
 ]
-
