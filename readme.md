@@ -4,7 +4,13 @@
 [![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" alt="mission-control"/>
+    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" 
+         alt="mission-control"
+    />
+    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal.png" 
+         alt="bookmark_source"
+         width="50%"
+    />
 </div>
 
 
@@ -42,7 +48,7 @@
 
 
 ## Configuration ##
-  - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
+  - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.
   - If you'd like it elsewhere, you can set an alternate path in one of two ways:
     - `g:projectile#data_dir = '<wherever>'`
     - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
