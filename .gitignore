@@ -22,8 +22,4 @@ dontreadme.md
 !.gitkeep
 **/__pycache__/**
 .todo.bak
-
-# Different files
-.projections.json
 schema/**
-
