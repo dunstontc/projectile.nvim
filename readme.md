@@ -20,7 +20,7 @@
   - TODOs
     - List todos in the current project folder & jump to them
     - List todos from a global or project todo.txt file
-    - Append todos to the quickfix or location list **(WIP)**
+    - Append todos to the quickfix list 
     - Syntax highlighting & filetype detection for `todo.txt` files
   - Sweet sweet Denite sources:
     - `projectile` - Source for projectile projects
