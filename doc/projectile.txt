@@ -344,7 +344,13 @@ GROUP					DEFAULT~
 		complete               mark a todo as complete
 
 
-`sauce`                                                    *denite-source-sauce*
+`todotxt_local`                                   *denite-source-todotxt_local*
+
+        Identical to todotxt, but finds any *.todo.txt file in
+        the current project directory.
+
+
+`sauce`                                                   *denite-source-sauce*
 
 	Nominates candidates based on the current
 	commandline completion suggestions for Denite.
@@ -392,6 +398,7 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 ------------------------------------------------------------------------------
 0.0.6	2018-01-11
         - Added denite action to append todos to qflist
+        - Added todotxt_local
         - Removed timestamp from bookmark/projectile source abbr
         - Added installation instructions for Dein, Plug, & Pathogen
         - Other updates to documentation
@@ -437,3 +444,4 @@ Author:     Clay Dunston <dunstontc@gmail.com>
 Website:    https://github.com/dunstontc/projectile.nvim
 
 vim:tw=78:ts=8:ft=help:norl:
+
