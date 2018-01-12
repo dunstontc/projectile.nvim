@@ -26,15 +26,15 @@
     - Syntax highlighting & filetype detection for `todo.txt` files
   - Sweet sweet Denite sources:
     - `projectile` - Source for projectile projects  
-      ![project_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/pj_1%20slim.png)
+      <!-- ![project_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/pj_1%20slim.png) -->
     - `bookmark` - Source for projectile bookmarks  
-      ![bookmark_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal%20slim.png)
+      <!-- ![bookmark_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal%20slim.png) -->
     - `todo` - Source for finding TODOs, FIXMEs, ANYTHINGs  
-      ![todo_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo%20slim.png)
+      <!-- ![todo_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo%20slim.png) -->
     - `todotxt` - Source for `$TODO_FILE`  
-      ![todotxt_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo_txt_slim.png)
+      <!-- ![todotxt_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo_txt_slim.png) -->
     - `todotxt_local` - Source for any todo.txt file  
-      [todotxt_local_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todotxt%20slim.png)
+      <!-- ![todotxt_local_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todotxt%20slim.png) -->
     - `sauce` - Source for Denite sources
 
 
@@ -54,6 +54,24 @@
     - `g:projectile#data_dir = '<wherever>'`
     - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
   - Check out the documentation.
+
+## Denite Sources ##
+
+### projectile ###
+  ![project_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/pj_1%20slim.png)
+
+### bookmark ###  
+  ![bookmark_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal%20slim.png)
+
+### todo ###  
+  ![todo_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo%20slim.png)
+
+### todotxt ###  
+  ![todotxt_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo_txt_slim.png)
+
+### todotxt_local ###  
+  ![todotxt_local_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todotxt%20slim.png)
+
 
 
 ## Issues ##
