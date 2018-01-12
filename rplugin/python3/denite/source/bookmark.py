@@ -3,11 +3,10 @@
 #  FILE: bookmark.py
 #  AUTHOR: Clay Dunston <dunstontc@gmail.com>
 #  License: MIT License
-#  Last Modified: 2018-01-11
+#  Last Modified: 2018-01-12
 #  =============================================================================
 
 
-# import re
 import errno
 import datetime
 from os import makedirs
@@ -40,7 +39,7 @@ class Source(Base):
         """Parse and accept user settings."""
         context['data_file'] = expand(self.vars['data_dir'] + '/bookmarks.json')
 
-        if not exists(context['data_file']):  # TODO: Pull `*.json` creation into its own function
+        if not exists(context['data_file']):
             bookmark_template = [{
                 'name': 'MYVIMRC',
                 'path': self.vim.eval('$MYVIMRC'),
@@ -77,7 +76,7 @@ class Source(Base):
                     'action__col':  obj['col'],
                     'name':         obj['name'],
                     'short_path':   obj['path'].replace(expanduser('~'), '~'),
-                    # 'timestamp':    obj['timestamp'],
+                    'timestamp':    obj['timestamp'],
                 })
 
         return self._convert(candidates)
@@ -99,8 +98,6 @@ class Source(Base):
             Adds nerdfont icon if enabled.
 
         """
-        # stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')
-
         path_len = self._get_length(candidates, 'short_path')
         name_len = self._get_length(candidates, 'name')
         if self.vars['icon_setting'] == 0:
@@ -109,9 +106,6 @@ class Source(Base):
             err_icon = '✗ '
 
         for candidate in candidates:
-
-            # matchez = stamp_pat.search(candidate['timestamp'])
-            # nice_date = self._maybe(matchez.group('date')) + '  ' + self._maybe(matchez.group('time'))
 
             if not isfile(candidate['action__path']):
                 err_mark = err_icon
@@ -185,7 +179,6 @@ SYNTAX_GROUPS = [
     {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
     {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
     {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    # {'name': 'deniteSource_Projectile_Timestamp', 'link': 'Number'    },  # FIXME: is this hack pay for itself in speed?
     {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
 ]
 
@@ -194,8 +187,6 @@ SYNTAX_PATTERNS = [
     {'name': 'Name',      'regex': r'/^\(\s\S.\+\)\( -- \)\@=/               contained '
                                    r'contains=deniteSource_Projectile_Path,deniteSource_Projectile_Noise'},
     {'name': 'Path',      'regex': r'/ --    [0-9a-zA-z~\/\-\.]\+/         contained contains=deniteSource_Projectile_Noise'},
-    # {'name': 'Timestamp', 'regex': r'/\v((-- .*){2})@<=(.*)/             contained'},
-    # {'name': 'Timestamp', 'regex': r'/\v(-- .+ -- .+)@<=(.*)/             contained'},
     {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
     {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
 ]
