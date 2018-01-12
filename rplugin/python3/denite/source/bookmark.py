@@ -77,7 +77,7 @@ class Source(Base):
                     'action__col':  obj['col'],
                     'name':         obj['name'],
                     'short_path':   obj['path'].replace(expanduser('~'), '~'),
-                    # 'timestamp':    obj['timestamp'],
+                    'timestamp':    obj['timestamp'],
                 })
 
         return self._convert(candidates)
