@@ -313,7 +313,6 @@ GROUP					DEFAULT~
         for lines containing words listed in |projectile#todo_terms|.
         Currently, it searches for these words
         in all capital letters & followed by a colon and a space.
-        (ex NOTE: )
 	Uses |denite-kind-file|.
 
 	Source actions:

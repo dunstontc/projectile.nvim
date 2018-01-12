@@ -7,10 +7,6 @@
     <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" 
          alt="mission-control"
     />
-    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal.png" 
-         alt="bookmark_source"
-         width="50%"
-    />
 </div>
 
 
@@ -29,11 +25,16 @@
     - Append todos to the quickfix list 
     - Syntax highlighting & filetype detection for `todo.txt` files
   - Sweet sweet Denite sources:
-    - `projectile` - Source for projectile projects
-    - `bookmark` - Source for projectile bookmarks
-    - `todo` - Source for finding TODOs, FIXMEs, ANYTHINGs
-    - `todotxt` - Source for `$TODO_FILE`
-    - `todotxt_local` - Source for any todo.txt file
+    - `projectile` - Source for projectile projects  
+      ![project_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/pj_1%20slim.png)
+    - `bookmark` - Source for projectile bookmarks  
+      ![bookmark_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal%20slim.png)
+    - `todo` - Source for finding TODOs, FIXMEs, ANYTHINGs  
+      ![todo_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo%20slim.png)
+    - `todotxt` - Source for `$TODO_FILE`  
+      ![todotxt_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo_txt_slim.png)
+    - `todotxt_local` - Source for any todo.txt file  
+      [todotxt_local_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todotxt%20slim.png)
     - `sauce` - Source for Denite sources
 
 
