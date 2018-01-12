@@ -37,7 +37,8 @@
 
 
 ## Installation ##
-  - Install with your favorite plugin manager or management method.
+  - Install with your favorite plugin manager.
+  - See the documentation if you have trouble.
 
 
 ## Configuration ##
@@ -45,7 +46,7 @@
   - If you'd like it elsewhere, you can set an alternate path in one of two ways:
     - `g:projectile#data_dir = '<wherever>'`
     - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
-  - Check out documentation.
+  - Check out the documentation.
 
 
 ## Issues ##
