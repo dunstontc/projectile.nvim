@@ -4,7 +4,9 @@
 [![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" alt="mission-control"/>
+    <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" 
+         alt="mission-control"
+    />
 </div>
 
 
@@ -23,11 +25,11 @@
     - Append todos to the quickfix list 
     - Syntax highlighting & filetype detection for `todo.txt` files
   - Sweet sweet Denite sources:
-    - `projectile` - Source for projectile projects
-    - `bookmark` - Source for projectile bookmarks
-    - `todo` - Source for finding TODOs, FIXMEs, ANYTHINGs
-    - `todotxt` - Source for `$TODO_FILE`
-    - `todotxt_local` - Source for any todo.txt file
+    - `projectile` - Source for projectile projects  
+    - `bookmark` - Source for projectile bookmarks  
+    - `todo` - Source for finding TODOs, FIXMEs, ANYTHINGs  
+    - `todotxt` - Source for `$TODO_FILE`  
+    - `todotxt_local` - Source for any todo.txt file  
     - `sauce` - Source for Denite sources
 
 
@@ -42,11 +44,29 @@
 
 
 ## Configuration ##
-  - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.  
+  - By default, data is saved in `$XDG_CACHE_HOME/projectile` or `~/.cache/projectile/`.
   - If you'd like it elsewhere, you can set an alternate path in one of two ways:
     - `g:projectile#data_dir = '<wherever>'`
     - `call denite#custom#var('projectile', 'data_dir', '<wherever>')`
   - Check out the documentation.
+
+## Denite Sources ##
+
+### projectile ###
+  ![project_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/pj_1%20slim.png)
+
+### bookmark ###  
+  ![bookmark_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/bm_normal%20slim.png)
+
+### todo ###  
+  ![todo_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo%20slim.png)
+
+### todotxt ###  
+  ![todotxt_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todo_txt_slim.png)
+
+### todotxt_local ###  
+  ![todotxt_local_source](https://raw.githubusercontent.com/dunstontc/assets/master/images/projectile/todotxt%20slim.png)
+
 
 
 ## Issues ##
