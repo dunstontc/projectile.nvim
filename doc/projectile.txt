@@ -235,7 +235,6 @@ GROUP					DEFAULT~
 *deniteSource_Todo_Context*               |todoContext|
 *deniteSource_Todo_Project*               |todoProject|
 *deniteSource_Todo_Date*                  |Comment|
-*deniteSource_Todo_String*                |String|
 *deniteSource_Todo_Extra*                 |todoExtra|
 *deniteSource_Todo_PriorityA*             |todoPriorityA|
 *deniteSource_Todo_PriorityB*             |todoPriorityB|

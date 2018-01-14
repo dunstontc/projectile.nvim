@@ -25,7 +25,7 @@ class Source(Base):
         super().__init__(vim)
 
         self.name = 'todotxt'
-        self.kind = 'word'
+        self.kind = 'todotxt'
         self.syntax_name = 'deniteSource_Todo'
         self.vars = {
             'data_dir':          vim.vars.get('projectile#data_dir', '~/.cache/projectile'),
