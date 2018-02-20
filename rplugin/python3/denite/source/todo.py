@@ -49,7 +49,7 @@ class Source(Base):
         context['path_pattern']    = re.compile(r'(^.*?)(?:\:.*$)')
         context['line_pattern']    = re.compile(r'(?:\:)(\d*)(?:\:)(\d*)')
         context['terms']           = '|'.join(self.vars.get('todo_terms'))
-        context['content_pattern'] = re.compile(f"({context['terms']})+(.*$)")
+        context['content_pattern'] = re.compile("({})+(.*$)".format(context['terms']))
 
         if self.vim.call('getcwd') == expanduser("~"):
             context['todos']       = []
@@ -57,8 +57,8 @@ class Source(Base):
             error(self.vim, 'You might not want to search in \'~\'...')
         else:
             context['searcher']   = self.vars['search_prog']
-            context['options']    = self.vars[f"{context['searcher']}_options"]
-            context['terms']      = f"\s({context['terms']})\:\s"
+            context['options']    = self.vars["{}_options".format(context['searcher'])]
+            context['terms']      = "\s({})\:\s".format(context['terms'])
             context['search_dir'] = self.vim.call('getcwd')
 
             context['todos'] = self._run_search(
@@ -122,7 +122,7 @@ class Source(Base):
 
         for candidate in candidates:
 
-            todo_pos = f"[{candidate['action__line']}:{candidate['action__col']}]"
+            todo_pos = "[{}:{}]".format(candidate['action__line'], candidate['action__col'])
 
             if self.vars['icon_setting'] == 1:
                 icon = self.vim.funcs.WebDevIconsGetFileTypeSymbol(candidate['action__path'])
@@ -153,7 +153,7 @@ class Source(Base):
     def _run_search(self, command, options, pattern, location):
         """Based off of a script by @chemzqm in denite-git."""
         try:
-            p = subprocess.run(f"{command} {' '.join(options)} \"{pattern}\" {location}",
+            p = subprocess.run("{} {} \"{}\" {}".format(command, ' '.join(options), pattern, location),
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT,
                                shell=True)
@@ -165,16 +165,15 @@ class Source(Base):
         """Define Vim regular expressions for syntax highlighting."""
         if self.vars['highlight_setting'] == 1:
             items = [x['name'] for x in SYNTAX_GROUPS]
-            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            self.vim.command('syntax match {} /^.*$/ containedin={} contains={}'.format(self.syntax_name, self.syntax_name, ",".join(items)))
             for pattern in SYNTAX_PATTERNS:
-                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+                self.vim.command('syntax match {}_{} {}'.format(self.syntax_name, pattern["name"], pattern["regex"]))
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
         if self.vars['highlight_setting'] == 1:
             for match in SYNTAX_GROUPS:
-                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+                self.vim.command('highlight link {} {}'.format(match["name"], match["link"]))
 
 
 SYNTAX_GROUPS = [

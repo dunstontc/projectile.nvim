@@ -92,7 +92,7 @@ class Kind(File):
         target_name  = target['name']
         data_file    = util.expand(self.vars['data_dir'] + '/bookmarks.json')
 
-        confirmation = self.vim.call('confirm', f"Delete bookmark: '{target_name}' ?", "&Yes\n&No")
+        confirmation = self.vim.call('confirm', "Delete bookmark: '{}' ?", "&Yes\n&No".format(target_name))
         if confirmation == 2:
             return
         else:
@@ -114,7 +114,7 @@ class Kind(File):
             match_path = '^{0}$'.format(path)
 
             if not os.path.exists(path):
-                util.error(self.vim, f"error accessing {path}")
+                util.error(self.vim, "error accessing {}".format(path))
                 # TODO: Handle this error.
 
             if re.match('https?://', path):

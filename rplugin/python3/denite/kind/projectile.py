@@ -53,7 +53,7 @@ class Kind(Directory):
             'root':        project_root,
             'timestamp':   str(datetime.datetime.now().isoformat()),
             'description': '',
-            'vcs':         isdir(f"{root_dir}/.git")  # TODO: Also check for .hg/ and .svn
+            'vcs':         isdir("{}/.git".format(root_dir))  # TODO: Also check for .hg/ and .svn
         }
 
         with open(data_file, 'r') as g:
@@ -72,7 +72,7 @@ class Kind(Directory):
         target_date  = target['timestamp']
         target_name  = target['name']
         data_file    = expand(self.vars['data_dir'] + '/projects.json')
-        confirmation = self.vim.call('confirm', f"Remove {target_name}?", "&Yes\n&No")
+        confirmation = self.vim.call('confirm', "Remove {}?".format(target_name), "&Yes\n&No")
         if confirmation == 2:
             return
         else:
@@ -94,6 +94,6 @@ class Kind(Directory):
         if not isdir(target['action__path']):
             return
         destination = expand(target['action__path'])
-        self.vim.call('execute', f'{user_cmd} {destination}')
+        self.vim.call('execute', '{} {}'.format(user_cmd, destination))
 
 
