@@ -161,7 +161,7 @@ class Source(Base):
 
         """
         try:
-            q = run(f"git -C {project_root} branch",
+            q = run("git -C {} branch".format(project_root),
                     stdout=PIPE,
                     stderr=STDOUT,
                     shell=True)
@@ -190,7 +190,7 @@ class Source(Base):
         pos_pat = re.compile(r'\*.+(?<=\[)(\w*)', re.M)
 
         try:
-            q = run(f"git -C {project_root} branch -v",
+            q = run("git -C {} branch -v".format(project_root),
                     stdout=PIPE,
                     stderr=STDOUT,
                     shell=True)
@@ -227,7 +227,7 @@ class Source(Base):
         """
         position = self._get_pos(project_root)
         try:
-            p = run(f"git -C {project_root} status --porcelain",
+            p = run("git -C {} status --porcelain".format(project_root),
                     stdout=PIPE,
                     stderr=STDOUT,
                     shell=True)
@@ -246,9 +246,9 @@ class Source(Base):
                         messages.append(self.vars['icons'][x])
 
         if not len(messages) and not len(position):
-            return f'{"".join(messages)}'
+            return '{}'.format("".join(messages))
         else:
-            return f'[{position}{"".join(messages)}]'
+            return '[{}{}]'.format(position, "".join(messages))
 
     def _maybe(self, please):
         """Something possibly might be something else.
@@ -328,10 +328,9 @@ class Source(Base):
 
         if self.vars['highlight_setting'] == 1:
             items = [x['name'] for x in SYNTAX_GROUPS]
-            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                             f"containedin={self.syntax_name} contains={','.join(items)}")
+            self.vim.command('syntax match {} /^.*$/ containedin={} contains={}'.format(self.syntax_name, self.syntax_name, ','.join(items)))
             for pattern in SYNTAX_PATTERNS:
-                self.vim.command(f"syntax match {self.syntax_name}_{pattern['name']} {pattern['regex']}")
+                self.vim.command("syntax match {}_{} {}".format(self.syntax_name, pattern['name'], pattern['regex']))
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
@@ -339,7 +338,7 @@ class Source(Base):
 
         if self.vars['highlight_setting'] == 1:
             for match in SYNTAX_GROUPS:
-                self.vim.command(f"highlight default link {match['name']} {match['link']}")
+                self.vim.command("highlight default link {} {}".format(match['name'], match['link']))
 
 
 SYNTAX_GROUPS = [

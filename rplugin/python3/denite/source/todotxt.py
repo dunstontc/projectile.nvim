@@ -175,17 +175,16 @@ class Source(Base):
         """Define Vim regular expressions for syntax highlighting."""
         if self.vars['highlight_setting'] == 1:
             items = [x['name'] for x in SYNTAX_GROUPS]
-            self.vim.command(f'syntax match {self.syntax_name} /^.*$/ '
-                             f'containedin={self.syntax_name} contains={",".join(items)}')
+            self.vim.command('syntax match {} /^.*$/ containedin={} contains={}'.format(self.syntax_name, self.syntax_name, ",".join(items)))
             for pattern in SYNTAX_PATTERNS:
-                self.vim.command(f'syntax match {self.syntax_name}_{pattern["name"]} {pattern["regex"]}')
+                self.vim.command('syntax match {}_{} {}'.format(self.syntax_name, pattern["name"], pattern["regex"]))
                 self.vim.command(r'syntax cluster TodoData  contains=deniteSource_Todo_Date,deniteSource_Todo_Project,deniteSource_Todo_Context,deniteSource_Todo_Extra,deniteSource_Todo_ID,deniteSource_Todo_String')
 
     def highlight(self):
         """Link highlight groups to existing attributes."""
         if self.vars['highlight_setting'] == 1:
             for match in SYNTAX_GROUPS:
-                self.vim.command(f'highlight link {match["name"]} {match["link"]}')
+                self.vim.command('highlight link {} {}'.format(match["name"], match["link"]))
 
 
 SYNTAX_GROUPS = [
