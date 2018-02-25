@@ -1,7 +1,8 @@
 # projectile.nvim #
 
 [![License](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
-[![Code Climate](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](https://github.com/dunstontc/projectile.nvim/issues)
+[![GitHub issues](https://img.shields.io/github/issues/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/issues)
+
 
 <div align="center">
     <img src="https://raw.githubusercontent.com/dunstontc/assets/master/gifs/yes.gif" 

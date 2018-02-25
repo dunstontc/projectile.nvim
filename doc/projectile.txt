@@ -59,7 +59,7 @@ With tpope/vim-pathogen: >
 
 <
 Once it is in your |runtimepath| you'll have access to a number
-of new |denite| sources. Upon first use, `bookmark` & `projectile` will
+of new Denite sources. Upon first use, `bookmark` & `projectile` will
 create |projectile#data_dir|/bookmarks.json & projects.json respectively.
 
 If you would for this folder to be made in a place other than
@@ -67,8 +67,8 @@ your `$XDG_CACHE_HOME`, you can use the |projectile#data_dir| variable
 to set the path to a different location.
 
 When bookmarks.json & projecs.json are written they'll each have one
-item added (|$MVIMRC| for bookmarks and |$VIMRUNTIME| for projects).
-This is due to an issue with |denite| where an action can't be made unless
+item added (|$MYVIMRC| for bookmarks and |$VIMRUNTIME| for projects).
+This is due to an issue with Denite where an action can't be made unless
 there are existing candidates for a given source. I'm currently working on
 a better wat to handle this, but this is how it currently works.
 
@@ -395,7 +395,14 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 
 
 ------------------------------------------------------------------------------
+0.0.7	2018-02-24
+
+        - Merged pull request from @xerron to support Python 3.5
+        - Fixed issue badge link in readme.md
+        - Other updates to documentation
+
 0.0.6	2018-01-11
+
         - Added denite action to append todos to qflist
         - Added todotxt_local
         - Removed timestamp from bookmark/projectile source abbr
@@ -403,18 +410,20 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
         - Other updates to documentation
 
 0.0.5	2018-01-08
+
         - Rewrote highlight patterns for use with denite; much faster now
         - Show bookmark name in delete confirmation
 
 0.0.4	2018-01-02
+
 	- Added options to disable highlighting & formatting
-	- Added stable todotxt & todotxt_local |sources|
+	- Added stable todotxt & todotxt_local sources
 	- Updated documentation
 
 
 0.0.3	2017-12-31
 
-        - Added |denite| source `sauce`
+        - Added Denite source `sauce`
         - Added installation instructions to documentation
         - Other updates to documentation
 
@@ -422,13 +431,13 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 0.0.2	2017-12-29
 
 	- Added initial git info feature for projects
-    	- Added initial implementation of |denite| todo.txt source
+    	- Added initial implementation of Denite todo.txt source
     	- Updated documentation
 
 
 0.0.1	2017-12-27
 
-        - Refactored syntax highlighting for all |denite| sources
+        - Refactored syntax highlighting for all Denite sources
         - Extracted candidate formatting & conversion to a dedicated function
         - Added filetype detection for todo.txt files
         - Updated documentation
@@ -437,7 +446,7 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 
 
 ==============================================================================
-Version:    0.0.6
+Version:    0.0.7
 License:    MIT License
 Author:     Clay Dunston <dunstontc@gmail.com>
 Website:    https://github.com/dunstontc/projectile.nvim
