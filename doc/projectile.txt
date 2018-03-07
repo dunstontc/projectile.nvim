@@ -395,6 +395,10 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 
 
 ------------------------------------------------------------------------------
+0.0.8	2018-03-06
+
+        - Fixed error attempting to redefine command in plug/projectile.vim
+
 0.0.7	2018-02-24
 
         - Merged pull request from @xerron to support Python 3.5
@@ -446,7 +450,7 @@ open an issue at https://github.com/dunstontc/projectile.nvim/issues
 
 
 ==============================================================================
-Version:    0.0.7
+Version:    0.0.8
 License:    MIT License
 Author:     Clay Dunston <dunstontc@gmail.com>
 Website:    https://github.com/dunstontc/projectile.nvim
