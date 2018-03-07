@@ -2,7 +2,7 @@
 " FILE: projectile.vim
 " AUTHOR: Clay Dunston <dunstontc@gmail.com>
 " License: MIT license
-" Last Modified: January 2nd, 2018
+" Last Modified: March 6th, 2018
 " ==============================================================================
 ""
 " @section Settings, settings
@@ -83,7 +83,7 @@ endif
 " @command(ProjectileInit)
 " Calls @function(Projectile_Init),
 " Creates {g:projectile#data_dir}/*.json
-command -nargs=0 ProjectileInit call projectile#Init()
+" command! -nargs=0 ProjectileInit call projectile#Init()
 
 
 ""

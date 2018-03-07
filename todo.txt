@@ -1,4 +1,5 @@
 (A) 2018-02-24 Implement shortcut actions to add a new bookmark/project.
+(A) 2018-02-25 Fix formatting for bookmark/project delete.
 (B) 2018-02-15 Escape spaces in all paths.
 (B) 2018-01-21 Add @timestamp back to @denite_source_projectile. id:35
 (B) 2017-12-18 Make sure the correct (absolute) file path is jumped to when opening a @todo. id:16
