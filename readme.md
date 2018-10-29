@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/github/license/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/dunstontc/projectile.nvim.svg)](https://github.com/dunstontc/projectile.nvim/issues)
+![Python Version](https://img.shields.io/badge/python-3+-blue.svg)
+
 
 
 <div align="center">
