@@ -175,17 +175,17 @@ class Source(Base):
 
 
 SYNTAX_GROUPS = [
-    {'name': 'deniteSource_Projectile_Noise',     'link': 'Comment'   },
-    {'name': 'deniteSource_Projectile_Name',      'link': 'Identifier'},
-    {'name': 'deniteSource_Projectile_Path',      'link': 'Directory' },
-    {'name': 'deniteSource_Projectile_Err',       'link': 'Error'     },
+    {'name': 'deniteSource_Projectile_Noise', 'link': 'Comment'   },
+    {'name': 'deniteSource_Projectile_Name',  'link': 'Identifier'},
+    {'name': 'deniteSource_Projectile_Path',  'link': 'Directory' },
+    {'name': 'deniteSource_Projectile_Err',   'link': 'Error'     },
 ]
 
 SYNTAX_PATTERNS = [
-    {'name': 'Noise',     'regex': r'/\(\s--\s\)/                            contained'},
-    {'name': 'Name',      'regex': r'/^\(\s\S.\+\)\( -- \)\@=/               contained '
-                                   r'contains=deniteSource_Projectile_Path,deniteSource_Projectile_Noise'},
-    {'name': 'Path',      'regex': r'/ --    [0-9a-zA-z~\/\-\.]\+/         contained contains=deniteSource_Projectile_Noise'},
-    {'name': 'Err',       'regex': r'/^.*✗.*$/                           contained'},
-    {'name': 'Err',       'regex': r'/^.*\sX\s.*$/                       contained'},
+    {'name': 'Noise', 'regex': r'/\(\s--\s\)/                        contained'},
+    {'name': 'Name',  'regex': r'/^\(\s\S.\+\)\( -- \)\@=/           contained '
+                               r'contains=deniteSource_Projectile_Path,deniteSource_Projectile_Noise'},
+    {'name': 'Path',  'regex': r'/ --    [0-9a-zA-z~\/\-\.]\+/       contained contains=deniteSource_Projectile_Noise'},
+    {'name': 'Err',   'regex': r'/^.*✗.*$/                           contained'},
+    {'name': 'Err',   'regex': r'/^.*\sX\s.*$/                       contained'},
 ]
