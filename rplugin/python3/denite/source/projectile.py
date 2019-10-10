@@ -22,7 +22,6 @@ class Source(Base):
     """Denite source for project directories."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
 
         self.name = 'projectile'
@@ -96,7 +95,7 @@ class Source(Base):
         Returns
         -------
         candidates : list
-            A sexy source. Adds error mark if a source's path is inaccessible.
+            A formatted source. Adds error mark if a source's path is inaccessible.
 
         """
         # stamp_pat = re.compile(r'(?P<date>\d{4}-\d{2}-\d{2})T(?P<time>\d{2}:\d{2}:\d{2})')

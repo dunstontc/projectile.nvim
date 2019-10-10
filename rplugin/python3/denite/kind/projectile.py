@@ -18,7 +18,6 @@ class Kind(Directory):
     """Kind using JSON to persist data for projects."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
         self.name             = 'projectile'
         self.default_action   = 'open'

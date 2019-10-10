@@ -13,7 +13,6 @@ class Kind(File):
     """Todo kind, extends File kind."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
         self.name             = 'todo'
         self.default_action   = 'open'

@@ -18,7 +18,6 @@ class Source(Base):
     """Denite source for todo.txt files."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
 
         self.name = 'todotxt_local'
@@ -79,7 +78,7 @@ class Source(Base):
         Returns
         -------
         candidates : list
-            A sexy source.
+            Formatted source.
             Aligns candidate properties.
             Adds error mark if a source's path is inaccessible.
             Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.

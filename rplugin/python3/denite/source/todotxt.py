@@ -21,7 +21,6 @@ class Source(Base):
     """Denite source for todo.txt files."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
 
         self.name = 'todotxt'
@@ -39,7 +38,7 @@ class Source(Base):
         }
 
     def on_init(self, context):
-        """Check for local *todo.txt files."""
+        """Check for local `*todo.txt` files."""
         context['__bufname'] = self.vim.current.buffer.name
         context['__filename'] = basename(context['__bufname'])
         # boofer  = self.vim.current.buffer.name
@@ -85,7 +84,7 @@ class Source(Base):
         Returns
         -------
         candidates : list
-            A sexy source.
+            Formatted source.
             Aligns candidate properties.
             Adds error mark if a source's path is inaccessible.
             Adds nerdfont icon if ``projectile#enable_devicons`` == ``1``.

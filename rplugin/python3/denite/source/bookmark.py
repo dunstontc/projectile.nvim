@@ -21,7 +21,6 @@ class Source(Base):
     """Denite source for bookmarked files."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
 
         self.name = 'bookmark'
@@ -92,7 +91,7 @@ class Source(Base):
         Returns
         -------
         candidates : list
-            A sexy source.
+            A formatted source.
             Aligns candidate properties.
             Adds error mark if a source's path is inaccessible.
             Adds nerdfont icon if enabled.

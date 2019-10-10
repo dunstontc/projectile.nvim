@@ -35,7 +35,6 @@ class Kind(File):
     """
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
         self.name             = 'bookmark'
         self.default_action   = 'open'

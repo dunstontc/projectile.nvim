@@ -11,10 +11,8 @@ from .base import Base
 
 
 class Source(Base):
-    """I wanna be the very best, like no one ever was."""
 
     def __init__(self, vim):
-        """To catch them is my real test, to train them is my cause."""
         super().__init__(vim)
 
         self.name = 'sauce'
@@ -22,11 +20,9 @@ class Source(Base):
         self.vars = {}
 
     def on_init(self, context):
-        """I will travel across the land, searching far and wide."""
         context['__sauces'] = self.vim.call('projectile#CommandCompletion', 'Denite ')
 
     def gather_candidates(self, context):
-        """Each Denite source, to understand, the power that's insiiide."""
         candidates = []
 
         for sauce in context['__sauces']:

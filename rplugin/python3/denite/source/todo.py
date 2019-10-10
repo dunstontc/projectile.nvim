@@ -18,7 +18,6 @@ class Source(Base):
     """Denite source for TODOS in the current directory."""
 
     def __init__(self, vim):
-        """Initialize thyself."""
         super().__init__(vim)
         self.name        = 'todo'
         self.syntax_name = 'deniteSource_Todo'
